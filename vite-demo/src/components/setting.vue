@@ -26,7 +26,7 @@
                 <div
                   class="theme-color-block"
                   :style="{ backgroundColor: item.color }"
-                  @click="handleChangeThemeColor(item.theme, index)"
+                  @click="handleChangeThemeColor(item, index)"
                 >
                   <check-outlined v-show="themeColorIndex === index" />
                 </div>
@@ -65,9 +65,9 @@ const themeColorIndex = ref<string | number>(0);
 const handleChangeShow = (show: boolean) => {
   visibleDraw.value = show;
 };
-const handleChangeThemeColor = (theme: string, index: string | number) => {
+const handleChangeThemeColor = ({color,theme}:{color:string, theme:string}, index: string | number) => {
   themeColorIndex.value = index;
-  changeTheme(theme);
+  changeTheme(theme, { primaryColor: color });
 };
 onMounted(() => {
   const theme = localStorage.getItem("theme");

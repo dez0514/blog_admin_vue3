@@ -11,7 +11,7 @@ const handleMenuClick = (e: Event) => {
   <div class="header">
     <div><setting-outlined class="icon" />管理系统</div>
     <a-dropdown>
-        <div class="username"><user-outlined class="icon" /> zwd</div>
+        <div class="username"><user-outlined class="icon" /> zhangwd24</div>
         <template #overlay>
             <a-menu class="droplist" @click="handleMenuClick">
                 <a-menu-item key="1" class="logout-txt">退出</a-menu-item>

@@ -4,7 +4,7 @@
       <vheader></vheader>
     </a-layout-header>
     <a-layout class="content">
-      <a-layout-sider theme="light" v-model="isCollapse" :collapsedWidth="60" collapsible :width="256">
+      <a-layout-sider theme='light' v-model="isCollapse" :collapsedWidth="60" collapsible :width="256">
         <sidebar></sidebar>
       </a-layout-sider>
       <a-layout-content>
