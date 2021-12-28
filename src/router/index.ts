@@ -8,42 +8,59 @@ import {
 } from "@ant-design/icons-vue";
 export const asyncRoutes: Array<RouteRecordRaw> = [
     {
+        path: '/article',
+        meta: {
+            title: '文章管理',
+            icon: QqOutlined
+        },
+        redirect: '/article/create',
+        component: () => import('@/components/routerview.vue'),
+        children: [
+            {
+                path: '/article/create',
+                name: 'articleCreate',
+                meta: {
+                    title: '创建/编辑文章',
+                    icon: AppstoreOutlined
+                },
+                component: () => import('@/views/article/articleCreate.vue')
+            },
+            {
+                path: '/article/list',
+                name: 'articleList',
+                meta: {
+                    title: '文章列表',
+                    icon: SettingOutlined
+                },
+                component: () => import('@/views/article/articleList.vue')
+            },
+            {
+                path: '/article/detail',
+                name: 'articleDetail',
+                meta: {
+                    title: '文章详情'
+                },
+                component: () => import('@/views/article/articleDetail.vue')
+            }
+        ]
+    },
+    {
+        path: '/comment',
+        name: 'comment',
+        meta: {
+            title: '留言管理',
+            icon: MailOutlined
+        },
+        component: () => import('@/views/comment/index.vue')
+    },
+    {
         path: '/home',
         name: 'home',
         meta: {
-            title: '首页',
+            title: '测试页面',
             icon: MailOutlined
         },
         component: () => import('@/views/home/home.vue')
-    },
-    {
-        path: '/about',
-        meta: {
-            title: '关于',
-            icon: QqOutlined
-        },
-        redirect: '/about/about1',
-        component: () => import('@/views/about/index.vue'),
-        children: [
-            {
-                path: '/about/about1',
-                name: 'about1',
-                meta: {
-                    title: '关于1',
-                    icon: AppstoreOutlined
-                },
-                component: () => import('@/views/about/about.vue')
-            },
-            {
-                path: '/about/about2',
-                name: 'about2',
-                meta: {
-                    title: '关于2',
-                    icon: SettingOutlined
-                },
-                component: () => import('@/views/about/about1.vue')
-            }
-        ]
     }
 ]
 const constantRoutes = [

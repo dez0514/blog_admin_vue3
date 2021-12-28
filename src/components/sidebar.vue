@@ -16,16 +16,18 @@
           "
           :key="item.path"
         >
-          <template #icon
-            ><component :is="item.meta.icon"></component
-          ></template>
+          <template #icon>
+            <component :is="item.meta.icon"></component></template>
           <template #title>{{ item.meta.title }}</template>
-          <a-menu-item v-for="inner in item.children" :key="inner.path">
-            <template #icon
-              ><component :is="inner.meta && inner.meta.icon"></component
-            ></template>
-            {{ inner.meta && inner.meta.title }}
-          </a-menu-item>
+          <template v-for="inner in item.children" >
+            <a-menu-item v-if="inner.meta && inner.meta.icon" :key="inner.path">
+              <template #icon
+                ><component :is="inner.meta && inner.meta.icon"></component
+              ></template>
+              {{ inner.meta && inner.meta.title }}
+            </a-menu-item>
+          </template>
+          
         </a-sub-menu>
         <a-menu-item
           v-if="
