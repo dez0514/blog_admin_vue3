@@ -48,7 +48,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, toRefs } from "vue";
-import { asyncRoutes } from "@/router";
+import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 const [router, route] = [useRouter(), useRoute()];
 const [openKeys, selectedKeys] = toRefs([ref<string[]>([]), ref<string[]>([])]);
