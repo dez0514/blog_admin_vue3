@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import { todoStore } from '../../store/pinia'
+import { storeToRefs } from 'pinia'
+const store = todoStore()
+const { todos,filter,nextId } = storeToRefs(store)
 const test = () => {
-    console.log('1111')
+    console.log(store)
+    store.addTodo('test1')
 }
 </script>
 <template>
     <div>home</div>
     <a-button type="primary" @click="test"> Primary</a-button>
     <a-alert message="好可惜，我也不会" type="success" />
+    <div>{{filter + '' + nextId}}</div>
+    <div v-for="(item,index) in todos" :key="index">{{item.text}}</div>
 </template>
 <style lang="scss" scoped>
 

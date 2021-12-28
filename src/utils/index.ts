@@ -1,11 +1,6 @@
 import Color from "color";
 import setCustomTheme from "@setCustomTheme";
-import { ThemeOpt } from '../types'
-interface ThemeSetOpt {
-    primaryColor: string;
-    targetValueReplacer?: object;
-    gradientReplacer?: any
-}
+import { ThemeOpt, ThemeSetOpt } from '../types'
 export const changeTheme = (theme:string, themeOptions?:ThemeOpt) => {
     window.document.documentElement.setAttribute('data-theme', theme)
     localStorage.setItem('theme', theme)

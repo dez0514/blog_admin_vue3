@@ -46,21 +46,11 @@ import {
   CheckOutlined,
 } from "@ant-design/icons-vue";
 import { changeTheme } from "../utils";
-interface themeItem {
-  color: string;
-  theme: string;
-}
+import { themeColorList } from '../utils/config'
+import { themeItem } from '../types'
+
 const visibleDraw = ref<boolean>(false);
-const themeColorList = ref<themeItem[]>([
-  { color: "rgb(24, 144, 255)", theme: "default" },
-  { color: "rgb(245, 34, 45)", theme: "dust" },
-  { color: "rgb(250, 84, 28)", theme: "volcano" },
-  { color: "rgb(250, 173, 20)", theme: "sunset" },
-  { color: "rgb(19, 194, 194)", theme: "cyan" },
-  { color: "rgb(82, 196, 26)", theme: "green" },
-  { color: "rgb(47, 84, 235)", theme: "geekblue" },
-  { color: "rgb(114, 46, 209)", theme: "purple" },
-]);
+const themeColorArr = ref<themeItem[]>([...themeColorList]);
 const themeColorIndex = ref<string | number>(0);
 const handleChangeShow = (show: boolean) => {
   visibleDraw.value = show;
@@ -71,7 +61,7 @@ const handleChangeThemeColor = ({color,theme}:{color:string, theme:string}, inde
 };
 onMounted(() => {
   const theme = localStorage.getItem("theme");
-  let index = themeColorList.value.findIndex((fitem) => fitem.theme === theme);
+  let index = themeColorArr.value.findIndex((fitem) => fitem.theme === theme);
   if (index > -1) {
     themeColorIndex.value = index;
   }
