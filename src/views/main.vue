@@ -36,7 +36,9 @@ body,html {
   height: calc(100vh - 64px);
 }
 .main {
-  margin: 20px 20px 0;
+  overflow-y: auto;
+  margin: 20px 0 0 20px;
+  padding: 20px;
   background: #fff;
   height: calc(100vh - 64px - 96px - 20px);
 }
