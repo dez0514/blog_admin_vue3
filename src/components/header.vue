@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 import { SettingOutlined, UserOutlined } from "@ant-design/icons-vue";
+const router = useRouter();
 const handleButtonClick = (e: Event) => {
   console.log("click left button", e);
 };
-const handleMenuClick = (e: Event) => {
-  console.log("click", e);
+const handleMenuClick = (context: { item:any, key: any, keyPath:any }) => {
+  console.log("click", context);
+  if(context.key === 'logout') {
+    router.push('/login');
+  }
 };
 </script>
 <template>
@@ -14,7 +19,7 @@ const handleMenuClick = (e: Event) => {
         <div class="username"><user-outlined class="icon" />zhangwangde</div>
         <template #overlay>
             <a-menu class="droplist" @click="handleMenuClick">
-                <a-menu-item key="1" class="logout-txt">退出</a-menu-item>
+                <a-menu-item key="logout" class="logout-txt">退出</a-menu-item>
             </a-menu>
         </template>
     </a-dropdown>

@@ -67,13 +67,13 @@
             name="content"
             :rules="[{ required: true, message: '请输入内容!' }]"
         >
-            <md-editor v-model="formState.content" :toolbars="toolbars" />
+            <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '250px' }" />
         </a-form-item>
         <a-form-item style="margin-bottom: 0;" :wrapper-col="{ offset: 4, span: 14 }">
             <a-button type="primary" html-type="submit">提交</a-button>
         </a-form-item>
     </a-form>
-    <a-modal v-model:visible="visible" title="Basic Modal" @ok="handleOk">
+    <a-modal v-model:visible="visible" title="新增标签" @ok="handleOk">
         <a-form
             style="margin-top: 10px;"
             :model="formPopState"
@@ -100,6 +100,20 @@
             >
                 <a-input v-model:value="formPopState.icon" />
             </a-form-item>
+            <!-- <a-form-item
+                :label-col="{ span: 3 }"
+                :wrapper-col="{ offset: 1 }"
+                label="颜色"
+                name="color"
+                :rules="[{ required: true, message: '请选择颜色!' }]"
+            >
+                <color-picker
+                    pickerType="chrome"
+                    :roundHistory="true"
+                    v-model:pureColor="formPopState.color"
+                    v-model:gradientColor="formPopState.gradientColor"
+                />
+            </a-form-item> -->
         </a-form>
     </a-modal>
 </template>
@@ -117,6 +131,7 @@ interface FormPopState {
     tagname: string;
     icon: string;
     color: string;
+    gradientColor: string;
 }
 export default defineComponent({
     setup() {
@@ -166,7 +181,8 @@ export default defineComponent({
         const formPopState = reactive<FormPopState>({
             tagname: '',
             icon: '',
-            color: ''
+            color: '#ff0000',
+            gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
         });
         const visible = ref<boolean>(false);
         const showModal = () => {
