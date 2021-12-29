@@ -31,7 +31,7 @@ export default defineConfig({
   css:{
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "./src/styles/variable.scss";@import "./src/styles/reset.scss";`//引用公共样式，使用vite搭建项目只安装sass即可，不需要安装node-sass,sass-loader
+        additionalData: `@import "./src/styles/variable.scss";`//引用公共样式，使用vite搭建项目只安装sass即可，不需要安装node-sass,sass-loader
       },
       less: {
         javascriptEnabled: true,
