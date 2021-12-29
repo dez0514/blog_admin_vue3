@@ -4,6 +4,8 @@ import router from './router'
 // import store from './store/vuex'
 import './app.less'
 import { createPinia } from 'pinia'
+import MdEditor from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
 
 
 let theme = localStorage.getItem('theme')
@@ -14,6 +16,7 @@ window.document.documentElement.setAttribute('data-theme', theme)
 const app: Component<Element> = createApp(App)
 app.use(router)
 app.use(createPinia())
+app.component('md-editor', MdEditor)
 // app.use(store)
 app.mount('#app')
 
