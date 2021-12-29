@@ -6,6 +6,7 @@ import {
     AppstoreOutlined,
     SettingOutlined,
 } from "@ant-design/icons-vue";
+import Login from '@/views/login/index.vue'
 export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: '/article',
@@ -67,7 +68,7 @@ const constantRoutes = [
     {
         path: '/login',
         name: 'login',
-        component: () => import('@/views/login/index.vue')
+        component: Login
     },
     {
         path: "/:pathMatch(.*)*",
