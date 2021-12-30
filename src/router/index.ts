@@ -98,7 +98,7 @@ router.beforeEach((
     next: NavigationGuardNext
 ) => {
     if (typeof (to.meta.title) === 'string') document.title = to.meta.title
-    if(to.path !== '/login' && !localStorage.getItem('isLogin')) next('/login')
+    if(to.path !== '/login' && localStorage.getItem('isLogin') !== 'true') next('/login')
     else next()
 })
 

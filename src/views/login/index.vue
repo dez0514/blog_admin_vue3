@@ -17,14 +17,22 @@
                 </a-input>
             </a-form-item>
             <a-form-item name="password" :rules="[{ required: true, message: '请输入密码!' }]">
-                <a-input-password placeholder="密码" v-model:value="formState.password" autocomplete="off">
+                <a-input-password
+                    placeholder="密码"
+                    v-model:value="formState.password"
+                    autocomplete="off"
+                >
                     <template #prefix>
                         <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
                     </template>
                 </a-input-password>
             </a-form-item>
             <a-form-item name="code" :rules="[{ required: true, message: '请输入验证码!' }]">
-                <a-input placeholder="验证码" v-model:value="formState.code" style="width: calc(100% - 100px);margin-right: 12px;">
+                <a-input
+                    placeholder="验证码"
+                    v-model:value="formState.code"
+                    style="width: calc(100% - 100px);margin-right: 12px;"
+                >
                     <template #prefix>
                         <CodeOutlined style="color: rgba(0, 0, 0, 0.25)" />
                     </template>
@@ -37,19 +45,21 @@
                     html-type="submit"
                     block
                     :disabled="formState.username === '' || formState.password === '' || formState.code === ''"
+                    @click="handleSubmit"
                 >登录</a-button>
             </a-form-item>
         </a-form>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import {
     UserOutlined,
     LockOutlined,
     CodeOutlined
 } from "@ant-design/icons-vue";
 import verifyCode from '../../components/verifyCode.vue'
+import { useRouter } from 'vue-router';
 interface FormState {
     username: string;
     password: string;
@@ -63,14 +73,22 @@ export default defineComponent({
         verifyCode
     },
     setup() {
+        const router = useRouter()
         const formState = reactive<FormState>({
             username: '',
             password: '',
             code: ''
         });
+        const imgCode = ref<string>('')
         const getCode = (code: string) => {
-            console.log('code===',code)
-            formState.code = code
+            console.log('code===', code)
+            imgCode.value = code
+        }
+        const handleSubmit = () => {
+            if (formState.username === 'zwd' && formState.password === '123456' && formState.code === imgCode.value) {
+                localStorage.setItem('isLogin', 'true')
+                router.replace('/')
+            }
         }
         const onFinish = (values: any) => {
             console.log('Success:', values);
@@ -82,7 +100,8 @@ export default defineComponent({
             formState,
             onFinish,
             onFinishFailed,
-            getCode
+            getCode,
+            handleSubmit
         };
     },
 });
