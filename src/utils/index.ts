@@ -26,7 +26,7 @@ export const changeTheme = (theme:string, themeOptions?:ThemeOpt) => {
         },{});
         themeSetOption.targetValueReplacer = targetValueReplacer
     }
-    console.log('themeSetOption===',themeSetOption)
+    // console.log('themeSetOption===',themeSetOption)
     setCustomTheme({
         Color,
         ...themeSetOption

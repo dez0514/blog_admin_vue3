@@ -8,7 +8,7 @@ import { themeColorList } from "./utils/config";
 
 onMounted(() => {
   let theme = localStorage.getItem("theme");
-  console.log("主题色值===", theme);
+  // console.log("主题色值===", theme);
   if (!theme) {
     theme = "default";
     changeTheme(theme);

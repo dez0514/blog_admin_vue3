@@ -97,10 +97,9 @@ router.beforeEach((
     from: RouteLocationNormalized,
     next: NavigationGuardNext
 ) => {
-    if (typeof (to.meta.title) === 'string') {
-        document.title = to.meta.title
-    }
-    next()
+    if (typeof (to.meta.title) === 'string') document.title = to.meta.title
+    if(to.path !== '/login' && !localStorage.getItem('isLogin')) next('/login')
+    else next()
 })
 
 export default router
