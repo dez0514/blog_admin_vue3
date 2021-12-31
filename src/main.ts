@@ -7,6 +7,8 @@ import './app.less'
 import { createPinia } from 'pinia'
 import MdEditor from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
+import 'ant-design-vue/es/message/style'
+// import 'ant-design-vue/es/notification/style'
 // import Vue3ColorPicker from "vue3-colorpicker";
 // import "vue3-colorpicker/style.css";
 

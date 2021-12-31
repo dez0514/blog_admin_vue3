@@ -8,8 +8,8 @@
     ></canvas>
 </template>
 <script setup lang="ts">
-import { defineEmits, reactive, ref, onMounted } from 'vue';
-const verify = ref<any>(null)
+import { reactive, ref, onMounted } from 'vue';
+const verify = ref(null as HTMLCanvasElement | null)
 const state = reactive({
     pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', // 字符串
     width: 120,
@@ -17,12 +17,10 @@ const state = reactive({
     imgCode: ''
 })
 const emit = defineEmits<{ (e: "emitCode", code: string): void }>();
-// const emit = defineEmits(['emitCode']);
-console.log(emit)
 // 点击图片重新绘制
 const handleDraw = () => {
     state.imgCode = draw()
-    console.log(state.imgCode)
+    // console.log(state.imgCode)
     emit('emitCode', state.imgCode)
 }
 // 随机数
@@ -40,7 +38,8 @@ const randomColor = (min: number, max: number) => {
 // 绘制图片
 const draw = () => {
     // 3.填充背景颜色，背景颜色要浅一点
-    const ctx = verify.value.getContext('2d')
+    const ctx = verify.value?.getContext('2d')
+    if(!ctx) return '';
     // 填充颜色
     ctx.fillStyle = randomColor(180, 230)
     // 填充的位置

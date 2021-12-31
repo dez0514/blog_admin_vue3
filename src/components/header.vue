@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
+import { useRouter } from "vue-router";
 import { SettingOutlined, UserOutlined } from "@ant-design/icons-vue";
 const router = useRouter();
-const handleButtonClick = (e: Event) => {
-  console.log("click left button", e);
-};
 const handleMenuClick = (context: { item:any, key: any, keyPath:any }) => {
   console.log("click", context);
   if(context.key === 'logout') {
+    localStorage.clear()
     router.push('/login');
   }
 };

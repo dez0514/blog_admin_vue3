@@ -7,6 +7,7 @@ import {
     SettingOutlined,
 } from "@ant-design/icons-vue";
 import Login from '@/views/login/index.vue'
+import RouterView from '@/components/routerview.vue'
 export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: '/article',
@@ -15,7 +16,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
             icon: QqOutlined
         },
         redirect: '/article/create',
-        component: () => import('@/components/routerview.vue'),
+        component: RouterView,
         children: [
             {
                 path: '/article/create',
