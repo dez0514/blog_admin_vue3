@@ -10,8 +10,8 @@ import './app.less'
 import 'md-editor-v3/lib/style.css';
 import 'ant-design-vue/es/message/style'
 import 'ant-design-vue/es/notification/style'
-// import Vue3ColorPicker from "vue3-colorpicker";
-// import "vue3-colorpicker/style.css";
+import Vue3ColorPicker from "vue3-colorpicker";
+import "vue3-colorpicker/style.css";
 
 
 let theme = localStorage.getItem('theme')
@@ -24,7 +24,7 @@ console.log('app===',app)
 app.use(router)
 app.use(createPinia())
 app.component('md-editor', MdEditor)
-// app.use(Vue3ColorPicker)
+app.use(Vue3ColorPicker)
 // app.use(store)
 app.config.globalProperties.$message = message
 app.config.globalProperties.$notification = notification

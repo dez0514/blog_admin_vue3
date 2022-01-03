@@ -100,7 +100,7 @@
             >
                 <a-input v-model:value="formPopState.icon" />
             </a-form-item>
-            <!-- <a-form-item
+            <a-form-item
                 :label-col="{ span: 3 }"
                 :wrapper-col="{ offset: 1 }"
                 label="颜色"
@@ -113,7 +113,7 @@
                     v-model:pureColor="formPopState.color"
                     v-model:gradientColor="formPopState.gradientColor"
                 />
-            </a-form-item> -->
+            </a-form-item>
         </a-form>
     </a-modal>
 </template>
