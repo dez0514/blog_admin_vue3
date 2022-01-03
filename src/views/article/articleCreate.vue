@@ -62,12 +62,12 @@
         </a-form-item>
         <a-form-item
             :label-col="{ span: 3 }"
-            :wrapper-col="{ offset: 1, span: 14 }"
+            :wrapper-col="{ offset: 1, span: 18 }"
             label="内容"
             name="content"
             :rules="[{ required: true, message: '请输入内容!' }]"
         >
-            <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '250px' }" />
+            <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '300px' }" />
         </a-form-item>
         <a-form-item style="margin-bottom: 0;" :wrapper-col="{ offset: 4, span: 14 }">
             <a-button type="primary" html-type="submit">提交</a-button>

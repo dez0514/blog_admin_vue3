@@ -15,16 +15,21 @@ const breadCrumbArr = computed(() => route.matched.filter(item => item.meta.titl
 <style lang="scss" scoped>
 .bread {
   overflow: hidden;
-  padding: 0 20px;
   background: #fff;
+  border-bottom: 1px solid #f0f0f0;
 }
-.bread-word,
+.bread-word {
+  padding: 0 20px;
+  line-height: 36px;
+  background-color: #f0f0f0;
+}
 .title {
+  padding: 0 20px;
   height: 48px;
   line-height: 48px;
 }
 .title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
 }
 </style>

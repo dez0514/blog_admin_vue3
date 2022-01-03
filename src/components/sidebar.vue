@@ -70,5 +70,8 @@ onMounted(() => {
 .side-wrap {
   overflow-y: auto;
   max-height: calc(100vh - 64px - 48px);
+  &:deep(.ant-menu-root) {
+    min-height: calc(100vh - 64px - 48px);
+  }
 }
 </style>

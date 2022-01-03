@@ -10,7 +10,7 @@ export default defineComponent({
   setup() {
     const text = ref('');
     return {
-       text 
+      text 
     }
   }
 });

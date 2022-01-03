@@ -5,19 +5,20 @@
             ref="formref"
             style="margin-top: 20px;"
             :model="formState"
-            name="basic"
-            autocomplete="off"
-            @finish="onFinish"
-            @finishFailed="onFinishFailed"
         >
-            <a-form-item name="username" :rules="[{ required: true, message: '请输入用户名!' }]">
-                <a-input placeholder="用户名" v-model:value="formState.username" @pressEnter="handlePressEnter('pwdref')" allow-clear>
+            <a-form-item name="username" :rules="rulesRef.username">
+                <a-input
+                    placeholder="用户名"
+                    v-model:value="formState.username"
+                    @pressEnter="handlePressEnter('pwdref')"
+                    allow-clear
+                >
                     <template #prefix>
                         <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item name="password" :rules="[{ required: true, message: '请输入密码!' }]">
+            <a-form-item name="password" :rules="rulesRef.password">
                 <a-input-password
                     ref="pwdref"
                     placeholder="密码"
@@ -31,7 +32,7 @@
                     </template>
                 </a-input-password>
             </a-form-item>
-            <a-form-item name="code" :rules="[{ required: true, message: '请输入验证码!' }]">
+            <a-form-item name="code" :rules="rulesRef.code">
                 <a-input
                     ref="coderef"
                     placeholder="验证码"
@@ -49,16 +50,17 @@
             <a-form-item>
                 <a-button
                     type="primary"
-                    html-type="submit"
                     block
                     :disabled="formState.username === '' || formState.password === '' || formState.code === ''"
+                    :loading="submitLoad"
+                    @click="handleSubmit"
                 >登录</a-button>
             </a-form-item>
         </a-form>
     </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref } from 'vue';
+import { defineComponent, inject, reactive, ref, toRaw } from 'vue';
 import {
     UserOutlined,
     LockOutlined,
@@ -66,9 +68,8 @@ import {
 } from "@ant-design/icons-vue";
 import verifyCode from '../../components/verifyCode.vue'
 import { useRouter } from 'vue-router';
-import { message } from 'ant-design-vue';
-// import { notification } from 'ant-design-vue';
-// const notice: any = notification
+import { Form } from 'ant-design-vue';
+const useForm = Form.useForm;
 interface FormState {
     username: string;
     password: string;
@@ -82,57 +83,87 @@ export default defineComponent({
         verifyCode
     },
     setup() {
+        const message: any = inject('$message')
         const router = useRouter()
         const formState = reactive<FormState>({
             username: '',
             password: '',
             code: ''
         });
+        const rulesRef = reactive({
+            username: [
+                {
+                    required: true,
+                    message: '请输入用户名',
+                }
+            ],
+            password: [
+                {
+                    required: true,
+                    message: '请输入密码',
+                }
+            ],
+            code: [
+                {
+                    required: true,
+                    message: '请输入验证码',
+                },
+                {
+                    max: 4,
+                    message: '格式有误',
+                    trigger: 'blur',
+                },
+            ],
+        });
+        const submitLoad = ref<boolean>(false)
         const imgCode = ref<string>('')
         const getCode = (code: string) => {
             imgCode.value = code
         }
-        // const openNotificationWithIcon = (type: string, content: string) => {
-            // notice[type]({ message: '提示',description: content });
-        // }
-        const onFinish = (values: FormState) => {
-            if(values.username !== 'zwd' || values.password !== '123456') {
-                // openNotificationWithIcon('error', '用户名或密码不正确')
-                message.error('用户名或密码不正确');
-                return
-            }
-            if(values.code.toLowerCase() !== imgCode.value.toLowerCase()) {
-                message.error('验证码不正确');
-                // openNotificationWithIcon('error', '验证码不正确')
-                return
-            }
-            localStorage.setItem('isLogin', 'true')
-            router.replace('/')
-        };
-        const onFinishFailed = (errorInfo: any) => {
-            console.log('Failed:', errorInfo);
-        };
+        const { validate } = useForm(formState, rulesRef);
+        const handleSubmit = () => {
+            validate().then(() => {
+                // console.log(toRaw(formState));
+                if (formState.username !== 'zwd' || formState.password !== '123456') {
+                    message.error('用户名或密码不正确');
+                    return
+                }
+                if (formState.code.toLowerCase() !== imgCode.value.toLowerCase()) {
+                    message.error('验证码不正确');
+                    return
+                }
+                submitLoad.value = true
+                setTimeout(()=>{
+                    submitLoad.value = false
+                    localStorage.setItem('isLogin', 'true')
+                    router.replace('/')
+                },2000)
+            }).catch(err => {
+                submitLoad.value = false
+                console.log('error', err);
+            });
+        }
         const pwdref = ref(null as HTMLInputElement | null)
         const coderef = ref(null as HTMLInputElement | null)
         const formref = ref(null as HTMLFormElement | null)
-        const handlePressEnter = (typeRef: string ) => {
-            if(typeRef === 'pwdref') {
+        const handlePressEnter = (typeRef: string) => {
+            if (typeRef === 'pwdref') {
                 pwdref.value?.focus()
-            } else if(typeRef === 'coderef') {
+            } else if (typeRef === 'coderef') {
                 coderef.value?.focus()
-            } else if(typeRef === 'formref') {
-                formref.value?.submit()
+            } else if (typeRef === 'formref') {
+                handleSubmit()
             }
         }
         return {
             pwdref,
             coderef,
             formState,
-            onFinish,
-            onFinishFailed,
+            rulesRef,
+            submitLoad,
+            handleSubmit,
             getCode,
             handlePressEnter
-            // openNotificationWithIcon
         };
     },
 });
@@ -147,6 +178,7 @@ export default defineComponent({
     width: 400px;
     border: 1px solid #d9d9d9;
     border-radius: 6px;
+    user-select: none;
 }
 </style>
 
