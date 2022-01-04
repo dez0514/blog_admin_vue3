@@ -34,6 +34,10 @@ body,html {
 <style lang="scss" scoped>
 .content {
   height: calc(100vh - 64px);
+  &:deep(.ant-layout-sider-trigger) {
+    border-top: 1px solid #f0f0f0;
+    border-right: 1px solid #f0f0f0;
+  }
 }
 .main {
   overflow-y: auto;
