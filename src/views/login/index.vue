@@ -136,6 +136,7 @@ export default defineComponent({
                 setTimeout(()=>{
                     submitLoad.value = false
                     localStorage.setItem('isLogin', 'true')
+                    localStorage.setItem('userinfo', JSON.stringify({username:formState.username}))
                     router.replace('/')
                 },2000)
             }).catch(err => {
@@ -145,7 +146,6 @@ export default defineComponent({
         }
         const pwdref = ref(null as HTMLInputElement | null)
         const coderef = ref(null as HTMLInputElement | null)
-        const formref = ref(null as HTMLFormElement | null)
         const handlePressEnter = (typeRef: string) => {
             if (typeRef === 'pwdref') {
                 pwdref.value?.focus()

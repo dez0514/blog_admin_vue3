@@ -7,6 +7,7 @@ import {
     SettingOutlined,
 } from "@ant-design/icons-vue";
 import Login from '@/views/login/index.vue'
+import Main from '@/views/main.vue'
 import RouterView from '@/components/routerview.vue'
 export const asyncRoutes: Array<RouteRecordRaw> = [
     {
@@ -84,7 +85,7 @@ const router = createRouter({
         {
             path: '/',
             redirect: asyncRoutes[0].path,
-            component: () => import('@/views/main.vue'),
+            component: Main,
             children: [
                 ...asyncRoutes
             ]
