@@ -43,6 +43,7 @@ const test = (type: keyof {a:string}) => {
 ### 事件总线用 mitt
 ### 状态管理vuex 或者 pinia
 ### ui 框架的换肤 vite插件
-### 没有name的情况下，怎么写递归组件，keep-alive如何匹配
+### 没有name的情况下，怎么写递归组件，keep-alive如何匹配? 
+答：会使用文件名作为name，参考：[https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导](https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导)
 ### 路由权限设计
 ### 布局，布局切换

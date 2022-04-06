@@ -12,6 +12,8 @@
                     v-model:value="formState.username"
                     @pressEnter="handlePressEnter('pwdref')"
                     allow-clear
+                    autocomplete="on"
+                    style="height: 44px"
                 >
                     <template #prefix>
                         <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
@@ -23,9 +25,10 @@
                     ref="pwdref"
                     placeholder="密码"
                     v-model:value="formState.password"
-                    autocomplete="off"
+                    autocomplete="on"
                     @pressEnter="handlePressEnter('coderef')"
                     allow-clear
+                    style="height: 44px"
                 >
                     <template #prefix>
                         <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
@@ -37,23 +40,28 @@
                     ref="coderef"
                     placeholder="验证码"
                     v-model:value="formState.code"
-                    style="width: calc(100% - 100px);margin-right: 12px;"
+                    style="width: calc(100% - 100px);margin-right: 12px;height: 44px;"
                     @pressEnter="handlePressEnter('formref')"
                     allow-clear
+                    autocomplete="off"
                 >
                     <template #prefix>
                         <CodeOutlined style="color: rgba(0, 0, 0, 0.25)" />
                     </template>
                 </a-input>
-                <verify-code style="width: 88px;height: 32px;" @emitCode="getCode"></verify-code>
+                <verify-code style="width: 88px;height: 44px;" @emitCode="getCode"></verify-code>
+            </a-form-item>
+            <a-form-item>
+              <verify-drag @emitVerifyDrag="getDragVerify"></verify-drag>
             </a-form-item>
             <a-form-item>
                 <a-button
                     type="primary"
                     block
-                    :disabled="formState.username === '' || formState.password === '' || formState.code === ''"
+                    :disabled="formState.username === '' || formState.password === '' || formState.code === '' || !formState.verifydrag"
                     :loading="submitLoad"
                     @click="handleSubmit"
+                    style="height: 44px"
                 >登录</a-button>
             </a-form-item>
         </a-form>
@@ -66,21 +74,24 @@ import {
     LockOutlined,
     CodeOutlined
 } from "@ant-design/icons-vue";
-import verifyCode from '../../components/verifyCode.vue'
+import verifyCode from './components/verifyCode.vue'
+import verifyDrag from './components/verifyDrag.vue'
 import { useRouter } from 'vue-router';
 import { Form } from 'ant-design-vue';
 const useForm = Form.useForm;
 interface FormState {
-    username: string;
-    password: string;
-    code: string;
+    username: string,
+    password: string,
+    code: string,
+    verifydrag: boolean
 }
 export default defineComponent({
     components: {
         UserOutlined,
         LockOutlined,
         CodeOutlined,
-        verifyCode
+        verifyCode,
+        verifyDrag
     },
     setup() {
         const message: any = inject('$message')
@@ -88,7 +99,8 @@ export default defineComponent({
         const formState = reactive<FormState>({
             username: '',
             password: '',
-            code: ''
+            code: '',
+            verifydrag: false
         });
         const rulesRef = reactive({
             username: [
@@ -120,6 +132,9 @@ export default defineComponent({
         const getCode = (code: string) => {
             imgCode.value = code
         }
+        const getDragVerify = (flag: boolean) => {
+          formState.verifydrag = flag
+        }
         const { validate } = useForm(formState, rulesRef);
         const handleSubmit = () => {
             validate().then(() => {
@@ -132,16 +147,20 @@ export default defineComponent({
                     message.error('验证码不正确');
                     return
                 }
+                if(!formState.verifydrag) {
+                    message.error('滑块验证未通过');
+                    return
+                }
                 submitLoad.value = true
                 setTimeout(()=>{
                     submitLoad.value = false
                     localStorage.setItem('isLogin', 'true')
                     localStorage.setItem('userinfo', JSON.stringify({username:formState.username}))
                     router.replace('/')
-                },2000)
+                }, 1000)
             }).catch(err => {
                 submitLoad.value = false
-                console.log('error', err);
+                message.error('登录失败');
             });
         }
         const pwdref = ref(null as HTMLInputElement | null)
@@ -163,6 +182,7 @@ export default defineComponent({
             submitLoad,
             handleSubmit,
             getCode,
+            getDragVerify,
             handlePressEnter
         };
     },

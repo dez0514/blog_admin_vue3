@@ -106,8 +106,8 @@ const draw = () => {
     return imgCode
 }
 onMounted(() => {
-    // 初始化绘制图片验证码
-    handleDraw()
+  // 初始化绘制图片验证码
+  handleDraw()
 })
 
 </script>
