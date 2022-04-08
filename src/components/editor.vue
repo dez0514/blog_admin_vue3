@@ -8,7 +8,7 @@ import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   setup() {
-    const text = ref('');
+    const text = ref<string>('');
     return {
       text 
     }

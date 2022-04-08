@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div><setting-outlined class="icon" />博客管理系统</div>
+    <div><read-outlined class="icon" />博客管理系统</div>
     <a-dropdown>
         <div class="username"><user-outlined class="icon" />{{userinfo?.username}}</div>
         <template #overlay>
@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from "vue-router";
-import { SettingOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons-vue";
+import { ReadOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons-vue";
 const router = useRouter();
 interface UserInfo {
   username: string
@@ -42,6 +42,9 @@ const handleMenuClick = (context: { item: any, key: string, keyPath: any }) => {
   color: #fff;
   .icon {
     margin-right: 10px;
+    position: relative;
+    top: 3px;
+    font-size: 22px;
   }
   .username {
       cursor: pointer;
