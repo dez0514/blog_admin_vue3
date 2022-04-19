@@ -9,6 +9,10 @@ import {
 import Login from '@/views/login/index.vue'
 import Main from '@/views/main.vue'
 import RouterView from '@/components/routerview.vue'
+// import { todoStore } from '../store/pinia'
+// import { storeToRefs } from 'pinia'
+// const store = todoStore()
+// const { comments } = storeToRefs(store)
 export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: '/article',
@@ -52,7 +56,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         name: 'comment',
         meta: {
             title: '留言管理',
-            icon: MailOutlined
+            icon: MailOutlined,
+            // badge: comments
         },
         component: () => import('@/views/comment/index.vue')
     },

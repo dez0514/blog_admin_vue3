@@ -41,6 +41,7 @@
             ><component :is="item.meta.icon"></component
           ></template>
           {{ item.meta.title }}
+          <a-badge v-if="item.meta.badge" :count="item.meta.badge" style="position: relative;top: -1px;"/>
         </a-menu-item>
       </template>
     </a-menu>

@@ -1,8 +1,16 @@
 <template>
   <div class="header">
-    <div><read-outlined class="icon" />博客管理系统</div>
-    <a-dropdown>
-        <div class="username"><user-outlined class="icon" />{{userinfo?.username}}</div>
+    <div class="logo-wrap" :style="{ width: collapsed ? '60px' : '256px' }">
+      <read-outlined class="logo-icon" />
+      <span v-show="!collapsed">博客管理系统</span>
+    </div>
+    <a-dropdown @visibleChange="visibleChange">
+        <div class="username">
+          <a-avatar :src="avatar" />
+          <span class="name">{{userinfo?.username}}</span>
+          <down-outlined v-show="!visible" class="icon down"/>
+          <up-outlined v-show="visible" class="icon up"/>
+        </div>
         <template #overlay>
             <a-menu @click="handleMenuClick">
               <a-menu-item key="logout" style="text-align: center;">
@@ -16,11 +24,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from "vue-router";
-import { ReadOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons-vue";
+import { ReadOutlined, LogoutOutlined, DownOutlined, UpOutlined } from "@ant-design/icons-vue";
+import avatar from '../assets/avatar_boy.png'
+defineProps({
+  collapsed: Boolean
+})
 const router = useRouter();
 interface UserInfo {
   username: string
 }
+const visible = ref<boolean>(false)
 const userinfo = ref<UserInfo | undefined>()
 const userStr = localStorage.getItem('userinfo')
 if(userStr) {
@@ -33,6 +46,9 @@ const handleMenuClick = (context: { item: any, key: string, keyPath: any }) => {
     router.push('/login');
   }
 };
+const visibleChange = (currentVisible: boolean) => {
+  visible.value = currentVisible
+}
 </script>
 <style lang="scss" scoped>
 .header {
@@ -40,14 +56,34 @@ const handleMenuClick = (context: { item: any, key: string, keyPath: any }) => {
   justify-content: space-between;
   align-items: center;
   color: #fff;
-  .icon {
+  .logo-wrap {
+    box-sizing: border-box;
+    padding: 0 18px;
+    text-align: left;
+  }
+  .logo-icon {
     margin-right: 10px;
     position: relative;
     top: 3px;
     font-size: 22px;
   }
   .username {
-      cursor: pointer;
+    padding: 0 18px;
+    cursor: pointer;
+    .icon {
+      position: relative;
+      font-size: 14px;
+      &.down {
+        top: 2px;
+      }
+      &.up {
+        top: -1px;
+      }
+    }
+    .name {
+      display: inline-block;
+      padding: 0 10px;
+    }
   }
 }
 </style>

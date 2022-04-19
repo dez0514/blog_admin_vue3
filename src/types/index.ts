@@ -12,3 +12,15 @@ export interface themeItem {
     color: string;
     theme: string;
 }
+
+export interface articleItem {
+  key: string;
+  name: string;
+  age: number;
+  address: string;
+}
+export interface columnItem {
+  title: string;
+  dataIndex: string;
+  key: string;
+}

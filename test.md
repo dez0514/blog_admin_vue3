@@ -42,6 +42,30 @@ const test = (type: keyof {a:string}) => {
 
 ### 事件总线用 mitt
 ### 状态管理vuex 或者 pinia
+vuex:
+```
+// 注意： main.ts 中注入
+import { useStore } from "vuex"
+const store = useStore()
+store.dispatch('updateCommentsAction', 25)
+
+```
+
+pinia:
+```
+// main.ts 注入
+import { createPinia } from 'pinia'
+app.use(createPinia())
+// .vue文件中使用
+import { todoStore } from '../../store/pinia'
+import { storeToRefs } from 'pinia'
+const store = todoStore()
+const { todos,filter,nextId } = storeToRefs(store)
+const testFuc = () => {
+  console.log(store)
+  store.addTodo('test1')
+}
+```
 ### ui 框架的换肤 vite插件
 ### 没有name的情况下，怎么写递归组件，keep-alive如何匹配? 
 答：会使用文件名作为name，参考：[https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导](https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导)
