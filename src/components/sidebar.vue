@@ -41,7 +41,7 @@
             ><component :is="item.meta.icon"></component
           ></template>
           {{ item.meta.title }}
-          <a-badge v-if="item.meta.badge" :count="item.meta.badge" style="position: relative;top: -1px;"/>
+          <a-badge v-if="item.meta.badge" :count="comments" style="position: relative;top: -1px;"/>
         </a-menu-item>
       </template>
     </a-menu>
@@ -51,6 +51,11 @@
 import { onMounted, ref, toRefs } from "vue";
 import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
+import { todoStore } from '../store/pinia'
+import { storeToRefs } from 'pinia'
+const store = todoStore()
+const { comments } = storeToRefs(store)
+console.log('comments==', comments)
 const [router, route] = [useRouter(), useRoute()];
 const [openKeys, selectedKeys] = toRefs([ref<string[]>([]), ref<string[]>([])]);
 const menuList = ref<RouteRecordRaw[]>([...asyncRoutes]);

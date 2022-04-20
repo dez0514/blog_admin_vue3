@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { todoStore } from '../../store/pinia'
 import { storeToRefs } from 'pinia'
+// import { getData } from '../../api'
 const store = todoStore()
 const { todos,filter,nextId,comments } = storeToRefs(store)
 const test = () => {
@@ -9,7 +10,7 @@ const test = () => {
 }
 const handleChangeMeta = () => {
   store.updateComments(25)
-  console.log(store)
+  console.log(comments)
 }
 </script>
 <template>
