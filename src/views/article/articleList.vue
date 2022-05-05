@@ -2,7 +2,23 @@
   <div class="page-container">
     <div class="content-wrap">
       <!-- y = 页面高度[100vh] - header[60px] - (bread + title)[共85px] - 上下padding[共40px] - pagination容器高度[48px] - 表头高度[55px] -->
-      <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}"  />
+      <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}">
+        <template #bodyCell="{ column, text, record }">
+          <template v-if="column.dataIndex === 'operation'">
+            <a @click="handleEdit(record.key)">编辑</a>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              v-if="dataSource.length"
+              title="确定删除此条数据?"
+              cancelText="取消"
+              okText="确定"
+              @confirm="onDelete(record.key)"
+            >
+              <a style="color: #ff4d4f">删除</a>
+            </a-popconfirm>
+          </template>
+        </template>
+      </a-table>
     </div>
     <div class="page-wrap">
       <a-pagination v-model:current="current" :total="50" show-less-items />
@@ -105,19 +121,34 @@ columns.value = [
   {
     title: '姓名',
     dataIndex: 'name',
-    key: 'name'
+    key: 'name',
+    align:'center'
   },
   {
     title: '年龄',
     dataIndex: 'age',
-    key: 'age'
+    key: 'age',
+    align:'center'
   },
   {
     title: '住址',
     dataIndex: 'address',
-    key: 'address'
+    key: 'address',
+    align:'center'
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    key: 'operation',
+    align:'center'
   }
 ]
+const handleEdit = (val: any) => {
+  console.log(val)
+}
+const onDelete = (val: string) => {
+  console.log(val)
+}
 </script>
 <style lang="scss" scoped>
 .page-container {

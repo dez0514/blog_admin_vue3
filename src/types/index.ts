@@ -19,8 +19,16 @@ export interface articleItem {
   age: number;
   address: string;
 }
+export interface tagItem {
+  key: string;
+  tagname: string;
+  icon: string;
+  color: string;
+  gradientColor: string;
+}
 export interface columnItem {
   title: string;
   dataIndex: string;
   key: string;
+  align?: string
 }
