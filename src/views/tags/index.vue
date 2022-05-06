@@ -61,28 +61,37 @@
         <a-button type="primary" style="margin-right: 5px" @click="handleAddRow">新增空行</a-button>
         <a-button type="primary" @click="handleDeleteSelectedRow">删除选中行</a-button>
       </div>
-      <a-table :row-selection="{ selectedRowKeys: selectedKeys, onChange: onSelectChange }" :dataSource="addList" :columns="dialogColumn" :pagination="false" :scroll="{ y: '500px' }">
-        <template #headerCell="{ title, column }">
-          <span style="color: red; vertical-align: middle;" v-if="column.key !== 'color'">* </span>{{title}}
-        </template>
-        <template #bodyCell="{ column, record }">
-          <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
-            <div>
-              <a-input v-model:value="record[column.dataIndex]" style="margin: -5px 0" allow-clear/>
-            </div>
+      <a-form ref="formref" style="margin-top: 20px;" :model="dynamicValidateForm">
+        <a-table class="patchform-wrap" :row-selection="{ selectedRowKeys: selectedKeys, onChange: onSelectChange }" :dataSource="dynamicValidateForm.addList" :columns="dialogColumn" :pagination="false" :scroll="{ y: '500px' }">
+          <template #headerCell="{ title, column }">
+            <span style="color: red; vertical-align: middle;" v-if="column.key !== 'color'">* </span>{{title}}
           </template>
-          <template v-else-if="column.dataIndex === 'color'">
-            <div>
-              <color-picker
-                pickerType="chrome"
-                :roundHistory="true" 
-                v-model:pureColor="record[column.dataIndex]"
-                v-model:gradientColor="record['gradientColor']" 
-              />
-            </div>
+          <template #bodyCell="{ column, record, index }">
+            <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
+              <div class="table-form-wrap">
+                <a-form-item :name="['addList', index, column.dataIndex]" 
+                  :rules="{
+                    required: true,
+                    message: `请输入${column.dataIndex}`
+                  }"
+                >
+                  <a-input v-model:value="record[column.dataIndex]" style="margin: -5px 0" autocomplete="off" allow-clear/>
+                </a-form-item>
+              </div>
+            </template>
+            <template v-else-if="column.dataIndex === 'color'">
+              <div>
+                <color-picker
+                  pickerType="chrome"
+                  :roundHistory="true" 
+                  v-model:pureColor="record[column.dataIndex]"
+                  v-model:gradientColor="record['gradientColor']" 
+                />
+              </div>
+            </template>
           </template>
-        </template>
-      </a-table>
+        </a-table>
+      </a-form>
     </a-modal>
     <div class="page-wrap">
       <a-pagination v-model:current="current" :total="50" show-less-items />
@@ -90,12 +99,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, inject } from 'vue'
+import { ref, reactive, inject, toRaw } from 'vue'
 import type { UnwrapRef } from 'vue'
 import { tagItem, columnItem } from "../../types"
 import { cloneDeep } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { promit } from '../../utils'
+const formref = ref(null as HTMLFormElement | null)
 const message: any = inject('$message')
 const dataSource = ref<tagItem[]>([])
 const columns: columnItem[] = [
@@ -142,10 +152,12 @@ dataSource.value = [
     gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
   }
 ]
-const editableData: UnwrapRef<Record<string, articleItem>> = reactive({})
+const editableData: UnwrapRef<Record<string, tagItem>> = reactive({})
 const visible = ref<boolean>(false)
-const addList = ref<tagItem[]>([])
-addList.value = [
+const dynamicValidateForm = reactive<{ addList: tagItem[] }>({
+  addList: []
+});
+dynamicValidateForm.addList = [
   {
     key: uuidv4(),
     tagname: '',
@@ -158,10 +170,13 @@ const selectedKeys = ref<string[]>([])
 // methods 批量新增
 const handleBatchAdd = () => {
   visible.value = true
+  Object.keys(editableData).forEach(item => {
+    delete editableData[item]
+  })
 }
 // model methods
 const handleAddRow = () => {
-  addList.value.push({
+  dynamicValidateForm.addList.push({
     key: uuidv4(),
     tagname: '',
     icon: '',
@@ -170,14 +185,13 @@ const handleAddRow = () => {
   })
 }
 const handleDeleteSelectedRow = () => {
-  // console.log('selectedKeys===', selectedKeys)
   if (selectedKeys.value.length === 0) return
-  if (addList.value.length === 1) {
+  if (dynamicValidateForm.addList.length === 1) {
     message.error('至少保留一条')
     return
   }
   promit(() => {
-    const temp = addList.value.filter(item =>
+    const temp = dynamicValidateForm.addList.filter(item =>
       !selectedKeys.value.includes(item.key)
     )
     if (temp.length === 0) {
@@ -189,7 +203,7 @@ const handleDeleteSelectedRow = () => {
         gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
       })
     }
-    addList.value = temp
+    dynamicValidateForm.addList = temp
     selectedKeys.value = []
   }, '提示', '确定删除此行？')
 }
@@ -197,11 +211,16 @@ const onSelectChange = (selectedRowKeys: string[]) => {
   selectedKeys.value = selectedRowKeys
 }
 const handleOk = () => {
-  // 校验 弹窗的表格。。到底要不要用form包table, 里面用 form-item
+  // console.log('formref==',formref.value)
+  formref?.value?.validate().then(() => {
+    console.log(toRaw(dynamicValidateForm))
+  }).catch((err: any) => {
+    console.log('err==', err)
+  })
 }
 const handleCancel = () => {
   visible.value = false
-  addList.value = [{
+  dynamicValidateForm.addList = [{
     key: uuidv4(),
     tagname: '',
     icon: '',
@@ -213,8 +232,18 @@ const handleCancel = () => {
 const handleEdit = (key: string) => {
   console.log(key)
   editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+  console.log('editableData==', editableData)
 }
 const handleSaveRow = (key: string) => {
+  // 校验 不能为空的 保存
+  if(!editableData[key].tagname) {
+    message.error('tagname不能为空')
+    return
+  }
+  if(!editableData[key].icon) {
+    message.error('icon不能为空')
+    return
+  }
   Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
   delete editableData[key];
 }
@@ -257,5 +286,18 @@ const confirmDeleteRow = (val: string) => {
   height: 12px;
   margin-right: 5px;
   vertical-align: middle;
+}
+:deep(.patchform-wrap) {
+  .ant-table-tbody > tr > td.ant-table-cell {
+    padding-top: 22px;
+    padding-bottom: 22px
+ }
+}
+:deep(.table-form-wrap .ant-form-item) {
+  margin-bottom: 0;
+  .ant-form-item-explain {
+    position: absolute;
+    top: 30px;
+  }
 }
 </style>

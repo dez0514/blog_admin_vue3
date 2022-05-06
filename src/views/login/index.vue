@@ -153,7 +153,7 @@ export default defineComponent({
           localStorage.setItem('isLogin', 'true')
           localStorage.setItem('userinfo', JSON.stringify({ username: formState.username }))
           router.replace('/')
-        }, 1000)
+        }, 500)
       }).catch(err => {
         submitLoad.value = false
         message.error('登录失败');
