@@ -41,8 +41,15 @@
           <a-input v-model:value="formPopState.icon" />
         </a-form-item>
         <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ offset: 1 }" label="颜色" name="color">
-          <color-picker pickerType="chrome" :roundHistory="true" v-model:pureColor="formPopState.color"
-            v-model:gradientColor="formPopState.gradientColor" />
+          <color-picker pickerType="fk"
+            useType="pure"
+            lang="ZH-cn"
+            format="hex"
+            :disableHistory="true"
+            :disableAlpha="true"
+            gradientColor="linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)"
+            v-model:pureColor="formPopState.color"
+          />
         </a-form-item>
       </a-form>
     </a-modal>
@@ -64,7 +71,6 @@ interface FormPopState {
   tagname: string;
   icon: string;
   color: string;
-  gradientColor: string;
 }
 export default defineComponent({
   setup() {
@@ -114,8 +120,7 @@ export default defineComponent({
     const formPopState = reactive<FormPopState>({
       tagname: '',
       icon: '',
-      color: '#ff0000',
-      gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+      color: '#ff0000'
     });
     const rulesRef = reactive({
       tagname: [{ required: true, message: '请输入标签名!' }],
@@ -134,7 +139,6 @@ export default defineComponent({
       formPopState.tagname = ''
       formPopState.icon = ''
       formPopState.color = '#ff0000'
-      formPopState.gradientColor = 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
       resetFields()
     }
     const handleOk = () => {

@@ -24,7 +24,7 @@ export interface tagItem {
   tagname: string;
   icon: string;
   color: string;
-  gradientColor: string;
+  gradientColor?: string;
 }
 export interface columnItem {
   title: string;

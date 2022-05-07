@@ -14,15 +14,25 @@
             <div>
               <color-picker
                 v-if="editableData[record.key]"
-                pickerType="chrome"
-                :roundHistory="true" 
-                v-model:pureColor="record[column.dataIndex]"
-                v-model:gradientColor="record['gradientColor']" 
+                pickerType="fk"
+                useType="pure"
+                lang="ZH-cn"
+                format="hex"
+                :disableHistory="true"
+                :disableAlpha="true"
+                gradientColor="linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)"
+                v-model:pureColor="editableData[record.key][column.dataIndex]"
               />
               <template v-else>
                 <span class="color-spanbox" :style="{ background: text }"></span>
                 <span style="vertical-align: middle;">{{ text }}</span>
               </template>
+            </div>
+          </template>
+          <template v-else-if="column.dataIndex === 'view'">
+            <div>
+              <span v-if="editableData[record.key]" class="view-box" :style="{color: editableData[record.key]['color']}">{{editableData[record.key]['tagname']}}</span>
+              <span v-else class="view-box" :style="{color: record['color']}">{{record['tagname']}}</span>
             </div>
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
@@ -64,7 +74,7 @@
       <a-form ref="formref" style="margin-top: 20px;" :model="dynamicValidateForm">
         <a-table class="patchform-wrap" :row-selection="{ selectedRowKeys: selectedKeys, onChange: onSelectChange }" :dataSource="dynamicValidateForm.addList" :columns="dialogColumn" :pagination="false" :scroll="{ y: '500px' }">
           <template #headerCell="{ title, column }">
-            <span style="color: red; vertical-align: middle;" v-if="column.key !== 'color'">* </span>{{title}}
+            <span style="color: red; vertical-align: middle;" v-if="column.key !== 'color' && column.key !== 'view'">* </span>{{title}}
           </template>
           <template #bodyCell="{ column, record, index }">
             <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
@@ -82,11 +92,20 @@
             <template v-else-if="column.dataIndex === 'color'">
               <div>
                 <color-picker
-                  pickerType="chrome"
-                  :roundHistory="true" 
+                  pickerType="fk"
+                  useType="pure"
+                  lang="ZH-cn"
+                  format="hex"
+                  :disableHistory="true"
+                  :disableAlpha="true"
+                  gradientColor="linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)"
                   v-model:pureColor="record[column.dataIndex]"
-                  v-model:gradientColor="record['gradientColor']" 
                 />
+              </div>
+            </template>
+            <template v-else-if="column.dataIndex === 'view'">
+              <div>
+                <span class="view-box" :style="{color: record['color']}">{{record['tagname']}}</span>
               </div>
             </template>
           </template>
@@ -122,9 +141,15 @@ const columns: columnItem[] = [
     align:'center'
   },
   {
-    title: '背景色',
+    title: '颜色',
     dataIndex: 'color',
     key: 'color',
+    align:'center'
+  },
+  {
+    title: '视图',
+    dataIndex: 'view',
+    key: 'view',
     align:'center'
   },
   {
@@ -141,15 +166,13 @@ dataSource.value = [
     key: uuidv4(),
     tagname: 'vue',
     icon: 'xxx',
-    color: '#ff0000',
-    gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+    color: '#ff0000'
   },
   {
     key: uuidv4(),
     tagname: 'react',
     icon: 'xxx',
-    color: '#ff0000',
-    gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+    color: '#ff0000'
   }
 ]
 const editableData: UnwrapRef<Record<string, tagItem>> = reactive({})
@@ -162,8 +185,7 @@ dynamicValidateForm.addList = [
     key: uuidv4(),
     tagname: '',
     icon: '',
-    color: '#ff0000',
-    gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+    color: '#ff0000'
   }
 ]
 const selectedKeys = ref<string[]>([])
@@ -180,8 +202,7 @@ const handleAddRow = () => {
     key: uuidv4(),
     tagname: '',
     icon: '',
-    color: '#ff0000',
-    gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+    color: '#ff0000'
   })
 }
 const handleDeleteSelectedRow = () => {
@@ -199,8 +220,7 @@ const handleDeleteSelectedRow = () => {
         key: uuidv4(),
         tagname: '',
         icon: '',
-        color: '#ff0000',
-        gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+        color: '#ff0000'
       })
     }
     dynamicValidateForm.addList = temp
@@ -224,8 +244,7 @@ const handleCancel = () => {
     key: uuidv4(),
     tagname: '',
     icon: '',
-    color: '#ff0000',
-    gradientColor: 'linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)'
+    color: '#ff0000'
   }]
 }
 // table methods
@@ -244,8 +263,9 @@ const handleSaveRow = (key: string) => {
     message.error('icon不能为空')
     return
   }
+  // console.log('save ===', editableData[key])
   Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  delete editableData[key];
+  delete editableData[key]
 }
 const handleCancelRow = (key: string) => {
   delete editableData[key];
@@ -281,6 +301,8 @@ const confirmDeleteRow = (val: string) => {
   border-top: 1px solid #f0f0f0;
 }
 .color-spanbox {
+  position: relative;
+  top: 1px;
   display: inline-block;
   width: 12px;
   height: 12px;
@@ -299,5 +321,21 @@ const confirmDeleteRow = (val: string) => {
     position: absolute;
     top: 30px;
   }
+}
+.view-box {
+  display: inline-block;
+  position: relative;
+  padding: 2px 14px 3px;
+}
+.view-box:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: currentColor;
+  opacity: .15;
+  border-radius: 20px;
 }
 </style>

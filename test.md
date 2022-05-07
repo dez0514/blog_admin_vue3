@@ -79,3 +79,18 @@ const testFuc = () => {
 1. 普通情况 还可以使用 useForm 方式来提交。（此中情况貌似困难，获取validate方法时 需要传入规则，此处不好定义循环中的规则）
 2. 标签管理处用的 ref, 通过ref也能获取到validate方法。
 
+### color-picker
+文档：https://aesoper101.github.io/vue3-colorpicker/?path=/story/example-introduction--page
+```
+// 渐变色只能设置固定颜色与选中颜色渐变，有点局限。几乎可以不用它，直接写固定值，不传控制台会报错。
+<color-picker
+  pickerType="fk"
+  useType="pure"
+  lang="ZH-cn"
+  format="hex"
+  :disableHistory="true"
+  :disableAlpha="true"
+  v-model:pureColor="color"
+  v-model:gradientColor="gradientColor"
+/>
+```
