@@ -34,6 +34,7 @@ declare module 'vue' {
     Bread: typeof import('./src/components/bread.vue')['default']
     Editor: typeof import('./src/components/editor.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
+    PreviewImage: typeof import('./src/components/previewImage/previewImage.vue')['default']
     Routerview: typeof import('./src/components/routerview.vue')['default']
     Setting: typeof import('./src/components/setting.vue')['default']
     Sidebar: typeof import('./src/components/sidebar.vue')['default']

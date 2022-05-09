@@ -20,6 +20,7 @@
     "unplugin-vue-components": "^0.17.6",
     "uuid": "^8.3.2",
     "vue": "^3.2.16",
+    "vue-clipboard3": "^2.0.0",
     "vue-router": "^4.0.12",
     "vue3-colorpicker": "^2.0.4",
     "vuex": "^4.0.2"
