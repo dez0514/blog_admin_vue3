@@ -9,22 +9,25 @@
       alt=""
     />
     <div class="preview-btns">
-      <div class="btn" @click="handleZoomOut"><zoom-in-outlined /></div>
-      <div class="btn" @click="handleZoomIn"><zoom-out-outlined /></div>
-      <div class="btn" @click="handleReset"><rollback-outlined /></div>
-      <div class="btn" @click="handleDownload" v-show="showDownLoadBtn"><vertical-align-bottom-outlined /></div>
+      <div class="btn" title="放大" @click="handleZoomOut"><zoom-in-outlined /></div>
+      <div class="btn" title="缩小" @click="handleZoomIn"><zoom-out-outlined /></div>
+      <div class="btn" title="重置" @click="handleReset"><rollback-outlined /></div>
+      <div class="btn" title="向左旋转90°" @click="handleRotate('left')"><undo-outlined /></div>
+      <div class="btn" title="向右旋转90°" @click="handleRotate('right')"><redo-outlined /></div>
+      <div class="btn" title="下载图片" @click="handleDownload" v-show="showDownLoadBtn"><vertical-align-bottom-outlined /></div>
     </div>
-    <div class="slide-btns left" :class="srcIndex === 0 ? 'stop_click' : ''" v-show="piclist.length > 1" @click="handleToPrev">
+    <div class="slide-btns left" title="上一张" :class="srcIndex === 0 ? 'stop_click' : ''" v-show="piclist.length > 1" @click="handleToPrev">
       <left-circle-outlined />
     </div>
-    <div class="slide-btns right" :class="srcIndex === piclist.length - 1 ? 'stop_click' : ''" v-show="piclist.length > 1" @click="handleToNext">
+    <div class="slide-btns right" title="下一张" :class="srcIndex === piclist.length - 1 ? 'stop_click' : ''" v-show="piclist.length > 1" @click="handleToNext">
       <right-circle-outlined />
     </div>
-    <div class="preview-close" @click="handleClose"><close-outlined /></div>
+    <div class="preview-close" title="关闭" @click="handleClose"><close-outlined /></div>
   </div>
 </template>
 <script setup lang="ts">
-import { ZoomInOutlined, ZoomOutOutlined, RollbackOutlined, VerticalAlignBottomOutlined, CloseOutlined, RightCircleOutlined, LeftCircleOutlined } from "@ant-design/icons-vue";
+import { ZoomInOutlined, ZoomOutOutlined, RollbackOutlined, VerticalAlignBottomOutlined,
+CloseOutlined, RightCircleOutlined, LeftCircleOutlined, RedoOutlined, UndoOutlined } from "@ant-design/icons-vue";
 import { ref, reactive, computed } from "vue"
 const props = defineProps<{
   piclist: string[],
@@ -60,7 +63,8 @@ const distance =  reactive({
   endX: 0,
   endY: 0,
   translateX: 0,
-  translateY: 0
+  translateY: 0,
+  rotate: 0
 })
 const handleZoomOut = () => {
   // 小数会出现不准确的情况，先换整数加减再还原回小数
@@ -81,6 +85,7 @@ const handleReset = () => {
   distance.endY = 0
   distance.translateX = 0
   distance.translateY = 0
+  distance.rotate = 0
   setImagStyle()
 }
 const handleWheelScale = ($event: any) => { // WheelEvent 提示：不存在wheelDelta
@@ -107,9 +112,18 @@ const handleMouseEnd = () => {
   distance.endX = distance.translateX
   distance.endY = distance.translateY
 }
+const handleRotate = (type: string) => {
+  if (type === 'right') {
+    distance.rotate = (distance.rotate + 90) >= 360 ? distance.rotate + 90 - 360  : distance.rotate + 90
+  } else if (type === 'left') {
+    distance.rotate = (distance.rotate - 90) <= -360 ? distance.rotate - 90 + 360  : distance.rotate - 90
+  }
+  console.log('rotate===', distance.rotate)
+  setImagStyle()
+}
 const setImagStyle = () => {
   if (previewPic.value) {
-    previewPic.value.style.transform = `scale(${scale.value}) translate(${distance.translateX}px, ${distance.translateY}px)`
+    previewPic.value.style.transform = `scale(${scale.value}) translate(${distance.translateX}px, ${distance.translateY}px) rotate(${distance.rotate}deg)`
   }
 }
 const handleToPrev = () => {
@@ -169,15 +183,16 @@ const handleClose = () => {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    width: 200px;
+    padding: 0 20px;
     height: 40px;
     border-radius: 20px;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
     background: rgba(0, 0, 0, .6);
 
     .btn {
+      padding: 0 5px;
       color: #fff;
       font-size: 22px;
       cursor: pointer;
