@@ -9,13 +9,29 @@
         <div :class="[folderTabIndex === 2 ? 'open_folder' : 'folder']"></div>
         <div class="folder-name">folder_two</div>
       </div>
+      <div title="新建文件夹" class="folder_add">
+        <plus-outlined />
+      </div>
       <!-- 弹出 新建文件夹 -->
     </div>
+    <div class="add_img">
+      <a-upload-dragger
+        v-model:fileList="fileList"
+        name="file"
+        :multiple="true"
+        action="/api/upload"
+        @change="handleChange"
+        @drop="handleDrop"
+      >
+        <p class="ant-upload-drag-icon">
+          <inbox-outlined></inbox-outlined>
+        </p>
+        <p class="ant-upload-text">点击或拖拽到此处上传图片</p>
+      </a-upload-dragger>
+    </div>
     <div class="pic-list">
-      <!-- 图片列表 -->
-      <!-- 上传图片 -->
       <div class="pic-item" v-for="(item, index) in bannerList" :key="index">
-        <img :src="getImageUrl(item)" alt="">
+        <div style="padding: 10px"><img :src="getImageUrl(item)" alt=""></div>
         <div class="pic-link">{{item}}</div>
         <div class="copy-tip">
           <a-button type="primary" @click="copy(item)">复制地址</a-button>
@@ -37,10 +53,12 @@
 import { ref, inject } from 'vue'
 import previewImg from '../../components/previewImage'
 import useClipboard from 'vue-clipboard3'
-import { DeleteOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, PlusOutlined, InboxOutlined } from '@ant-design/icons-vue'
+import type { UploadChangeParam } from 'ant-design-vue'
 const { toClipboard } = useClipboard()
 const message: any = inject('$message')
 const folderTabIndex = ref<number>(0)
+const fileList = ref([])
 const getImageUrl = (name: string) => {
   return new URL(`../../assets/test/${name}`, import.meta.url).href
 }
@@ -63,6 +81,20 @@ const preview = (index: number) => {
 const handleDelete = (index: number) => {
   console.log('删除图片，列表传id', index)
 }
+const handleChange = (info: UploadChangeParam) => {
+  const status = info.file.status;
+  if (status !== 'uploading') {
+    console.log(info.file, info.fileList);
+  }
+  if (status === 'done') {
+    message.success(`${info.file.name} file uploaded successfully.`);
+  } else if (status === 'error') {
+    message.error(`${info.file.name} file upload failed.`);
+  }
+}
+const handleDrop = (e: DragEvent) => {
+  console.log(e)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -73,30 +105,55 @@ const handleDelete = (index: number) => {
 }
 .folder_list {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.folder_add {
+  margin-left: 8px;
+  display: flex;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #333;
+  color: #333;
+  text-align: center;
+  font-size: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.add_img {
+  margin-bottom: 10px;
 }
 .folder_wrap {
+  position: relative;
   width: 100px;
 }
 .folder-name {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   width: 100px;
   text-align: center;
   overflow:hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: #000;
 }
 .folder {
   width: 100px;
   height: 100px;
   background: url(../../assets/folder.png) no-repeat;
-  background-position: 0 0;
+  background-position: 0 -12px;
   background-size: 100% 100%;
 }
 .open_folder {
   width: 100px;
   height: 100px;
   background: url(../../assets/open_folder.png) no-repeat;
-  background-position: 8px 16px;
+  background-position: 8px 5px;
   background-size: 84% 68%;
 }
 .pic-list {
@@ -104,7 +161,6 @@ const handleDelete = (index: number) => {
   column-gap: 10px;
   .pic-item {
     position: relative;
-    padding: 10px;
     break-inside: avoid;
     box-sizing: border-box;
     border: 1px solid #eaeaea;
@@ -116,7 +172,8 @@ const handleDelete = (index: number) => {
       width: 100%;
     }
     .pic-link {
-      margin-top: 10px;
+      padding: 10px;
+      border-top: 1px solid #eaeaea;
     }
     .copy-tip {
       display: none;

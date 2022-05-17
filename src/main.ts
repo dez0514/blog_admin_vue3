@@ -14,9 +14,10 @@ import Vue3ColorPicker from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 
 
-let theme = localStorage.getItem('theme')
-if (!theme) {
-    theme = 'default'
+let themeObjStr = localStorage.getItem('theme')
+let theme = 'default'
+if (themeObjStr) {
+  theme = JSON.parse(themeObjStr).themeColor
 }
 window.document.documentElement.setAttribute('data-theme', theme)
 const app: App<Element> = createApp(AppVue)
