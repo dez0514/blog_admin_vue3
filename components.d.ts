@@ -36,10 +36,12 @@ declare module 'vue' {
     Bread: typeof import('./src/components/bread.vue')['default']
     Editor: typeof import('./src/components/editor.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
+    Logo: typeof import('./src/components/logo.vue')['default']
     PreviewImage: typeof import('./src/components/previewImage/previewImage.vue')['default']
     Routerview: typeof import('./src/components/routerview.vue')['default']
     Setting: typeof import('./src/components/setting.vue')['default']
     Sidebar: typeof import('./src/components/sidebar.vue')['default']
+    Sidebar_trigger: typeof import('./src/components/sidebar_trigger.vue')['default']
     Test: typeof import('./src/components/test.vue')['default']
   }
 }

@@ -2,7 +2,6 @@ import { App, createApp } from 'vue'
 import AppVue from '@/App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
-// import store from './store/vuex'
 import { message,notification } from 'ant-design-vue';
 import MdEditor from 'md-editor-v3';
 import "@/styles/reset.scss";
@@ -26,7 +25,6 @@ app.use(createPinia())
 app.use(router)
 app.component('md-editor', MdEditor)
 app.use(Vue3ColorPicker)
-// app.use(store)
 app.config.globalProperties.$message = message
 app.config.globalProperties.$notification = notification
 app.provide('$message', message)

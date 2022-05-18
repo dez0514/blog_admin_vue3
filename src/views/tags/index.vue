@@ -6,7 +6,7 @@
         <template #bodyCell="{ column, text, record }">
           <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
             <div>
-              <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" allow-clear/>
+              <a-input v-if="editableData[record.key]" v-model:value="(editableData as any)[record.key][column.dataIndex]" style="margin: -5px 0" allow-clear/>
               <template v-else>{{ text }}</template>
             </div>
           </template>
@@ -21,7 +21,7 @@
                 :disableHistory="true"
                 :disableAlpha="true"
                 gradientColor="linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)"
-                v-model:pureColor="editableData[record.key][column.dataIndex]"
+                v-model:pureColor="(editableData as any)[record.key][column.dataIndex]"
               />
               <template v-else>
                 <span class="color-spanbox" :style="{ background: text }"></span>

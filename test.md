@@ -50,6 +50,52 @@ const store = useStore()
 store.dispatch('updateCommentsAction', 25)
 
 ```
+```
+// vuex.ts
+import { createStore } from 'vuex'
+import { Commit } from "vuex"
+import { State } from '../types/store'
+
+export default createStore({
+  state: {
+    comments: 0,
+    typeId: 'user001',
+    showName: true,
+    count: 0,
+    user: {
+      name: 'joy',
+      pwd: '123456'
+    }
+  },
+  getters: {
+    getId: (state: State) => state.typeId,
+    getUser: (state: State) => state.user
+  },
+  mutations: {
+    showUserName(state: State) {
+      state.showName = false
+    },
+    updateCount(state: State) {
+      state.count++
+    },
+    updateComments(state: State, payload: number) {
+      state.comments = payload
+    }
+  },
+  actions: {
+    getUserList(context: { commit: Commit }) {
+      context.commit('updateCount')
+    },
+    updateCommentsAction(context: { commit: Commit }, payload: number) {
+      context.commit('updateComments', payload)
+    }
+  },
+  modules: {
+
+  }
+})
+
+```
 
 pinia:
 ```
@@ -67,6 +113,12 @@ const testFuc = () => {
 }
 ```
 ### ui 框架的换肤 vite插件
+参考方案： [https://mp.weixin.qq.com/s/VvmZdLP-ry0XIYCA5qd7bA](https://mp.weixin.qq.com/s/VvmZdLP-ry0XIYCA5qd7bA)
+换肤主要分两部分：1.ui框架组件的换肤，通常ui框架会提供方案。 2.普通h5标签的换肤。
+理想思路：定义css变量，局部样式时利用var(变量名)的方式给颜色，然后根据当前主题色给这个变量赋值。
+此管理系统的颜色要求：
+  1.header 和 sidebar 只各自分黑白版。黑板白字，白板黑字。
+  2.内容区的元素需要换肤的部分设置背景色和字体色。部分不需要其他颜色的也是黑板白字，白板黑字
 ### 没有name的情况下，怎么写递归组件，keep-alive如何匹配? 
 答：会使用文件名作为name，参考：[https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导](https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导)
 ### 路由权限设计

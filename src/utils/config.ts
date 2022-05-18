@@ -11,19 +11,25 @@ export const themeColorList: themeItem[] = [
 ];
 export const styleList: styleItem[] = [
   {
+    styleName: 'lightDark',
+    leftColor: 'light',
+    topColor: 'dark',
+    bottomColor: 'light'
+  },
+  {
     styleName: 'light',
     leftColor: 'light',
     topColor: 'light',
     bottomColor: 'light'
   },
   {
-    styleName: 'dark',
+    styleName: 'darkLight',
     leftColor: 'dark',
     topColor: 'light',
     bottomColor: 'light'
   },
   {
-    styleName: 'deepDark',
+    styleName: 'dark',
     leftColor: 'dark',
     topColor: 'dark',
     bottomColor: 'dark'

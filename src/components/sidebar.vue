@@ -1,10 +1,11 @@
 <template>
-  <div class="side-wrap">
+  <div :class="['side-wrap', props.mode]">
     <a-menu
-      mode="inline"
+      :mode="props.mode"
       :openKeys="openKeys"
       :selectedKeys="selectedKeys"
       @click="handleRouteClick"
+      :theme="props.sideTheme"
     >
       <template v-for="item in menuList">
         <a-sub-menu
@@ -53,6 +54,14 @@ import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 import { todoStore } from '../store/pinia'
 import { storeToRefs } from 'pinia'
+interface Props {
+  mode?: string;
+  sideTheme?: string
+}
+const props = withDefaults(defineProps<Props>(), {
+  mode: 'inline',
+  sideTheme: 'light'
+})
 const store = todoStore()
 const { comments } = storeToRefs(store)
 console.log('comments==', comments)
@@ -74,9 +83,21 @@ onMounted(() => {
 </script>
 <style lang="scss" scoped>
 .side-wrap {
-  overflow-y: auto;
-  max-height: calc(100vh - 64px - 48px);
-  &:deep(.ant-menu-root) {
+  /* &.horizontal {
+    height: 100%;
+    :deep(.ant-menu-horizontal) {
+      border-color: transparent;
+    }
+  } */
+  &.horizontal:deep(.ant-menu-root) {
+    height: 63px;
+    border: 0;
+  }
+  &.inline {
+    overflow-y: auto;
+    max-height: calc(100vh - 64px - 48px);
+  }
+  &.inline:deep(.ant-menu-root) {
     min-height: calc(100vh - 64px - 48px);
   }
 }

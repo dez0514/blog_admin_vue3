@@ -1,50 +1,55 @@
 <template>
-   <a-layout>
-    <a-layout-header>
-      <vheader :collapsed="isCollapse"></vheader>
+  <a-layout>
+    <a-layout-header v-if="themeOpts.menuType !== 'rowColumn'" :style="{ background: (themeOpts.menuStyle === 'darkLight' || themeOpts.menuStyle === 'light') ? '#fff':'#000' }">
+      <vheader />
     </a-layout-header>
+    <a-layout-sider v-if="themeOpts.menuType === 'rowColumn'" :theme="(themeOpts.menuStyle === 'lightDark' || themeOpts.menuStyle === 'light') ? 'light':'dark'" :collapsed="isCollapse" :collapsedWidth="60"
+      :width="256" :trigger="null" collapsible>
+      <logo :isInSideBar="true" :isCollapse="isCollapse"/>
+      <sidebar :sideTheme="(themeOpts.menuStyle === 'lightDark' || themeOpts.menuStyle === 'light') ? 'light':'dark'"></sidebar>
+      <sidebar-trigger />
+    </a-layout-sider>
     <a-layout class="content">
-      <a-layout-sider theme='light' :collapsed="isCollapse" :collapsedWidth="60" :width="256" :trigger="null" collapsible>
-        <sidebar></sidebar>
-        <div class="custom-trigger" :style="{textAlign: !isCollapse ? 'right' : 'center'}">
-          <a-tooltip placement="top">
-            <template #title>
-              <span>展开</span>
-            </template>
-            <menu-unfold-outlined v-show="isCollapse" class="icon" @click="handleCollapse" />
-          </a-tooltip>
-          <a-tooltip placement="top">
-            <template #title>
-              <span>收起</span>
-            </template>
-            <menu-fold-outlined v-show="!isCollapse" class="icon" @click="handleCollapse" />
-          </a-tooltip>
-        </div>
+      <a-layout-sider v-if="themeOpts.menuType === 'columnRow'" :theme="(themeOpts.menuStyle === 'lightDark' || themeOpts.menuStyle === 'light') ? 'light':'dark'" :collapsed="isCollapse"
+        :collapsedWidth="60" :width="256" :trigger="null" collapsible>
+        <sidebar :sideTheme="(themeOpts.menuStyle === 'lightDark' || themeOpts.menuStyle === 'light') ? 'light':'dark'"></sidebar>
+        <sidebar-trigger />
       </a-layout-sider>
+      <a-layout-header v-if="themeOpts.menuType === 'rowColumn'"  :style="{ background: (themeOpts.menuStyle === 'darkLight' || themeOpts.menuStyle === 'light') ? '#fff':'#000' }">
+        <vheader />
+      </a-layout-header>
       <a-layout-content>
-        <bread></bread>
+        <bread />
         <div class="main">
           <router-view></router-view>
         </div>
-        <setting></setting>
+        <setting />
       </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 <script setup lang="ts">
+import logo from '@components/logo.vue'
 import sidebar from '@components/sidebar.vue'
+import SidebarTrigger from '@components/sidebar_trigger.vue'
 import vheader from '@components/header.vue'
 import bread from '@components/bread.vue'
 import setting from '@components/setting.vue'
-import { ref } from 'vue';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
-const isCollapse = ref(false)
-const handleCollapse = () => {
-  isCollapse.value = !isCollapse.value
-}
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia'
+import { themeStore } from '../store/themePinia'
+import { configStore } from '../store/configPinia'
+const configStores = configStore()
+const { isCollapse } = storeToRefs(configStores)
+const themeStores = themeStore()
+const { themeColor, menuStyle, menuType } = storeToRefs(themeStores)
+const themeOpts = computed(() => {
+  return { themeColor: themeColor.value, menuStyle: menuStyle.value, menuType: menuType.value }
+})
 </script>
 <style lang="scss">
-body,html {
+body,
+html {
   font-size: 16px;
 }
 </style>
@@ -52,28 +57,11 @@ body,html {
 :deep(.ant-layout-header) {
   padding: 0;
 }
+
 .content {
   height: calc(100vh - 64px);
-  /* &:deep(.ant-layout-sider-trigger) {
-    display: none;
-    border-top: 1px solid #f0f0f0;
-    border-right: 1px solid #f0f0f0;
-  } */
-  .custom-trigger {
-    box-sizing: border-box;
-    padding: 0 10px;
-    height: 47px;
-    line-height: 47px;
-    color: #000;
-    border-top: 1px solid #f0f0f0;
-    border-right: 1px solid #f0f0f0;
-    font-size: 20px;
-    width: inherit;
-    .icon {
-      cursor: pointer;
-    }
-  }
 }
+
 .main {
   overflow-y: auto;
   padding-top: 20px;

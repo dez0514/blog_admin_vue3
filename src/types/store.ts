@@ -8,3 +8,7 @@ export interface State {
     pwd: string;
   }
 }
+
+export interface ConfigState {
+  isCollapse: boolean;
+}

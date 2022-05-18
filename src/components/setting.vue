@@ -165,7 +165,6 @@ onMounted(() => {
     position: relative;
     overflow: hidden;
     display: flex;
-    background: pink;
     width: 50px;
     height: 50px;
     margin-top: 8px;

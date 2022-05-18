@@ -116,7 +116,7 @@ const handleDrop = (e: DragEvent) => {
   width: 100px;
   height: 100px;
   border: 2px solid #333;
-  color: #333;
+  color: $sunset;
   text-align: center;
   font-size: 40px;
   align-items: center;
