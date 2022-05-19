@@ -49,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, toRefs } from "vue";
+import { onMounted, ref } from "vue";
 import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 import { todoStore } from '../store/pinia'
@@ -66,7 +66,7 @@ const store = todoStore()
 const { comments } = storeToRefs(store)
 console.log('comments==', comments)
 const [router, route] = [useRouter(), useRoute()];
-const [openKeys, selectedKeys] = toRefs([ref<string[]>([]), ref<string[]>([])]);
+const [openKeys, selectedKeys] = [ref<string[]>([]), ref<string[]>([])];
 const menuList = ref<RouteRecordRaw[]>([...asyncRoutes]);
 const handleRouteClick = ({ key }: { key: string }) => {
   selectedKeys.value = [key];

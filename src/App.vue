@@ -2,7 +2,7 @@
   <router-view />
 </template>
 <script setup lang="ts">
-import { onMounted } from "@vue/runtime-core";
+import { onMounted } from "vue";
 import { changeTheme, defaultTheme } from "./utils";
 import { themeColorList } from "./utils/config";
 

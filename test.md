@@ -119,6 +119,7 @@ const testFuc = () => {
 此管理系统的颜色要求：
   1.header 和 sidebar 只各自分黑白版。黑板白字，白板黑字。
   2.内容区的元素需要换肤的部分设置背景色和字体色。部分不需要其他颜色的也是黑板白字，白板黑字
+  3.此插件，黑板的table没解决。。
 ### 没有name的情况下，怎么写递归组件，keep-alive如何匹配? 
 答：会使用文件名作为name，参考：[https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导](https://www.cnblogs.com/guangzan/p/15021560.html#name-的自动推导)
 ### 路由权限设计

@@ -7,9 +7,9 @@
 <script setup lang="ts">
 import { ReadOutlined } from '@ant-design/icons-vue'
   interface Props {
-    visiable: boolean;
-    isInSideBar: boolean; //logo 默认在header里, 布局切换可能在 sidebar里
-    isCollapse:boolean;
+    visiable?: boolean;
+    isInSideBar?: boolean; //logo 默认在header里, 布局切换可能在 sidebar里
+    isCollapse?:boolean;
   }
   const props = withDefaults(defineProps<Props>(), {
     visiable: true,

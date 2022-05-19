@@ -15,63 +15,69 @@ $purple: rgb(114, 46, 209);
   --theme-side-rightborder: initial; // 侧边栏的右边框，黑款时默认无边框，上下自定义元素边框颜色设为背景色相同
   --theme-header-color: initial; // header非ui组件的字体色
   --theme-header-boder-color: initial; // header非ui组件的边框色
+  // --main-bgcolor: initial; // 内容区背景色
+  // --main-color: initial; // 内容区字体颜色
 }
 
 #app {
-    color: $default;
+  // color: $default;
+  .set-btn {
+    background-color: $default;
+  }
+
+  [data-theme="dust"] & {
+
+    // color: $dust;
     .set-btn {
-        background-color: $default;
+      background-color: $dust;
     }
-    [data-theme="dust"] & {
-        color: $dust;
-        .set-btn {
-            background-color: $dust;
-        }
+  }
+
+  [data-theme="volcano"] & {
+
+    // color: $volcano;
+    .set-btn {
+      background-color: $volcano;
     }
-    [data-theme="volcano"] & {
-        color: $volcano;
-        .set-btn {
-            background-color: $volcano;
-        }
+  }
+
+  [data-theme="sunset"] & {
+    // color: $sunset;
+
+    .set-btn {
+      background-color: $sunset;
     }
+  }
 
-    [data-theme="sunset"] & {
-        color: $sunset;
+  [data-theme="cyan"] & {
+    // color: $cyan;
 
-        .set-btn {
-            background-color: $sunset;
-        }
+    .set-btn {
+      background-color: $cyan;
     }
+  }
 
-    [data-theme="cyan"] & {
-        color: $cyan;
+  [data-theme="green"] & {
+    // color: $green;
 
-        .set-btn {
-            background-color: $cyan;
-        }
+    .set-btn {
+      background-color: $green;
     }
+  }
 
-    [data-theme="green"] & {
-        color: $green;
+  [data-theme="geekblue"] & {
+    // color: $geekblue;
 
-        .set-btn {
-            background-color: $green;
-        }
+    .set-btn {
+      background-color: $geekblue;
     }
+  }
 
-    [data-theme="geekblue"] & {
-        color: $geekblue;
+  [data-theme="purple"] & {
+    // color: $purple;
 
-        .set-btn {
-            background-color: $geekblue;
-        }
+    .set-btn {
+      background-color: $purple;
     }
-
-    [data-theme="purple"] & {
-        color: $purple;
-
-        .set-btn {
-            background-color: $purple;
-        }
-    }
+  }
 }
