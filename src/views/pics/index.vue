@@ -1,15 +1,11 @@
 <template>
   <div class="pics-wrap">
     <div class="folder_list">
-      <div class="folder_wrap" @click="handleCheckFolder(1)" >
-        <div :class="[folderTabIndex === 1 ? 'open_folder' : 'folder']"></div>
-        <div class="folder-name">folder_one</div>
+      <div class="folder_wrap" v-for="(item,index) in floderList" :key="index" @click="handleCheckFolder(index)" >
+        <div :class="[folderTabIndex === index ? 'open_folder' : 'folder']"></div>
+        <div class="folder-name">{{item.name}}</div>
       </div>
-      <div class="folder_wrap" @click="handleCheckFolder(2)" >
-        <div :class="[folderTabIndex === 2 ? 'open_folder' : 'folder']"></div>
-        <div class="folder-name">folder_two</div>
-      </div>
-      <div title="新建文件夹" class="folder_add">
+      <div title="新建文件夹" class="folder_add" @click="handleMkDir">
         <plus-outlined />
       </div>
       <!-- 弹出 新建文件夹 -->
@@ -30,6 +26,9 @@
       </a-upload-dragger>
     </div>
     <div class="pic-list">
+      <div class="pic-item">
+        <div style="padding: 10px"><img src="http://localhost:8081/imgs/bd_marker.png" alt=""></div>
+      </div>
       <div class="pic-item" v-for="(item, index) in bannerList" :key="index">
         <div style="padding: 10px"><img :src="getImageUrl(item)" alt=""></div>
         <div class="pic-link">{{item}}</div>
@@ -47,18 +46,53 @@
         </div>
       </div>
     </div>
+    <a-modal :width="500" v-model:visible="visible" :maskClosable="false" title="新建文件夹" :confirmLoading="formState.confirmLoad" @ok="handleOk" @cancel="handleCancel" cancelText="取消" okText="确定">
+      <a-form ref="formref" style="margin-top: 20px;" :model="formState">
+        <a-form-item label="文件夹名称:" name="folderName" :rules="rulesRef.folderName" v-bind="validateInfos.folderName">
+          <a-input v-model:value="formState.folderName" placeholder="文件夹名称" autocomplete="off" allow-clear />
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, inject } from 'vue'
+import { ref, inject, reactive, onMounted } from 'vue'
 import previewImg from '../../components/previewImage'
 import useClipboard from 'vue-clipboard3'
 import { DeleteOutlined, PlusOutlined, InboxOutlined } from '@ant-design/icons-vue'
 import type { UploadChangeParam } from 'ant-design-vue'
+import { postMkDir, postDeleteDir, postDeleteFile, getFileList} from '../../api'
+import { Form } from 'ant-design-vue';
+interface FormState {
+  folderName: string;
+  confirmLoad: boolean
+}
+interface folderItem {
+  name: string;
+  isFolder: boolean;
+}
+const useForm = Form.useForm;
 const { toClipboard } = useClipboard()
 const message: any = inject('$message')
-const folderTabIndex = ref<number>(0)
+const folderTabIndex = ref<number>(-1)
 const fileList = ref([])
+const visible = ref<boolean>(false)
+const currentFolder = ref<string>('')
+const floderList = ref<folderItem[]>([])
+
+const formState = reactive<FormState>({
+  folderName: '',
+  confirmLoad: false
+});
+const rulesRef = reactive({
+  folderName: [
+    {
+      required: true,
+      message: '请输入文件夹名称',
+    }
+  ]
+})
+const { resetFields, validate, validateInfos } = useForm(formState, rulesRef);
 const getImageUrl = (name: string) => {
   return new URL(`../../assets/test/${name}`, import.meta.url).href
 }
@@ -95,6 +129,58 @@ const handleChange = (info: UploadChangeParam) => {
 const handleDrop = (e: DragEvent) => {
   console.log(e)
 }
+const handleMkDir = () => {
+  visible.value = true
+  // getFileListData()
+}
+const handleOk = () => {
+  validate().then(() => {
+    formState.confirmLoad = true
+    postMkDir({ name: formState.folderName }).then((res: any) => {
+      formState.confirmLoad = false
+      if(Number(res.code) === -1) {
+        message.error(res.message);
+        return
+      }
+      if(Number(res.code) === 0) {
+        message.success(res.message);
+        handleCancel()
+      }
+    }).catch(err => {
+      console.log('err==', err)
+    })
+  })
+}
+const handleCancel = () => {
+  formState.folderName = ''
+  visible.value = false
+  resetFields()
+}
+const handleDeldir = () => {
+  postDeleteDir({name: 'test_two'}).then(res => {
+    console.log(res)
+  })
+}
+const handleDelFile = () => {
+  postDeleteFile({name: 'test_two/bd_marker.png'}).then(res => {
+    console.log(res)
+  })
+}
+const getFileListData = () => {
+  getFileList({ name: currentFolder.value }).then(res => {
+    console.log(res)
+    const list = res.data.map((item: any) => {
+      return {
+        name: item.name,
+        isFolder: item.isFolder
+      }
+    })
+    floderList.value = list.filter((item:any) => item.isFolder)
+  })
+}
+onMounted(() => {
+  getFileListData()
+})
 </script>
 
 <style lang="scss" scoped>

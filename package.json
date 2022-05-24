@@ -17,6 +17,7 @@
     "mitt": "^3.0.0",
     "path": "^0.12.7",
     "pinia": "^2.0.9",
+    "qs": "^6.10.3",
     "unplugin-vue-components": "^0.17.6",
     "uuid": "^8.3.2",
     "vue": "^3.2.16",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.12",
+    "@types/qs": "^6.9.7",
     "@types/uuid": "^8.3.4",
     "@vitejs/plugin-vue": "^1.9.3",
     "@zougt/some-loader-utils": "^1.4.1",
