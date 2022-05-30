@@ -121,7 +121,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .set-btn {
   position: fixed;
-  top: 50%;
+  top: 124px;
   right: 1px;
   margin-top: -24px;
   height: 48px;

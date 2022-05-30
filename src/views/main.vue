@@ -63,6 +63,7 @@ html {
 }
 
 .main {
+  position: relative;
   overflow-y: auto;
   padding-top: 20px;
   background: #fff;

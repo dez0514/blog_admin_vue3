@@ -29,7 +29,7 @@
 import logo from '@components/logo.vue'
 import { ref, computed } from 'vue'
 import { useRouter } from "vue-router";
-import { ReadOutlined, LogoutOutlined, DownOutlined, UpOutlined } from "@ant-design/icons-vue";
+import { LogoutOutlined, DownOutlined, UpOutlined } from "@ant-design/icons-vue";
 import { storeToRefs } from 'pinia'
 import { themeStore } from '../store/themePinia'
 import sidebar from '@components/sidebar.vue'

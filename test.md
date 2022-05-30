@@ -148,3 +148,16 @@ const testFuc = () => {
 />
 ```
 
+#### upload 组件多文件上传会多次触发接口和各阶段钩子。
+效果上用默认的也可以。
+接口如果做了批量：想要只请求一次接口，就得在beforeUpload里做处理，return false 就不会往后走。
+但是会存在上传列表的状态问题，如果不显示上传列表就没关系，如果显示的话，就得最后把fileList 的状态修改为done, 否则一直uploading
+progress 可能处理也比较麻烦。。
+
+#### express multer 多文件上传指定动态路径问题参考： https://www.jianshu.com/p/f1489339d65a
+注意：如果常规在 formData 中带参数，写在 file 的前面，比如 dest ,最先 formData.append('dest', xxx) , 在append文件。不然有可能拿不到。
+或者可以多封装一层，传进去。文中最后一种方法。
+
+#### node express 中图片文件名带中文，无法展示。
+参考： https://blog.csdn.net/qq_39668938/article/details/107293250
+app.js去掉 res.header("Content-Type", "application/json;charset=utf-8")

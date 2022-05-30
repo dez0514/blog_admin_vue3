@@ -1,5 +1,5 @@
 <template>
-  <div class="preview-image" @mouseup.prevent="handleMouseEnd">
+  <div class="preview-image" @mouseup.prevent="handleMouseEnd" @mousemove.prevent="handleMouseMove" @wheel="handleWheelScale">
     <img class="preview-pic" 
       ref="previewPic" 
       :src="curSrc"
@@ -111,6 +111,7 @@ const handleMouseEnd = () => {
   isMoving.value = false
   distance.endX = distance.translateX
   distance.endY = distance.translateY
+  console.log(distance.translateX)
 }
 const handleRotate = (type: string) => {
   if (type === 'right') {
@@ -123,7 +124,7 @@ const handleRotate = (type: string) => {
 }
 const setImagStyle = () => {
   if (previewPic.value) {
-    previewPic.value.style.transform = `scale(${scale.value}) translate(${distance.translateX}px, ${distance.translateY}px) rotate(${distance.rotate}deg)`
+    previewPic.value.style.transform = `scale(${scale.value}) translate(${(distance.translateX / scale.value).toFixed(2)}px, ${(distance.translateY / scale.value).toFixed(2)}px) rotate(${distance.rotate}deg)`
   }
 }
 const handleToPrev = () => {
@@ -176,6 +177,7 @@ const handleClose = () => {
     max-width: 100%;
     max-height: 100%;
     user-select: none;
+    transform-origin: center center;
   }
 
   .preview-btns {

@@ -9,7 +9,9 @@ declare module 'vue' {
     ABadge: typeof import('ant-design-vue/es')['Badge']
     ABreadcrumb: typeof import('ant-design-vue/es')['Breadcrumb']
     ABreadcrumbItem: typeof import('ant-design-vue/es')['BreadcrumbItem']
+    ABreadcrumbSeparator: typeof import('ant-design-vue/es')['BreadcrumbSeparator']
     AButton: typeof import('ant-design-vue/es')['Button']
+    ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
     AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADivider: typeof import('ant-design-vue/es')['Divider']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
@@ -28,6 +30,7 @@ declare module 'vue' {
     APagination: typeof import('ant-design-vue/es')['Pagination']
     APopconfirm: typeof import('ant-design-vue/es')['Popconfirm']
     ASelect: typeof import('ant-design-vue/es')['Select']
+    ASpin: typeof import('ant-design-vue/es')['Spin']
     ASubMenu: typeof import('ant-design-vue/es')['SubMenu']
     ATable: typeof import('ant-design-vue/es')['Table']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
@@ -43,6 +46,7 @@ declare module 'vue' {
     Sidebar: typeof import('./src/components/sidebar.vue')['default']
     Sidebar_trigger: typeof import('./src/components/sidebar_trigger.vue')['default']
     Test: typeof import('./src/components/test.vue')['default']
+    Xiewei: typeof import('./src/components/previewImage/xiewei.vue')['default']
   }
 }
 
