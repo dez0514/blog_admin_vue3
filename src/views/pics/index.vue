@@ -45,9 +45,10 @@
     </div>
     <div class="pic-list">
       <div :class="['pic-item', isSelect ? 'select_mode' : 'normal']" v-for="(item, index) in imgList" :key="index">
-        <div style="padding: 10px"><img
-            :src="`${baseUrl}${currentFolder === '' ? '' : currentFolder + '/'}${item.name}`" alt=""
-            @error="onErrorImg"></div>
+        <div style="padding: 10px;background: rgba(0, 0, 0, .05)">
+          <img :src="`${baseUrl}${currentFolder === '' ? '' : currentFolder + '/'}${item.name}`" alt=""
+            @error="onErrorImg">
+        </div>
         <div class="pic-link">{{ item.name }}</div>
         <div class="copy-tip">
           <a-button type="primary"
@@ -379,8 +380,9 @@ onMounted(() => {
   overflow-y: auto;
   padding: 0 20px;
 }
+
 .loadings {
-  position: absolute;  // 它的外层是 main.vue 的.main 要给 relative
+  position: absolute; // 它的外层是 main.vue 的.main 要给 relative
   top: 0;
   left: 0;
   height: 100%;
@@ -390,6 +392,7 @@ onMounted(() => {
   justify-content: center;
   background-color: rgba(255, 255, 255, .7);
 }
+
 .folder_list {
   display: flex;
   flex-wrap: wrap;
