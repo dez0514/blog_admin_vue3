@@ -37,6 +37,7 @@ declare module 'vue' {
     ATypographyLink: typeof import('ant-design-vue/es')['TypographyLink']
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     Bread: typeof import('./src/components/bread.vue')['default']
+    Calendar: typeof import('./src/components/calendar/index.vue')['default']
     Editor: typeof import('./src/components/editor.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Logo: typeof import('./src/components/logo.vue')['default']
