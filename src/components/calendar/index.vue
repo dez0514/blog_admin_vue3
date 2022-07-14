@@ -4,9 +4,9 @@
       <div class="btns-wrap">
         <div class="btn prev left-radius" title="previous month" @click="goPrevMonth">&lt;</div>
         <div class="btn next right-radius" title="next month" @click="goNextMonth">&gt;</div>
-        <div class="btn today" title="this month">today</div>
+        <div class="btn today" title="this month" @click="goToday">today</div>
       </div>
-      <div class="calendar-title">{{ monthNameArr[month_show] + ' ' + year_show + '/' + monthNameArrZh[month_show]}}</div>
+      <div class="calendar-title">{{ monthNameArr[month_show] + ' ' + year_show + '.' + (month_show + 1)}}</div>
       <div class="btns-wrap">
         <div class="btn month left-radius active">month</div>
         <div class="btn week">week</div>
@@ -22,7 +22,7 @@
       </div>
       <!-- 当前月份的天 -->
       <div class="day-box" v-for="i in showMonthDays">
-        <div class="day-txt">{{ i }}</div>
+        <div :class="['day-txt', (year_show === curYear && month_show === curMonth && i === curDay) ? 'today' : '']">{{ i }}</div>
       </div>
       <!-- 后面多余的空格填下个月前几天 -->
       <div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
@@ -36,7 +36,9 @@
 // 2.31天:1,3,5,7,8,10,12月。30天: 4,6,9,11月。2月平月28，闰月29。
 // 3.判断闰年(1.能被4整除但不能被100整除的年份。2.能被400整除) 
 // 4.判断当前年当前月份的第一天是周几。
-// 5.获取上一月天数（处理到前面的空格）
+// 5.获取上一月天数（处理到前面的空格)
+// 6.考虑展示：假期，节气，节日，农历日期。
+// 7.添加日程事件，面板切换。
 // import { LeftOutlined, RightOutlined } from "@ant-design/icons-vue";
 import { ref, computed } from "vue"
 // 先获取当前年月日再说
@@ -45,12 +47,11 @@ const curMonth = new Date().getMonth() // 0 - 11
 const curDay = new Date().getDate()
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const monthNameArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
-const monthNameArrZh = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月',]
 // 面板显示的年月日，默认为当前
 const year_show = ref<number>(curYear)
 const month_show = ref<number>(curMonth)
-// const day_show = ref<number>(curDay)
-const monthDayNumList = computed(() => { // 所有月份的天数
+const day_show = ref<number>(curDay)
+const monthDayNumList = computed(() => { // 所有月份的天数，一定别写错。。
   return [31, 28 + isLeapYear(year_show.value), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 })
 // 面板显示的(年)月份的总天数
@@ -92,7 +93,11 @@ const goNextMonth = () => {
     month_show.value++
   }
 }
-
+const goToday = () => {
+  year_show.value = curYear
+  month_show.value = curMonth
+  day_show.value = curDay
+}
 </script>
 <style lang="scss" scoped>
 $white: #fff;
@@ -102,6 +107,7 @@ $border: #ddd;
 $primary: #1890ff;
 $btnhover: rgba(24, 144, 255, .8);
 $btnactive: #183fff;
+$today: red;
 .calendar-container {
   box-sizing: border-box;
   padding: 20px;
@@ -162,6 +168,7 @@ $btnactive: #183fff;
   border-top: 1px solid $border;
   border-left: 1px solid $border;
   .column-item {
+    position: relative;
     box-sizing: border-box;
     padding: 4px;
     text-align: center;
@@ -173,10 +180,20 @@ $btnactive: #183fff;
     height: 100px;
   }
   .day-txt {
-    text-align: right;
-    padding-right: 3px;
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    border-radius: 50%;
+    height: 28px;
+    line-height: 28px;
+    width: 28px;
+    text-align: center;
     &.lastmonth_day, &.nextmonth_day {
       opacity: .5;
+    }
+    &.today {
+      background: $today;
+      color: $white;
     }
   }
 }
