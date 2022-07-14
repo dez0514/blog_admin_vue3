@@ -6,7 +6,7 @@
         <div class="btn next right-radius" title="next month" @click="goNextMonth">&gt;</div>
         <div class="btn today" title="this month">today</div>
       </div>
-      <div class="calendar-title">{{ monthNameArr[month_show] + ' ' + year_show }}</div>
+      <div class="calendar-title">{{ monthNameArr[month_show] + ' ' + year_show + '/' + monthNameArrZh[month_show]}}</div>
       <div class="btns-wrap">
         <div class="btn month left-radius active">month</div>
         <div class="btn week">week</div>
@@ -15,12 +15,18 @@
       </div>
     </div>
     <div class="calendar-box">
-      <div class="column-item" style="text-align: center;" v-for="i in 7">{{ weekDays[i - 1] }}</div>
-      <div class="day-box" v-for="i in 42">
-        <div style="text-align: right;padding-right: 3px;" v-if="(i - 1) < firstDayInWeek">{{ showLastMonthDays - (firstDayInWeek - i) }}</div>
-        <div v-if="(i - 1) < firstDayInWeek">{{ showLastMonthDays }}</div>
-        <div style="text-align: right;padding-right: 3px;" v-if="(i - 1) >= firstDayInWeek && (i - 1) <= (showMonthDays + firstDayInWeek)">{{ i - firstDayInWeek }}</div>
-        <div style="text-align: right;padding-right: 3px;" v-if="(i - 1) > (showMonthDays + firstDayInWeek)">{{ i - showMonthDays - firstDayInWeek - 1 }}</div>
+      <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
+      <!-- 前面多余的空格，填上个月最后几天 -->
+      <div class="day-box" v-for="i in firstDayInWeek">
+        <div class="day-txt lastmonth_day">{{ showLastMonthDays - (firstDayInWeek - i) }}</div>
+      </div>
+      <!-- 当前月份的天 -->
+      <div class="day-box" v-for="i in showMonthDays">
+        <div class="day-txt">{{ i }}</div>
+      </div>
+      <!-- 后面多余的空格填下个月前几天 -->
+      <div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
+        <div class="day-txt nextmonth_day">{{ i }}</div>
       </div>
     </div>
   </div>
@@ -39,12 +45,13 @@ const curMonth = new Date().getMonth() // 0 - 11
 const curDay = new Date().getDate()
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const monthNameArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+const monthNameArrZh = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月',]
 // 面板显示的年月日，默认为当前
 const year_show = ref<number>(curYear)
 const month_show = ref<number>(curMonth)
 // const day_show = ref<number>(curDay)
 const monthDayNumList = computed(() => { // 所有月份的天数
-  return [31, 28 + isLeapYear(year_show.value), 31, 30, 31, 31, 30, 31, 30, 31, 30, 31]
+  return [31, 28 + isLeapYear(year_show.value), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 })
 // 面板显示的(年)月份的总天数
 const showMonthDays = computed(() => {
@@ -157,12 +164,20 @@ $btnactive: #183fff;
   .column-item {
     box-sizing: border-box;
     padding: 4px;
+    text-align: center;
     border-right: 1px solid $border;
     border-bottom: 1px solid $border;
   }
   .day-box {
     @extend .column-item;
     height: 100px;
+  }
+  .day-txt {
+    text-align: right;
+    padding-right: 3px;
+    &.lastmonth_day, &.nextmonth_day {
+      opacity: .5;
+    }
   }
 }
 </style>
