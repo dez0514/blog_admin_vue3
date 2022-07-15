@@ -17,16 +17,19 @@
     <div class="calendar-box">
       <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
       <!-- 前面多余的空格，填上个月最后几天 -->
-      <div class="day-box" v-for="i in firstDayInWeek">
+      <!-- <div class="day-box" v-for="i in firstDayInWeek">
         <div class="day-txt lastmonth_day">{{ showLastMonthDays - (firstDayInWeek - i) }}</div>
-      </div>
+      </div> -->
       <!-- 当前月份的天 -->
-      <div class="day-box" v-for="i in showMonthDays">
+      <!-- <div class="day-box" v-for="i in showMonthDays">
         <div :class="['day-txt', (year_show === curYear && month_show === curMonth && i === curDay) ? 'today' : '']">{{ i }}</div>
-      </div>
+      </div> -->
       <!-- 后面多余的空格填下个月前几天 -->
-      <div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
+      <!-- <div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
         <div class="day-txt nextmonth_day">{{ i }}</div>
+      </div> -->
+      <div class="day-box" v-for="(item, index) in calendarList" :key="index">
+        <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">{{ item.day }}</div>
       </div>
     </div>
   </div>
@@ -41,6 +44,13 @@
 // 7.添加日程事件，面板切换。
 // import { LeftOutlined, RightOutlined } from "@ant-design/icons-vue";
 import { ref, computed } from "vue"
+import { festival } from './util'
+interface calendarItem {
+  year: number;
+  month: number; // 0-11
+  day: number;
+  festival?: string;
+}
 // 先获取当前年月日再说
 const curYear = new Date().getFullYear()
 const curMonth = new Date().getMonth() // 0 - 11
@@ -71,6 +81,48 @@ const showLastMonthDays = computed(() => {
 // 面板显示的(年)月份的第一天是周几, 0-6: 0表示周日，1-6指周一到周六
 const firstDayInWeek = computed(() => {
   return new Date(year_show.value + '-' + (month_show.value + 1) + '-' + 1).getDay()
+})
+// 最后循环的列表
+const calendarList = computed(() => {
+  // 根据showLastMonthDays, firstDayInWeek, showMonthDays 处理这个数组，表示每天的信息
+  let list: calendarItem[] = []
+  const festivalKeyArr = Object.keys(festival)
+  // 前面格子的
+  const lastMonthNearDays: calendarItem[] = new Array(firstDayInWeek.value).fill(0).map((item, index) => {
+    console.log('index==', index)
+    const dayNum = showLastMonthDays.value - firstDayInWeek.value + (index + 1)
+    // 此处的月份是要用上一个月，需要减1，但是festival是按照月份1-12来的写key, month_show 是0-11取值所以匹配时还得加1。
+    const monthDayStr: string =  month_show.value + '-' + dayNum
+    return {
+      year: month_show.value === 0 ? year_show.value - 1 : year_show.value,
+      month: month_show.value - 1,
+      day: dayNum,
+      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+    }
+  })
+  // 本月的格子
+  const monthDaysList: calendarItem[] = new Array(showMonthDays.value).fill(0).map((item, index) => {
+    const monthDayStr: string =  (month_show.value + 1) + '-' + (index + 1)
+    return {
+      year: year_show.value,
+      month: month_show.value,
+      day: index + 1,
+      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+    }
+  })
+  // 后面填满42个格子，表示下个月的前几天，从1开始往后递增就行
+  const nextMonthNearDays: calendarItem[] = new Array(42 - showMonthDays.value - firstDayInWeek.value).fill(0).map((item, index) => {
+    const monthDayStr: string =  (month_show.value + 2) + '-' + (index + 1)
+    return {
+      year: month_show.value === 11 ? year_show.value + 1 : year_show.value,
+      month: month_show.value + 1,
+      day: index + 1,
+      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+    }
+  })
+  list = [...lastMonthNearDays, ...monthDaysList, ...nextMonthNearDays]
+  console.log('list=====', list)
+  return list
 })
 console.log(curYear, curMonth, curDay)
 // 是否闰年， 返回闰年多的天数
