@@ -16,20 +16,9 @@
     </div>
     <div class="calendar-box">
       <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
-      <!-- 前面多余的空格，填上个月最后几天 -->
-      <!-- <div class="day-box" v-for="i in firstDayInWeek">
-        <div class="day-txt lastmonth_day">{{ showLastMonthDays - (firstDayInWeek - i) }}</div>
-      </div> -->
-      <!-- 当前月份的天 -->
-      <!-- <div class="day-box" v-for="i in showMonthDays">
-        <div :class="['day-txt', (year_show === curYear && month_show === curMonth && i === curDay) ? 'today' : '']">{{ i }}</div>
-      </div> -->
-      <!-- 后面多余的空格填下个月前几天 -->
-      <!-- <div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
-        <div class="day-txt nextmonth_day">{{ i }}</div>
-      </div> -->
       <div class="day-box" v-for="(item, index) in calendarList" :key="index">
         <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">{{ item.day }}</div>
+        <div>{{ item.festival }}</div>
       </div>
     </div>
   </div>
@@ -40,11 +29,10 @@
 // 3.判断闰年(1.能被4整除但不能被100整除的年份。2.能被400整除) 
 // 4.判断当前年当前月份的第一天是周几。
 // 5.获取上一月天数（处理到前面的空格)
-// 6.考虑展示：假期，节气，节日，农历日期。
+// 6.把数字循环改成对象数组循环。考虑展示：假期，节气，节日，农历日期。
 // 7.添加日程事件，面板切换。
-// import { LeftOutlined, RightOutlined } from "@ant-design/icons-vue";
 import { ref, computed } from "vue"
-import { festival } from './util'
+import { weekDays, monthNameArr, festivals, animals, cyclical, getSolarTerm } from './util'
 interface calendarItem {
   year: number;
   month: number; // 0-11
@@ -55,8 +43,6 @@ interface calendarItem {
 const curYear = new Date().getFullYear()
 const curMonth = new Date().getMonth() // 0 - 11
 const curDay = new Date().getDate()
-const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-const monthNameArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
 // 面板显示的年月日，默认为当前
 const year_show = ref<number>(curYear)
 const month_show = ref<number>(curMonth)
@@ -86,18 +72,22 @@ const firstDayInWeek = computed(() => {
 const calendarList = computed(() => {
   // 根据showLastMonthDays, firstDayInWeek, showMonthDays 处理这个数组，表示每天的信息
   let list: calendarItem[] = []
-  const festivalKeyArr = Object.keys(festival)
+  const festivalKeyArr = Object.keys(festivals)
   // 前面格子的
   const lastMonthNearDays: calendarItem[] = new Array(firstDayInWeek.value).fill(0).map((item, index) => {
     console.log('index==', index)
     const dayNum = showLastMonthDays.value - firstDayInWeek.value + (index + 1)
     // 此处的月份是要用上一个月，需要减1，但是festival是按照月份1-12来的写key, month_show 是0-11取值所以匹配时还得加1。
     const monthDayStr: string =  month_show.value + '-' + dayNum
+    const year_num = month_show.value === 0 ? year_show.value - 1 : year_show.value
     return {
-      year: month_show.value === 0 ? year_show.value - 1 : year_show.value,
+      year: year_num,
       month: month_show.value - 1,
       day: dayNum,
-      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+      festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
+      animal: animals[(year_num - 4) % 12],
+      lunarYearCn: cyclical(year_num - 1900 + 36),
+      solarTerm: getSolarTerm(year_num, month_show.value - 1, dayNum)
     }
   })
   // 本月的格子
@@ -107,21 +97,28 @@ const calendarList = computed(() => {
       year: year_show.value,
       month: month_show.value,
       day: index + 1,
-      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+      festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
+      animal: animals[(year_show.value - 4) % 12],
+      lunarYearCn: cyclical(year_show.value - 1900 + 36),
+      solarTerm: getSolarTerm(year_show.value, month_show.value, index + 1)
     }
   })
   // 后面填满42个格子，表示下个月的前几天，从1开始往后递增就行
   const nextMonthNearDays: calendarItem[] = new Array(42 - showMonthDays.value - firstDayInWeek.value).fill(0).map((item, index) => {
     const monthDayStr: string =  (month_show.value + 2) + '-' + (index + 1)
+    const year_num = month_show.value === 11 ? year_show.value + 1 : year_show.value
     return {
-      year: month_show.value === 11 ? year_show.value + 1 : year_show.value,
+      year: year_num,
       month: month_show.value + 1,
       day: index + 1,
-      festival: festivalKeyArr.includes(monthDayStr) ? (festival as any)[monthDayStr] : ''
+      festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
+      animal: animals[(year_num - 4) % 12],
+      lunarYearCn: cyclical(year_num - 1900 + 36),
+      solarTerm: getSolarTerm(year_num, month_show.value + 1, index + 1)
     }
   })
   list = [...lastMonthNearDays, ...monthDaysList, ...nextMonthNearDays]
-  console.log('list=====', list)
+  console.log('cur calendar===', list)
   return list
 })
 console.log(curYear, curMonth, curDay)
