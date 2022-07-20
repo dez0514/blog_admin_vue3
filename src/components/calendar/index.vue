@@ -16,9 +16,15 @@
     </div>
     <div class="calendar-box">
       <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
-      <div class="day-box" v-for="(item, index) in calendarList" :key="index">
-        <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">{{ item.day }}</div>
-        <div>{{ item.festival }}</div>
+      <div v-for="(item, index) in calendarList" :key="index" 
+       :class="['day-box', curSelectDate?.year === item.year && curSelectDate?.month === item.month && curSelectDate?.day === item.day ? 'select-day' : '']"
+       @click="handleClickDay(item)"
+      >
+        <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">
+          {{ item.day }}
+        </div>
+        <div class="festival">{{ item.festival }}</div>
+        <div class="solarterm">{{ item.solarTerm }}</div>
       </div>
     </div>
   </div>
@@ -38,6 +44,7 @@ interface calendarItem {
   month: number; // 0-11
   day: number;
   festival?: string;
+  solarTerm?: string;
 }
 // 先获取当前年月日再说
 const curYear = new Date().getFullYear()
@@ -47,6 +54,7 @@ const curDay = new Date().getDate()
 const year_show = ref<number>(curYear)
 const month_show = ref<number>(curMonth)
 const day_show = ref<number>(curDay)
+const curSelectDate = ref<calendarItem | null>(null) // 点击选中日期
 const monthDayNumList = computed(() => { // 所有月份的天数，一定别写错。。
   return [31, 28 + isLeapYear(year_show.value), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 })
@@ -146,6 +154,18 @@ const goToday = () => {
   year_show.value = curYear
   month_show.value = curMonth
   day_show.value = curDay
+  const todayItem = calendarList.value.find(item => item.year === curYear && item.month === curMonth && item.day === curDay)
+  if (typeof todayItem !== 'undefined') {
+    curSelectDate.value = todayItem
+  }
+}
+const handleClickDay = (item: calendarItem) => {
+  console.log(item)
+  if (item.month !== month_show.value) {
+    month_show.value = item.month
+  }
+  // 点击选中给样式
+  curSelectDate.value = item
 }
 </script>
 <style lang="scss" scoped>
@@ -157,6 +177,11 @@ $primary: #1890ff;
 $btnhover: rgba(24, 144, 255, .8);
 $btnactive: #183fff;
 $today: red;
+$festival: rgba(76, 175, 80, .2);
+$festivalcolor: #539156;
+$solarterm: rgba(156, 39, 176, .2);
+$solartermcolor: #9c27b0;
+$selectday: rgba(24, 144, 255, .07);
 .calendar-container {
   box-sizing: border-box;
   padding: 20px;
@@ -212,7 +237,7 @@ $today: red;
 .calendar-box {
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(7, auto);
+  grid-template-columns: repeat(7, calc(100%/7));
   gap: 0;
   border-top: 1px solid $border;
   border-left: 1px solid $border;
@@ -227,6 +252,27 @@ $today: red;
   .day-box {
     @extend .column-item;
     height: 100px;
+    padding-top: 30px;
+    cursor: pointer;
+    .festival {
+      box-sizing: border-box;
+      padding: 0 5px;
+      text-align: left;
+      background-color: $festival;
+      color: $festivalcolor;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 24px;
+    }
+    .solarterm {
+      @extend .festival;
+      background-color: $solarterm;
+      color: $solartermcolor;
+    }
+    &.select-day {
+      background-color: $selectday;
+    }
   }
   .day-txt {
     position: absolute;
