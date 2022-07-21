@@ -14,17 +14,22 @@
         <div class="btn list right-radius">list</div>
       </div>
     </div>
-    <div class="calendar-box">
-      <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
-      <div v-for="(item, index) in calendarList" :key="index" 
-       :class="['day-box', curSelectDate?.year === item.year && curSelectDate?.month === item.month && curSelectDate?.day === item.day ? 'select-day' : '']"
-       @click="handleClickDay(item)"
-      >
-        <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">
-          {{ item.day }}
+    <div class="calendar-wrapper">
+      <div class="week-box">
+        <div class="column-item" v-for="i in 7">{{ weekDays[i - 1] }}</div>
+      </div>
+      <div class="calendar-box">
+        <div v-for="(item, index) in calendarList" :key="index" 
+          :class="['day-box', curSelectDate?.year === item.year && curSelectDate?.month === item.month && curSelectDate?.day === item.day ? 'select-day' : '']"
+          @click="handleClickDay(item)"
+        >
+          <div :class="['day-txt', (item.year === curYear && item.month === curMonth && item.day === curDay) ? 'today' : '']">
+            {{ item.day }}
+          </div>
+          <div class="festival">{{ item.festival }}</div>
+          <div class="solarterm">{{ item.solarTerm }}</div>
         </div>
-        <div class="festival">{{ item.festival }}</div>
-        <div class="solarterm">{{ item.solarTerm }}</div>
+        <div class="range-color-box" v-for="(item, index) in rangeColorList" :key="index" :style="{width: item.width, left: item.left, top: item.top}"></div>
       </div>
     </div>
   </div>
@@ -45,6 +50,7 @@ interface calendarItem {
   day: number;
   festival?: string;
   solarTerm?: string;
+  location: number
 }
 // 先获取当前年月日再说
 const curYear = new Date().getFullYear()
@@ -95,7 +101,8 @@ const calendarList = computed(() => {
       festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
       animal: animals[(year_num - 4) % 12],
       lunarYearCn: cyclical(year_num - 1900 + 36),
-      solarTerm: getSolarTerm(year_num, month_show.value - 1, dayNum)
+      solarTerm: getSolarTerm(year_num, month_show.value - 1, dayNum),
+      location: index // 格子的位置0-41
     }
   })
   // 本月的格子
@@ -108,7 +115,8 @@ const calendarList = computed(() => {
       festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
       animal: animals[(year_show.value - 4) % 12],
       lunarYearCn: cyclical(year_show.value - 1900 + 36),
-      solarTerm: getSolarTerm(year_show.value, month_show.value, index + 1)
+      solarTerm: getSolarTerm(year_show.value, month_show.value, index + 1),
+      location: index + firstDayInWeek.value
     }
   })
   // 后面填满42个格子，表示下个月的前几天，从1开始往后递增就行
@@ -122,7 +130,8 @@ const calendarList = computed(() => {
       festival: festivalKeyArr.includes(monthDayStr) ? (festivals as any)[monthDayStr] : '',
       animal: animals[(year_num - 4) % 12],
       lunarYearCn: cyclical(year_num - 1900 + 36),
-      solarTerm: getSolarTerm(year_num, month_show.value + 1, index + 1)
+      solarTerm: getSolarTerm(year_num, month_show.value + 1, index + 1),
+      location: index + firstDayInWeek.value + showMonthDays.value
     }
   })
   list = [...lastMonthNearDays, ...monthDaysList, ...nextMonthNearDays]
@@ -167,6 +176,81 @@ const handleClickDay = (item: calendarItem) => {
   // 点击选中给样式
   curSelectDate.value = item
 }
+//思路：根据连续假期日期范围，处理成一个个div定位, 一条连续日期可能处理成多条（跨几行就几条），计算位置，标注起点和结束点。
+// 注意判断是不是当前面板的连续日期
+// 最终处理成下面的数组。1. 每个格子的日期标个location。2.计算处理 left,top,width
+// 1. 一个判断连续日期是否跨行的方法
+// 2. 一个用来计算 日期位于第几个格子，第几行第几列
+// 存在一部分在当前面板 一部分不在的情况，显示在的那一部分
+const rangeColorList = [
+  {
+    // date: '20221001-20221007', // 日期信息
+    left: '10px', // 从第三个开始： n*100%/7 ,起点+10, 非起点不加
+    top: '30px', // 第n行：n*格子高度100+30
+    width: 'calc(4*100%/7 - 20px)', // 跨n个格子，起点-10， 结束-10
+  },
+  {
+    left: 'calc(3*100%/7 + 10px)', // 从第三个开始
+    top: '130px', 
+    width: 'calc(4*100%/7 - 10px)' // 未结束
+  },
+  {
+    left: '0px', // 接上一行，非起点
+    top: '230px', 
+    width: 'calc(2*100%/7 - 10px)' //跨2个格子 结束-10
+  }
+]
+const getRangeDateToColorList = () => {
+  // 得找到各个范围内所有天数日期
+  const rangeList = [
+    { dateRange: '2022.10.01-2022.10.07', title: '国庆7天乐' },
+    { dateRange: '2022.05.01-2022.05.05', title: '五一黄金周' }
+  ]
+  const temp = []
+  rangeList.forEach((item) => {
+    const dateArr = item.dateRange.split('-').filter(inner => inner !== '')
+    if(dateArr.length > 0) {
+      const obj = {
+        dateRange: item.dateRange,
+        title: item.title,
+        startDate: dateArr[0],
+        endDate: dateArr.length > 1 ? dateArr[1] : dateArr[0],
+        left: '',
+        top: '',
+        width: ''
+      }
+      temp.push(obj)
+    }
+  })
+}
+// 获取范围内的日期
+const getRangeDayList = (rangeStr: string) => {
+  // rangeStr = '2022.10.01-2022.10.07'
+  const [start, end] = rangeStr.split('-')
+  const startTime = new Date(start).getTime()
+  const endTime = new Date(end).getTime()
+  const timeDiff = startTime  - endTime
+  let arr = []
+  for(let i=0; i <= timeDiff; i += 86400000){
+    const tDate = new Date(startTime+i)
+    arr.push(tDate.getFullYear() + '.' + (tDate.getMonth() + 1) + '.' + tDate.getDate()) // 天拼不拼0无所谓，下面用的时候会Number掉
+  }
+  return arr
+}
+// 获取日期行列号
+const getDateLocRowAndColumn = (date: string) => { // 没有年份的 固定假期暂时不考虑 到时候拼接 面板年份
+  // date = '2022.10.01' // 去当前面板里查询 // 如果日期不在当前面板就不显示 location= -1 // 注意 month + 1
+  const dateArr = date.split('.')
+  if(dateArr.length < 3) return { row: -1, column: -1 } // 日期一定是年月日，否则当没有
+  const fitem = calendarList.value.find(item => item.year === Number(dateArr[0]) && item.month + 1 === Number(dateArr[1]) && item.day === Number(dateArr[2]))
+  if(typeof fitem !== 'undefined') {
+    const row = fitem.location/7
+    const column = fitem.location%7
+    return { row, column }
+  } else {
+    return { row: -1, column: -1 }
+  }
+}
 </script>
 <style lang="scss" scoped>
 $white: #fff;
@@ -176,12 +260,13 @@ $border: #ddd;
 $primary: #1890ff;
 $btnhover: rgba(24, 144, 255, .8);
 $btnactive: #183fff;
-$today: red;
+$today: #ff0000;
 $festival: rgba(76, 175, 80, .2);
 $festivalcolor: #539156;
 $solarterm: rgba(156, 39, 176, .2);
 $solartermcolor: #9c27b0;
 $selectday: rgba(24, 144, 255, .07);
+$holiday: pink;
 .calendar-container {
   box-sizing: border-box;
   padding: 20px;
@@ -234,8 +319,10 @@ $selectday: rgba(24, 144, 255, .07);
     background-color: $btnactive;
   }
 }
-.calendar-box {
+.calendar-wrapper {
   margin-top: 20px;
+}
+.week-box {
   display: grid;
   grid-template-columns: repeat(7, calc(100%/7));
   gap: 0;
@@ -247,10 +334,14 @@ $selectday: rgba(24, 144, 255, .07);
     padding: 4px;
     text-align: center;
     border-right: 1px solid $border;
-    border-bottom: 1px solid $border;
   }
+}
+.calendar-box {
+  @extend .week-box;
+  position: relative;
   .day-box {
     @extend .column-item;
+    border-bottom: 1px solid $border;
     height: 100px;
     padding-top: 30px;
     cursor: pointer;
@@ -291,5 +382,11 @@ $selectday: rgba(24, 144, 255, .07);
       color: $white;
     }
   }
+}
+.range-color-box {
+  position: absolute;
+  height: 30px;
+  background-color: $holiday;
+  color: $white;
 }
 </style>
