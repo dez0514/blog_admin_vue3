@@ -42,7 +42,7 @@
 // 5.获取上一月天数（处理到前面的空格)
 // 6.把数字循环改成对象数组循环。考虑展示：假期，节气，节日，农历日期。
 // 7.添加日程事件，面板切换。
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { weekDays, monthNameArr, festivals, animals, cyclical, getSolarTerm } from './util'
 interface calendarItem {
   year: number;
@@ -200,57 +200,107 @@ const rangeColorList = [
     width: 'calc(2*100%/7 - 10px)' //跨2个格子 结束-10
   }
 ]
-const getRangeDateToColorList = () => {
-  // 得找到各个范围内所有天数日期
-  const rangeList = [
-    { dateRange: '2022.10.01-2022.10.07', title: '国庆7天乐' },
-    { dateRange: '2022.05.01-2022.05.05', title: '五一黄金周' }
-  ]
-  const temp = []
-  rangeList.forEach((item) => {
-    const dateArr = item.dateRange.split('-').filter(inner => inner !== '')
-    if(dateArr.length > 0) {
-      const obj = {
-        dateRange: item.dateRange,
-        title: item.title,
-        startDate: dateArr[0],
-        endDate: dateArr.length > 1 ? dateArr[1] : dateArr[0],
-        left: '',
-        top: '',
-        width: ''
-      }
-      temp.push(obj)
-    }
-  })
-}
 // 获取范围内的日期
 const getRangeDayList = (rangeStr: string) => {
-  // rangeStr = '2022.10.01-2022.10.07'
+  // rangeStr = '2022.10.01-2022.10.07' return ['2022.10.01','2022.10.02','2022.10.03',...]
   const [start, end] = rangeStr.split('-')
   const startTime = new Date(start).getTime()
   const endTime = new Date(end).getTime()
-  const timeDiff = startTime  - endTime
+  const timeDiff =  endTime - startTime
   let arr = []
   for(let i=0; i <= timeDiff; i += 86400000){
-    const tDate = new Date(startTime+i)
+    const tDate = new Date(startTime + i)
     arr.push(tDate.getFullYear() + '.' + (tDate.getMonth() + 1) + '.' + tDate.getDate()) // 天拼不拼0无所谓，下面用的时候会Number掉
   }
   return arr
 }
+interface rcItem {
+  row: number;
+  column: number;
+}
+interface rangeItem {
+  dateRange: string;
+  title: string;
+  range?: rcItem[];
+  rows?: any[];
+  startDate?: string;
+  endDate?: string;
+}
+const getRangeDateList = () => {
+  // 得找到各个范围内所有天数日期
+  const rangeList: rangeItem[] = [
+    { dateRange: '2022.07.01-2022.07.07', title: 'test777' },
+    // { dateRange: '2022.07.26-2022.05.28', title: 'test333' },
+    // { dateRange: '2022.07.22-2022.07.22', title: 'test0' }
+  ]
+  rangeList.forEach((item) => {
+    const range = getRangeDayList(item.dateRange)
+    const rcArr: rcItem[] = []
+    range.forEach(inner => {
+      const tempObj = getDateRowAndColumn(inner)
+      rcArr.push(tempObj)
+    })
+    const rows = classifyTypes(rcArr)
+    item.rows = rows
+    const dateArr = item.dateRange.split('-').filter(inner => inner !== '')
+    if(dateArr.length > 0) {
+      item.startDate = dateArr[0]
+      item.endDate = dateArr.length > 1 ? dateArr[1] : dateArr[0]
+    }
+  })
+  console.log('temp range====', rangeList)
+  return rangeList
+}
+const getColorList = (list: rangeItem[]) => {
+  let temp: any[] = []
+  list.forEach((item, index) => {
+    if(item.rows) {
+      Object.keys(item.rows).forEach((inner, idx) => {
+        const left_offset = idx === 0 ? 10 : 0
+        temp.push({
+          title: item.title,
+          dateRange: item.dateRange,
+          startDate: item.startDate,
+          endDate: item.endDate,
+          // left: `calc(${2}*100%/7 + 10px)`,
+          // top: '130px', 
+          // width: 'calc(4*100%/7 - 10px)'
+        })
+      })
+    }
+  })
+  return temp
+}
 // 获取日期行列号
-const getDateLocRowAndColumn = (date: string) => { // 没有年份的 固定假期暂时不考虑 到时候拼接 面板年份
+const getDateRowAndColumn = (date: string) => { // 没有年份的 固定假期暂时不考虑 到时候拼接 面板年份
   // date = '2022.10.01' // 去当前面板里查询 // 如果日期不在当前面板就不显示 location= -1 // 注意 month + 1
   const dateArr = date.split('.')
   if(dateArr.length < 3) return { row: -1, column: -1 } // 日期一定是年月日，否则当没有
   const fitem = calendarList.value.find(item => item.year === Number(dateArr[0]) && item.month + 1 === Number(dateArr[1]) && item.day === Number(dateArr[2]))
   if(typeof fitem !== 'undefined') {
-    const row = fitem.location/7
+    const row = Math.floor(fitem.location/7)
     const column = fitem.location%7
     return { row, column }
   } else {
     return { row: -1, column: -1 }
   }
 }
+// 根据row分类，row相等的为一类（表示在一行里），值就是行里跨过的列
+const classifyTypes = (list: any[], base: string = 'row') => {
+  // list = [{row, column}] // return { [row1]: [column1,column2,...], [row2]:[column1,column2,...] }
+  const temp: any = {}
+  list.forEach(item => {
+    if(!temp[item[base]]) {
+      temp[item[base]] = [item.column]
+    } else {
+      temp[item[base]].push(item.column)
+    }
+  })
+  return temp
+}
+onMounted(() => {
+  console.log(getColorList(getRangeDateList()))
+})
 </script>
 <style lang="scss" scoped>
 $white: #fff;
