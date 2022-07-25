@@ -29,7 +29,9 @@
           <div class="festival">{{ item.festival }}</div>
           <div class="solarterm">{{ item.solarTerm }}</div>
         </div>
-        <div class="range-color-box" v-for="(item, index) in rangeColorList" :key="index" :style="{width: item.width, left: item.left, top: item.top}"></div>
+        <template v-for="(item, index) in rangeColorList" :key="index">
+          <div class="range-color-box" v-if="item.width !== '0px'" :style="{width: item.width, left: item.left, top: item.top, backgroundColor: item.color}">{{ item.title }}</div>
+        </template>
       </div>
     </div>
   </div>
@@ -52,6 +54,26 @@ interface calendarItem {
   solarTerm?: string;
   location: number
 }
+interface rcItem {
+  row: number;
+  column: number;
+}
+interface classRow {
+  [key: number | string]: number[]
+}
+interface rangeItem {
+  dateRange: string;
+  title: string;
+  range?: rcItem[];
+  rows?: classRow;
+  startDate?: string;
+  endDate?: string;
+  left?: string;
+  top?: string;
+  width?: string;
+  color?: string;
+  nums?: number;
+}
 // 先获取当前年月日再说
 const curYear = new Date().getFullYear()
 const curMonth = new Date().getMonth() // 0 - 11
@@ -61,6 +83,13 @@ const year_show = ref<number>(curYear)
 const month_show = ref<number>(curMonth)
 const day_show = ref<number>(curDay)
 const curSelectDate = ref<calendarItem | null>(null) // 点击选中日期
+const rangeColorList = ref<rangeItem[]>([
+  { dateRange: '2022.06.24-2022.06.28', title: 'test一半在上个月的面板一半在当前面板', color: 'pink' }, // 由于存在 -1 无法判断是否为开始点，顺带分类顺序一乱导致无法判断结束点
+  { dateRange: '2022.07.04-2022.07.06', title: 'test单行', color: '#00cfff' },
+  { dateRange: '2022.07.08-2022.07.11', title: 'test垮了两行', color: 'blue' },
+  { dateRange: '2022.07.22-2022.07.22', title: 'test单个日期', color: 'red' },
+  { dateRange: '2022.08.04-2022.08.08', title: 'test一半在当前面板一半在下个面板', color: 'green' } // 也是 -1 问题 // 思路：前后定义第-1行和第7行，用来判断 前后是不是开始或者结束点，计算location时增加麻烦。。
+]) // 连续假期 年月日-年月日
 const monthDayNumList = computed(() => { // 所有月份的天数，一定别写错。。
   return [31, 28 + isLeapYear(year_show.value), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 })
@@ -150,6 +179,7 @@ const goPrevMonth = () => {
   } else {
     month_show.value--
   }
+  rangeColorList.value = getColorList(getRangeDateList(rangeColorList.value))
 }
 const goNextMonth = () => {
   if (month_show.value === 11) {
@@ -158,6 +188,7 @@ const goNextMonth = () => {
   } else {
     month_show.value++
   }
+  rangeColorList.value = getColorList(getRangeDateList(rangeColorList.value))
 }
 const goToday = () => {
   year_show.value = curYear
@@ -167,6 +198,7 @@ const goToday = () => {
   if (typeof todayItem !== 'undefined') {
     curSelectDate.value = todayItem
   }
+  rangeColorList.value = getColorList(getRangeDateList(rangeColorList.value))
 }
 const handleClickDay = (item: calendarItem) => {
   console.log(item)
@@ -176,30 +208,12 @@ const handleClickDay = (item: calendarItem) => {
   // 点击选中给样式
   curSelectDate.value = item
 }
-//思路：根据连续假期日期范围，处理成一个个div定位, 一条连续日期可能处理成多条（跨几行就几条），计算位置，标注起点和结束点。
-// 注意判断是不是当前面板的连续日期
-// 最终处理成下面的数组。1. 每个格子的日期标个location。2.计算处理 left,top,width
-// 1. 一个判断连续日期是否跨行的方法
-// 2. 一个用来计算 日期位于第几个格子，第几行第几列
-// 存在一部分在当前面板 一部分不在的情况，显示在的那一部分
-const rangeColorList = [
-  {
-    // date: '20221001-20221007', // 日期信息
-    left: '10px', // 从第三个开始： n*100%/7 ,起点+10, 非起点不加
-    top: '30px', // 第n行：n*格子高度100+30
-    width: 'calc(4*100%/7 - 20px)', // 跨n个格子，起点-10， 结束-10
-  },
-  {
-    left: 'calc(3*100%/7 + 10px)', // 从第三个开始
-    top: '130px', 
-    width: 'calc(4*100%/7 - 10px)' // 未结束
-  },
-  {
-    left: '0px', // 接上一行，非起点
-    top: '230px', 
-    width: 'calc(2*100%/7 - 10px)' //跨2个格子 结束-10
-  }
-]
+//思路：根据连续假期日期范围，处理成一个个div定位, 一条连续日期可能处理成多条（跨几行就几条），计算位置，标注起点和结束点。注意判断是不是当前面板的连续日期
+// 1. 每个格子的日期标个location。
+// 2.计算处理 left,top,width
+// 3. 一个判断连续日期是否跨行的方法
+// 4. 一个用来计算 日期位于第几个格子，第几行第几列
+// 5. 存在一部分在当前面板 一部分不在的情况，显示在的那一部分
 // 获取范围内的日期
 const getRangeDayList = (rangeStr: string) => {
   // rangeStr = '2022.10.01-2022.10.07' return ['2022.10.01','2022.10.02','2022.10.03',...]
@@ -214,25 +228,8 @@ const getRangeDayList = (rangeStr: string) => {
   }
   return arr
 }
-interface rcItem {
-  row: number;
-  column: number;
-}
-interface rangeItem {
-  dateRange: string;
-  title: string;
-  range?: rcItem[];
-  rows?: any[];
-  startDate?: string;
-  endDate?: string;
-}
-const getRangeDateList = () => {
+const getRangeDateList = (rangeList: rangeItem[]) => {
   // 得找到各个范围内所有天数日期
-  const rangeList: rangeItem[] = [
-    { dateRange: '2022.07.01-2022.07.07', title: 'test777' },
-    // { dateRange: '2022.07.26-2022.05.28', title: 'test333' },
-    // { dateRange: '2022.07.22-2022.07.22', title: 'test0' }
-  ]
   rangeList.forEach((item) => {
     const range = getRangeDayList(item.dateRange)
     const rcArr: rcItem[] = []
@@ -242,6 +239,7 @@ const getRangeDateList = () => {
     })
     const rows = classifyTypes(rcArr)
     item.rows = rows
+    item.nums = range.length
     const dateArr = item.dateRange.split('-').filter(inner => inner !== '')
     if(dateArr.length > 0) {
       item.startDate = dateArr[0]
@@ -252,19 +250,29 @@ const getRangeDateList = () => {
   return rangeList
 }
 const getColorList = (list: rangeItem[]) => {
-  let temp: any[] = []
+  let temp: rangeItem[] = []
   list.forEach((item, index) => {
     if(item.rows) {
-      Object.keys(item.rows).forEach((inner, idx) => {
-        const left_offset = idx === 0 ? 10 : 0
+      const len = Object.keys(item.rows).length
+      Object.keys(item.rows).forEach((inner, idx) => {  // inner 就是行号
+        // 1.如果只有 -1， 那假期都在其他面板
+        // 2.如果即有 -1，又有其他行号，那说明是跨面板，但是这种无法判断前跨还是后跨，也可能两边都跨了
+        // 两边都跨 前后都没边距，前跨左边无边距，后跨右边无边距
+        // 假期长度大于44 也不一定两边都跨； 能否再利用开始结束日期判断一下；
+        const l_offset = idx === 0 ? 10 : 0 // 开始点偏移
+        const r_offset = idx === len - 1 ? 10 : 0 // 结束点。条件不足，跨面板时，当前没有结束点 或者没有开始点
+        const width = item.rows && item.rows[inner] && item.rows[inner].length // 这里的ts真的是醉了。。明明上面包了一层if(item.rows)存在的判断
+        const start_column = item.rows && item.rows[inner] && item.rows[inner][0]
+        // const end_column = item.rows[inner][width - 1]
         temp.push({
           title: item.title,
           dateRange: item.dateRange,
           startDate: item.startDate,
+          color: item.color,
           endDate: item.endDate,
-          // left: `calc(${2}*100%/7 + 10px)`,
-          // top: '130px', 
-          // width: 'calc(4*100%/7 - 10px)'
+          left: `calc(${start_column}*100%/7 + ${l_offset}px)`,
+          top: `calc(${inner} * 100px + 60px)`, 
+          width: Number(inner) === -1 ? '0px' : `calc(${width}*100%/7 - ${l_offset}px - ${r_offset}px)`
         })
       })
     }
@@ -299,7 +307,7 @@ const classifyTypes = (list: any[], base: string = 'row') => {
   return temp
 }
 onMounted(() => {
-  console.log(getColorList(getRangeDateList()))
+  rangeColorList.value = getColorList(getRangeDateList(rangeColorList.value))
 })
 </script>
 <style lang="scss" scoped>
@@ -434,9 +442,14 @@ $holiday: pink;
   }
 }
 .range-color-box {
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 10px;
   position: absolute;
   height: 30px;
-  background-color: $holiday;
+  line-height: 30px;
   color: $white;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
