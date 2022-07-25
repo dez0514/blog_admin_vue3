@@ -57,9 +57,14 @@ interface calendarItem {
 interface rcItem {
   row: number;
   column: number;
+  date: string;
+}
+interface rowItem {
+  column: number;
+  date: string;
 }
 interface classRow {
-  [key: number | string]: number[]
+  [key: number | string]: rowItem[]
 }
 interface rangeItem {
   dateRange: string;
@@ -251,18 +256,23 @@ const getRangeDateList = (rangeList: rangeItem[]) => {
 }
 const getColorList = (list: rangeItem[]) => {
   let temp: rangeItem[] = []
-  list.forEach((item, index) => {
+  list.forEach(item => {
     if(item.rows) {
       const len = Object.keys(item.rows).length
-      Object.keys(item.rows).forEach((inner, idx) => {  // inner 就是行号
-        // 1.如果只有 -1， 那假期都在其他面板
-        // 2.如果即有 -1，又有其他行号，那说明是跨面板，但是这种无法判断前跨还是后跨，也可能两边都跨了
-        // 两边都跨 前后都没边距，前跨左边无边距，后跨右边无边距
-        // 假期长度大于44 也不一定两边都跨； 能否再利用开始结束日期判断一下；
-        const l_offset = idx === 0 ? 10 : 0 // 开始点偏移
-        const r_offset = idx === len - 1 ? 10 : 0 // 结束点。条件不足，跨面板时，当前没有结束点 或者没有开始点
+      Object.keys(item.rows).forEach(inner => {  // inner 就是行号
+        // 两边都跨面板 前后都没边距，前跨左边无边距，后跨右边无边距
+        // 利用当前这行的日期含不含 开始和结束日期 来判断当前这行长条是不是包含开始点和结束点；包含开始日期就是开始点，包含结束日期就是结束点，不用想那么多
+        const tempDateArr = item.rows && item.rows[inner].map(mitem => new Date(mitem.date).getTime()) || []
+        let l_offset = 0 // 开始点偏移
+        let r_offset = 0 // 结束点偏移
+        if(item.startDate && tempDateArr.includes(new Date(item.startDate).getTime())){
+          l_offset = 10
+        }
+        if(item.endDate && tempDateArr.includes(new Date(item.endDate).getTime())){
+          r_offset = 10
+        }
         const width = item.rows && item.rows[inner] && item.rows[inner].length // 这里的ts真的是醉了。。明明上面包了一层if(item.rows)存在的判断
-        const start_column = item.rows && item.rows[inner] && item.rows[inner][0]
+        const start_column = item.rows && item.rows[inner] && item.rows[inner][0].column
         // const end_column = item.rows[inner][width - 1]
         temp.push({
           title: item.title,
@@ -283,25 +293,25 @@ const getColorList = (list: rangeItem[]) => {
 const getDateRowAndColumn = (date: string) => { // 没有年份的 固定假期暂时不考虑 到时候拼接 面板年份
   // date = '2022.10.01' // 去当前面板里查询 // 如果日期不在当前面板就不显示 location= -1 // 注意 month + 1
   const dateArr = date.split('.')
-  if(dateArr.length < 3) return { row: -1, column: -1 } // 日期一定是年月日，否则当没有
+  if(dateArr.length < 3) return { row: -1, column: -1, date } // 日期一定是年月日，否则当没有
   const fitem = calendarList.value.find(item => item.year === Number(dateArr[0]) && item.month + 1 === Number(dateArr[1]) && item.day === Number(dateArr[2]))
   if(typeof fitem !== 'undefined') {
     const row = Math.floor(fitem.location/7)
     const column = fitem.location%7
-    return { row, column }
+    return { row, column, date }
   } else {
-    return { row: -1, column: -1 }
+    return { row: -1, column: -1, date }
   }
 }
 // 根据row分类，row相等的为一类（表示在一行里），值就是行里跨过的列
 const classifyTypes = (list: any[], base: string = 'row') => {
-  // list = [{row, column}] // return { [row1]: [column1,column2,...], [row2]:[column1,column2,...] }
+  // list = [{row, column, date}] // return { [row1]: [column1,column2,...], [row2]:[column1,column2,...] }
   const temp: any = {}
   list.forEach(item => {
     if(!temp[item[base]]) {
-      temp[item[base]] = [item.column]
+      temp[item[base]] = [{ column: item.column, date: item.date }]
     } else {
-      temp[item[base]].push(item.column)
+      temp[item[base]].push({ column: item.column, date: item.date })
     }
   })
   return temp
