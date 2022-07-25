@@ -212,6 +212,7 @@ const handleClickDay = (item: calendarItem) => {
   }
   // 点击选中给样式
   curSelectDate.value = item
+  rangeColorList.value = getColorList(getRangeDateList(rangeColorList.value))
 }
 //思路：根据连续假期日期范围，处理成一个个div定位, 一条连续日期可能处理成多条（跨几行就几条），计算位置，标注起点和结束点。注意判断是不是当前面板的连续日期
 // 1. 每个格子的日期标个location。
