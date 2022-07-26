@@ -423,6 +423,7 @@ $holiday: pink;
   color: $white;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: left;
   &.start {
     left: 10px;
   }
