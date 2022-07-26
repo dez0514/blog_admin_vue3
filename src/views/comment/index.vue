@@ -5,7 +5,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import calendar from '../../components/calendar/index.vue'
+import calendar from '../../components/calendar/calendar.vue'
 </script>
 <style lang="scss" scoped>
 .comments {
