@@ -259,7 +259,6 @@ const getColorList = (list: rangeItem[]) => {
   let temp: rangeItem[] = []
   list.forEach(item => {
     if(item.rows) {
-      const len = Object.keys(item.rows).length
       Object.keys(item.rows).forEach(inner => {  // inner 就是行号
         // 两边都跨面板 前后都没边距，前跨左边无边距，后跨右边无边距
         // 利用当前这行的日期含不含 开始和结束日期 来判断当前这行长条是不是包含开始点和结束点；包含开始日期就是开始点，包含结束日期就是结束点，不用想那么多
@@ -272,7 +271,7 @@ const getColorList = (list: rangeItem[]) => {
         if(item.endDate && tempDateArr.includes(new Date(item.endDate).getTime())){
           r_offset = 10
         }
-        const width = item.rows && item.rows[inner] && item.rows[inner].length // 这里的ts真的是醉了。。明明上面包了一层if(item.rows)存在的判断
+        const width = item.rows && item.rows[inner] && item.rows[inner].length
         const start_column = item.rows && item.rows[inner] && item.rows[inner][0].column
         // const end_column = item.rows[inner][width - 1]
         temp.push({

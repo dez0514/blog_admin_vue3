@@ -1,20 +1,3 @@
-
-```html
-<!-- 简易日历的循环，直接循环数字 -->
-<!-- 前面多余的空格，填上个月最后几天 -->
-<!-- 此处 today 高亮判断有问题，如果是月初1号，可能两个1号高亮 -->
-<div class="day-box" v-for="i in firstDayInWeek">
-  <div class="day-txt lastmonth_day">{{ showLastMonthDays - (firstDayInWeek - i) }}</div>
-</div>
-<!-- 当前月份的天 -->
-<div class="day-box" v-for="i in showMonthDays">
-  <div :class="['day-txt', (year_show === curYear && month_show === curMonth && i === curDay) ? 'today' : '']">{{ i }}</div>
-</div>
-<!-- 后面多余的空格填下个月前几天 -->
-<div class="day-box" v-for="i in (42 - showMonthDays - firstDayInWeek)">
-  <div class="day-txt nextmonth_day">{{ i }}</div>
-</div>
-```
 ##### 阳历节日
 festival: {
   '1-1': {title: '元旦节'},
