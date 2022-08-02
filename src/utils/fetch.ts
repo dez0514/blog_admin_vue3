@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
+import { baseURL } from '../api/urls'
 
-const baseURL = 'http://localhost:8081'
 const CONTENT_TYPE = {
   json: 'application/json;charset=utf-8',
   xwform: 'application/x-www-form-urlencoded',

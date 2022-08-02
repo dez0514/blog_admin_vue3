@@ -89,11 +89,12 @@ import { Form } from 'ant-design-vue';
 import { MouseMenuDirective as vMouseMenu } from '@howdyjs/mouse-menu';
 import { promit } from '../../utils'
 import defaultImg from '../../assets/default_pic.png'
+import { baseURL } from '../../api/urls'
 const maxCount = 3
 const onErrorImg = (e: any) => {
   e.target.src = defaultImg
 }
-const baseUrl = 'http://localhost:8081/imgs/'
+const baseUrl = `${baseURL}/imgs/`
 const menuOptions = {
   menuWidth: 160,
   menuWrapperCss: {
