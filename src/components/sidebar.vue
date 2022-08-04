@@ -49,21 +49,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, toRefs, reactive } from "vue";
+import { onMounted, ref, toRefs, computed } from "vue";
 import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 import { todoStore } from '../store/pinia'
 import { storeToRefs } from 'pinia'
 import { themeStore } from '../store/themePinia'
 import { themeColorList } from '../utils/config'
-import { computed } from "@vue/reactivity";
 const themeStores = themeStore()
 const { themeColor } = storeToRefs(themeStores)
 // console.log('themeColor==', themeColor.value)
 const textColor = computed(() => {
   const fidx = themeColorList.findIndex(item => item.theme === themeColor.value)
   if(fidx > -1) {
-    return themeColorList[fidx].color
+    return  themeColorList[fidx].color
   } else {
     return '#1890ff'
   }
@@ -98,7 +97,6 @@ onMounted(() => {
 });
 </script>
 <style lang="scss" scoped>
-$theme: v-bind(textColor);
 .side-wrap {
   /* &.horizontal {
     height: 100%;
@@ -117,8 +115,10 @@ $theme: v-bind(textColor);
   &.inline:deep(.ant-menu-root) {
     min-height: calc(100vh - 64px - 48px);
   }
-  /* :deep(.ant-menu-light.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected) {
-    background-color: rgba($color: $theme, $alpha: .8); // mix(#fff, $theme, 91.6%); //  $theme;
-  } */
+  :deep(.ant-menu-light.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected) {
+    $theme: v-bind(textColor);
+    background-color: $theme;
+    color: #fff;
+  }
 }
 </style>

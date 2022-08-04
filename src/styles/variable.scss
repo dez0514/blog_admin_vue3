@@ -9,15 +9,19 @@ $green: rgb(82, 196, 26);
 $geekblue: rgb(47, 84, 235);
 $purple: rgb(114, 46, 209);
 
+
 :root {
   --theme-side-color: initial; // 侧边栏非ui组件的字体色
   --theme-side-boder-color: initial; // 侧边栏非ui组件的边框色
   --theme-side-rightborder: initial; // 侧边栏的右边框，黑款时默认无边框，上下自定义元素边框颜色设为背景色相同
   --theme-header-color: initial; // header非ui组件的字体色
   --theme-header-boder-color: initial; // header非ui组件的边框色
+  --light-side-active-bg: $default;
   // --main-bgcolor: initial; // 内容区背景色
   // --main-color: initial; // 内容区字体颜色
 }
+
+$lightSideBarBG: $default; // 白款侧边栏选中背景覆盖有误，手动覆盖。。mix 无法使用var和root里的变量，只能用全局的
 
 #app {
   // color: $default;
