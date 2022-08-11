@@ -1,2 +1,2 @@
 -- SELECT * FROM `blog`.`tags` LIMIT 10;
-SELECT * from tags WHERE color='red';
+SELECT * FROM `blog`.`articles` LIMIT 10;

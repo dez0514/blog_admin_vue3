@@ -82,14 +82,23 @@ console.log('comments==', comments)
 const [router, route] = [useRouter(), useRoute()];
 const [openKeys, selectedKeys] = [ref<string[]>([]), ref<string[]>([])];
 const menuList = ref<RouteRecordRaw[]>([...asyncRoutes]);
-const handleRouteClick = ({ key }: { key: string }) => {
+const handleRouteClick = ({ item, key, keyPath }: any) => {
+  console.log('key====', item, key, keyPath)
+  let routePath = key
+  if (key === '/article/create/:id?') {
+    routePath = '/article/create'
+  }
   selectedKeys.value = [key];
-  router.push(key);
+  router.push(routePath);
 };
 
 onMounted(() => {
   console.log('props=====', props)
-  selectedKeys.value = [route.path];
+  if (route.path === '/article/create') {
+    selectedKeys.value = ['/article/create/:id?'];
+  } else {
+    selectedKeys.value = [route.path];
+  }
   const openArr = route.path.split("/");
   if (openArr.length > 1) {
     openKeys.value = ["/" + openArr[1]];

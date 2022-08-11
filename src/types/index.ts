@@ -18,10 +18,18 @@ export interface themeStorage {
   menuType: string;
 }
 export interface articleItem {
-  key: string;
-  name: string;
-  age: number;
-  address: string;
+  id: number;
+  title: string;
+  extra_title: string;
+  author: string;
+  tags: string;
+  banner: string;
+  git: string;
+  content: string;
+  create_time: string;
+  update_time: string;
+  likes: number;
+  views: number;
 }
 export interface tagItem {
   key: string;
@@ -34,7 +42,8 @@ export interface columnItem {
   title: string;
   dataIndex: string;
   key: string;
-  align?: string
+  align?: string,
+  ellipsis?: boolean;
 }
 
 export interface styleItem {

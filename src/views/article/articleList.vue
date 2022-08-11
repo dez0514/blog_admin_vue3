@@ -5,14 +5,14 @@
       <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}">
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'operation'">
-            <a @click="handleEdit(record.key)">编辑</a>
+            <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
               v-if="dataSource.length"
               title="确定删除此条数据?"
               cancelText="取消"
               okText="确定"
-              @confirm="onDelete(record.key)"
+              @confirm="onDelete(record)"
             >
               <a style="color: #ff4d4f">删除</a>
             </a-popconfirm>
@@ -26,114 +26,53 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue"
-import { articleItem, columnItem } from "../../types";
+import { onMounted, ref } from "vue"
+import { articleItem } from "../../types";
+import { getArticles } from '../../api/articles'
+import { message } from 'ant-design-vue';
+import { useRouter } from 'vue-router'
+const router = useRouter();
 const dataSource = ref<articleItem[]>([])
-const columns = ref<columnItem[]>([])
 const current = ref(1)
-dataSource.value = [
+const columns = [
   {
-    key: '1',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '2',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '3',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '4',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '5',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '6',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '7',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '8',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '9',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '10',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '11',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '12',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '13',
-    name: '胡彦斌',
-    age: 32,
-    address: '西湖区湖底公园1号'
-  },
-  {
-    key: '14',
-    name: '胡彦祖',
-    age: 42,
-    address: '西湖区湖底公园1号'
-  },
-]
-columns.value = [
-  {
-    title: '姓名',
-    dataIndex: 'name',
-    key: 'name',
+    title: '标题',
+    dataIndex: 'title',
+    key: 'title',
+    ellipsis: true,
     align:'center'
   },
   {
-    title: '年龄',
-    dataIndex: 'age',
-    key: 'age',
+    title: '封面',
+    dataIndex: 'banner',
+    key: 'banner',
+    ellipsis: true,
     align:'center'
   },
   {
-    title: '住址',
-    dataIndex: 'address',
-    key: 'address',
+    title: '文章地址',
+    dataIndex: 'git',
+    key: 'git',
+    ellipsis: true,
+    align:'center'
+  },
+  {
+    title: '文章内容',
+    dataIndex: 'content',
+    key: 'content',
+    ellipsis: true,
+    align:'center'
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time',
+    align:'center'
+  },
+  {
+    title: '更新时间',
+    dataIndex: 'update_time',
+    key: 'update_time',
     align:'center'
   },
   {
@@ -145,10 +84,26 @@ columns.value = [
 ]
 const handleEdit = (val: any) => {
   console.log(val)
+  router.push(`/article/create/${val.id}`)
 }
 const onDelete = (val: string) => {
   console.log(val)
 }
+const getList = () => {
+  getArticles().then((res: any) => {
+    console.log(res)
+    if(res.code === 0) {
+      dataSource.value = res.data
+    } else if(typeof res.message === 'object') {
+      message.error(res.message && res.message.sqlMessage)
+    } else {
+      message.error(res.message)
+    }
+  })
+}
+onMounted(() => {
+  getList()
+})
 </script>
 <style lang="scss" scoped>
 .page-container {

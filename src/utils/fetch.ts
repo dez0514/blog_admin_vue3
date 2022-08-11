@@ -1,6 +1,8 @@
 import axios from 'axios'
-import { AxiosRequestConfig, AxiosResponse } from 'axios'
+// import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { baseURL } from '../api/urls'
+import { useLoading } from './useLoading'
+const { setLoading } = useLoading()
 
 const CONTENT_TYPE = {
   json: 'application/json;charset=utf-8',
@@ -16,7 +18,11 @@ const service = axios.create({
 })
 
 service.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: any) => {
+    console.log('config===', config)
+    if (config.headers.isLoading !== false) {
+      setLoading(true)
+    }
     // 在所有请求头部添加token值
     // const token = localStorage.getItem('token') // store.state.token;
     // if (token) {
@@ -28,17 +34,27 @@ service.interceptors.request.use(
     return config
   },
   error => {
+    if (error.config.headers.isLoading !== false) {
+      setLoading(false)
+    }
     return Promise.reject(error)
   }
 )
 
 service.interceptors.response.use(
-  (response) => {
+  (response: any) => {
+    console.log('response===', response)
+    if (response.config.headers.isLoading !== false) {
+      setLoading(false)
+    }
     // 成功请求到数据
     // console.log('response==', response)
     return Promise.resolve(response.data)
   },
-  (error) => {
+  (error: any) => {
+    if (error.config.headers.isLoading !== false) {
+      setLoading(false)
+    }
     // 响应错误处理
     if (axios.isCancel(error)) {
       // 取消请求的情况下，终端Promise调用链

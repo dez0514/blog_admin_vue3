@@ -23,7 +23,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     component: RouterView,
     children: [
       {
-        path: '/article/create',
+        path: '/article/create/:id?',
         name: 'articleCreate',
         meta: {
           title: '创建/编辑文章',

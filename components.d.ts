@@ -39,6 +39,7 @@ declare module 'vue' {
     Calendar: typeof import('./src/components/calendar/calendar.vue')['default']
     Editor: typeof import('./src/components/editor.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
+    Loading: typeof import('./src/components/loading.vue')['default']
     Logo: typeof import('./src/components/logo.vue')['default']
     PreviewImage: typeof import('./src/components/previewImage/previewImage.vue')['default']
     Routerview: typeof import('./src/components/routerview.vue')['default']

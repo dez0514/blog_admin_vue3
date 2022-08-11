@@ -57,7 +57,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, reactive, ref, toRaw } from 'vue';
-import { Form } from 'ant-design-vue';
+import { Form, message } from 'ant-design-vue';
+import { addArticle } from '../../api/articles'
 const useForm = Form.useForm;
 interface FormState {
   title: string;
@@ -101,7 +102,7 @@ export default defineComponent({
       'pageFullscreen',
       // 'fullscreen',
       'preview',
-      'htmlPreview',
+      // 'htmlPreview',
       // 'catalog',
       // 'github'
     ]
@@ -151,13 +152,43 @@ export default defineComponent({
       })
     }
     const handleChange = (value: string[]) => {
-      console.log(`selected ${value}`);
+      console.log(`selected====`, value);
     };
     const onSubmit = (values: any) => {
       console.log('Success:', values);
+      const userinfoStr = localStorage.getItem('userinfo')
+      let author = ''
+      if(userinfoStr) {
+        author = JSON.parse(userinfoStr).username
+      }
+      const params = {
+        title: values.title,
+        author: author,
+        extra_title: values.extraTitle,
+        banner: values.banner,
+        tags: values.tags.join(','),
+        git: values.git,
+        content: values.content
+      }
+      addArticle(params).then((res: any) => {
+        console.log('res==', res)
+        if(res.code === 0) {
+          message.success(res.message)
+          formState.title = ''
+          formState.extraTitle = '' 
+          formState.banner = ''
+          formState.git = ''
+          formState.tags = []
+          formState.content = '' 
+        } else if(typeof res.message === 'object') {
+          message.error(res.message && res.message.sqlMessage)
+        } else {
+          message.error(res.message)
+        }
+      })
     };
     const onSubmitFailed = (errorInfo: any) => {
-      console.log('Failed:', errorInfo);
+      console.log('Failed:', errorInfo.values.tags.join(','));
     };
     return {
       formState,

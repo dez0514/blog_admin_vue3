@@ -1,6 +1,6 @@
 <template>
   <div class="comments">
-    <div style="margin-bottom: 10px;">comments</div>
+    <div style="margin-bottom: 10px;text-transform: capitalize;">zhang wang de</div>
     <calendar />
   </div>
 </template>
