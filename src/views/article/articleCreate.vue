@@ -24,7 +24,7 @@
       </a-form-item>
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 18 }" label="内容" name="content"
         :rules="[{ required: true, message: '请输入内容!' }]">
-        <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '440px' }" />
+        <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '440px' }" preview-theme="vuepress" @htmlChanged="getEditorHtml" />
       </a-form-item>
       <a-form-item style="margin-bottom: 0;" :wrapper-col="{ offset: 3, span: 14 }">
         <a-button type="primary" html-type="submit">提交</a-button>
@@ -56,9 +56,10 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, toRaw } from 'vue';
+import { defineComponent, onMounted, reactive, ref, toRaw, watch } from 'vue';
 import { Form, message } from 'ant-design-vue';
-import { addArticle } from '../../api/articles'
+import { addArticle, getArticleDetail } from '../../api/articles'
+import { useRoute } from "vue-router";
 const useForm = Form.useForm;
 interface FormState {
   title: string;
@@ -75,6 +76,7 @@ interface FormPopState {
 }
 export default defineComponent({
   setup() {
+    const route = useRoute()
     const toolbars = [
       'bold',
       'underline',
@@ -102,7 +104,7 @@ export default defineComponent({
       'pageFullscreen',
       // 'fullscreen',
       'preview',
-      // 'htmlPreview',
+      'htmlPreview',
       // 'catalog',
       // 'github'
     ]
@@ -154,6 +156,9 @@ export default defineComponent({
     const handleChange = (value: string[]) => {
       console.log(`selected====`, value);
     };
+    const getEditorHtml = (html: string) => {
+      console.log('html===', html)
+    }
     const onSubmit = (values: any) => {
       console.log('Success:', values);
       const userinfoStr = localStorage.getItem('userinfo')
@@ -187,9 +192,36 @@ export default defineComponent({
         }
       })
     };
+    const getArticleById = (id: string | string[]) => {
+      getArticleDetail({ id }).then((res: any) => {
+        console.log(res)
+        if (res.code === 0) {
+          formState.title = res.data.title
+          formState.extraTitle = res.data.extra_title 
+          formState.banner = res.data.banner
+          formState.git = res.data.git
+          formState.tags = res.data.tags.split(',')
+          formState.content = res.data.content 
+        } else if(typeof res.message === 'object') {
+          message.error(res.message && res.message.sqlMessage)
+        } else {
+          message.error(res.message)
+        }
+      })
+    }
     const onSubmitFailed = (errorInfo: any) => {
       console.log('Failed:', errorInfo.values.tags.join(','));
     };
+    watch(() => route.params.id, (val, oldval) => {
+      if(route.name === 'articleCreate' && val !== oldval) {
+        location.reload()
+      }
+    })
+    onMounted(() => {
+      if (route.params.id) {
+        getArticleById(route.params.id)
+      }
+    })
     return {
       formState,
       formPopState,
@@ -206,7 +238,9 @@ export default defineComponent({
       showModal,
       handleOk,
       handleCancel,
-      modalCloseBack
+      modalCloseBack,
+      getArticleById,
+      getEditorHtml
     };
   },
 });

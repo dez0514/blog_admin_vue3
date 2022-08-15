@@ -5,6 +5,8 @@
       <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}">
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'operation'">
+            <a @click="handleDetail(record)">查看</a>
+            <a-divider type="vertical" />
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
@@ -79,12 +81,18 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    align:'center'
+    align:'center',
+    width: 180
   }
 ]
 const handleEdit = (val: any) => {
   console.log(val)
   router.push(`/article/create/${val.id}`)
+}
+const handleDetail = (val: any) => {
+  // detail
+  console.log(val)
+  router.push(`/article/detail/${val.id}`)
 }
 const onDelete = (val: string) => {
   console.log(val)

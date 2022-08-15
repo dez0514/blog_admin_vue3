@@ -11,7 +11,26 @@ import 'ant-design-vue/es/message/style'
 import 'ant-design-vue/es/notification/style'
 import Vue3ColorPicker from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
+import './styles/md/index.less'
 
+// MdEditor.config({
+//   editorExtensions: {
+//     highlight: {
+//       css: {
+//         atom: {
+//           light:
+//             'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/atom-one-light.min.css',
+//           dark: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/atom-one-dark.min.css'
+//         },
+//         xxx: {
+//           light:
+//             'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/xxx-light.css',
+//           dark: 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/xxx-dark.css'
+//         }
+//       }
+//     }
+//   }
+// });
 
 let themeObjStr = localStorage.getItem('theme')
 let theme = 'default'

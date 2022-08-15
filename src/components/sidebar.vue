@@ -49,7 +49,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, toRefs, computed } from "vue";
+import { ref, toRefs, computed, watch } from "vue";
 import { asyncRoutes } from "../router";
 import { useRouter, useRoute, RouteRecordRaw } from "vue-router";
 import { todoStore } from '../store/pinia'
@@ -91,10 +91,9 @@ const handleRouteClick = ({ item, key, keyPath }: any) => {
   selectedKeys.value = [key];
   router.push(routePath);
 };
-
-onMounted(() => {
-  console.log('props=====', props)
-  if (route.path === '/article/create') {
+watch(() => route.path, (val) => {
+  console.log('watch.route===', route)
+  if(val.indexOf('/article/create') > -1) {
     selectedKeys.value = ['/article/create/:id?'];
   } else {
     selectedKeys.value = [route.path];
@@ -103,7 +102,7 @@ onMounted(() => {
   if (openArr.length > 1) {
     openKeys.value = ["/" + openArr[1]];
   }
-});
+}, { immediate: true})
 </script>
 <style lang="scss" scoped>
 .side-wrap {

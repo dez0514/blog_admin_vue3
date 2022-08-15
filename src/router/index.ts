@@ -41,7 +41,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
         component: () => import('@/views/article/articleList.vue')
       },
       {
-        path: '/article/detail',
+        path: '/article/detail/:id',
         name: 'articleDetail',
         meta: {
           title: '文章详情'

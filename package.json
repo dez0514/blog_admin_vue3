@@ -12,8 +12,10 @@
     "@vue/compiler-sfc": "^3.2.26",
     "ant-design-vue": "^3.2.2",
     "axios": "^0.24.0",
+    "highlight.js": "^11.6.0",
     "less": "^4.1.2",
     "lodash-es": "^4.17.21",
+    "marked": "^4.0.18",
     "md-editor-v3": "^1.9.2",
     "mitt": "^3.0.0",
     "path": "^0.12.7",
@@ -28,6 +30,7 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@types/marked": "^4.0.3",
     "@types/node": "^16.11.12",
     "@types/qs": "^6.9.7",
     "@types/uuid": "^8.3.4",
