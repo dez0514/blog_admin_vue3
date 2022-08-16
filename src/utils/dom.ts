@@ -1,4 +1,5 @@
 import TWEEN from '@tweenjs/tween.js'
+import ClipboardJS from 'clipboard'
 
 // 获取滚动条高度
 export function getScrollTop(container?: any): number {
@@ -97,4 +98,48 @@ export const $ = {
       el.className = el.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ').replace(/^\s+|\s+$/g, '')
     }
   }
+}
+
+// 复制文本
+export const copyTextByDom = (
+  selector: string,
+  {
+    success,
+    deep = false,
+    error
+  }: {
+    success: (e: ClipboardJS.Event) => void
+    deep?: boolean
+    error?: (e: ClipboardJS.Event) => void
+  }
+) => {
+  let clipboard
+  if (deep) {
+    clipboard = new ClipboardJS(`.${selector}`, {
+      text: (el: any) => {
+        let div = el.parentNode.cloneNode(true)
+        div.style.display = 'none'
+        div.style.opacity = 0
+        div.style.whiteSpace = 'pre-wrap'
+        Array.from(div.children).forEach((node: any) => {
+          if (node.className === selector) {
+            div.removeChild(node)
+          }
+        })
+        const text = div.innerText
+        div = null
+        return text
+      }
+    })
+  } else {
+    clipboard = new ClipboardJS(`.${selector}`, {
+      text: (el: any) => {
+        return el.innerText
+      }
+    })
+  }
+  clipboard.on('success', success)
+  clipboard.on('error', (e) => {
+    error && error(e)
+  })
 }

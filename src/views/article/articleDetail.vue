@@ -10,22 +10,27 @@
         {{ (detailInfo && detailInfo.update_time) ? `更新时间：${detailInfo.update_time}` : `创建时间：${detailInfo && detailInfo.create_time}` }}
       </div>
     </div>
-    <div class="banner" :style="{ background: `url(${detailInfo && detailInfo.banner}) no-repeat`, backgroundPosition: 'center center', backgroundSize: 'cover' }">
+    <div class="gitlink">
+      <p>git链接: <a :href="detailInfo && detailInfo.git" target="_blank">{{ detailInfo && detailInfo.git }}</a></p>
+    </div>
+    <div class="banner-wrap">
+      <div class="banner" :style="{ background: `url(${detailInfo && detailInfo.banner}) no-repeat`, backgroundPosition: 'center center', backgroundSize: 'cover' }"></div>
       <img :src="detailInfo && detailInfo.banner" alt="">
     </div>
     <div class="detail-desc md-container">
-      <div v-html="detailInfo && detailInfo.content"></div>
+      <div ref="detailbox" v-html="detailInfo && detailInfo.content"></div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue"
+import { onMounted, ref, nextTick } from "vue"
 import { useRoute } from 'vue-router'
 import { message } from 'ant-design-vue';
 import { getArticleDetail } from '../../api/articles'
-import { formartMd } from '../../utils/marked'
+import { formartMd, getMdTitleList } from '../../utils/marked'
 const route = useRoute()
 const detailInfo = ref<any>(null)
+const detailbox = ref(null as HTMLDivElement | null)
 const getArticleById = (id: string | string[]) => {
   getArticleDetail({ id }).then((res: any) => {
     console.log(res)
@@ -33,6 +38,12 @@ const getArticleById = (id: string | string[]) => {
       const content = formartMd(res.data.content)
       console.log('format====', content)
       detailInfo.value = { ...res.data, content }
+      nextTick(() => {
+        if (detailbox.value) {
+          const detailMenuList = getMdTitleList(detailbox.value)
+          console.log('detailMenuList===', detailMenuList)
+        }
+      })
     } else if (typeof res.message === 'object') {
       message.error(res.message && res.message.sqlMessage)
     } else {
@@ -63,23 +74,26 @@ onMounted(() => {
   text-align: center;
   font-size: 24px;
 }
-.banner {
-  overflow: hidden;
-  position: relative;
-  height: 350px;
-  width: 100%;
-  background-color: #f0f2f7;
-  border-radius: 10px;
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, .6);
-    filter: blur(20px);
+.gitlink {
+  border-left: 4px solid #20a0ff;
+  background: #f0f2f7;
+  color: #555;
+  font-size: 1em;
+  padding: 10px 20px;
+  border-radius: 5px;
+  a {
+    padding-bottom: 1px;
+    border-bottom: 1px solid rgba(0, 154, 97, 0.25);
   }
+  a:hover {
+    border-bottom: 1px solid #20a0ff;
+  }
+}
+.banner-wrap {
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  border-radius: 10px;
   img {
     z-index: 10;
     position: absolute;
@@ -89,6 +103,23 @@ onMounted(() => {
     display: block;
     max-width: 200px;
     max-height: 200px;
+  }
+}
+.banner {
+  overflow: hidden;
+  height: 350px;
+  width: 100%;
+  background-color: #f0f2f7;
+  filter:blur(15px);
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(31, 45, 61, 0.2);
+    filter: brightness(50%);
   }
 }
 .detail-desc {

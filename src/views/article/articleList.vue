@@ -69,13 +69,15 @@ const columns = [
     title: '创建时间',
     dataIndex: 'create_time',
     key: 'create_time',
-    align:'center'
+    align:'center',
+    ellipsis: true
   },
   {
     title: '更新时间',
     dataIndex: 'update_time',
     key: 'update_time',
-    align:'center'
+    align:'center',
+    ellipsis: true
   },
   {
     title: '操作',

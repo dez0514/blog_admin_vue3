@@ -2,7 +2,7 @@ import { App, createApp } from 'vue'
 import AppVue from '@/App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
-import { message,notification } from 'ant-design-vue';
+import { message, notification } from 'ant-design-vue';
 import MdEditor from 'md-editor-v3';
 import "@/styles/reset.scss";
 import './app.less'
@@ -12,6 +12,21 @@ import 'ant-design-vue/es/notification/style'
 import Vue3ColorPicker from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import './styles/md/index.less'
+import { copyTextByDom } from './utils/dom'
+// 复制代码
+const copyCode = () => {
+  copyTextByDom('copy-code-btn', {
+    deep: true,
+    success: () => {
+      message.success('代码复制成功~')
+    },
+    error: () => {
+      message.error('代码复制失败~')
+    }
+  })
+}
+const _window = window as any
+_window.copyCode = copyCode
 
 // MdEditor.config({
 //   editorExtensions: {

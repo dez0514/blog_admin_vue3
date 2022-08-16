@@ -8,7 +8,7 @@ export const formartMd = (md: string) => {
     return `<img class="preview-image" src="${href}" alt="${text}" ${title ? `title="${title}"` : ''}/>`
   }
   renderer.code = (code, lang) => {
-    code = `${highlightJs.highlightAuto(code).value}<span class="copy-code-btn">${lang ? `${lang} ` : ''}复制代码</span>`
+    code = `${highlightJs.highlightAuto(code).value}<span class="copy-code-btn" onclick="copyCode()">${lang ? `${lang} ` : ''}复制代码</span>`
     return `<pre><code ${lang ? `class="${renderer.options.langPrefix}${lang}"` : ''}>${code}</code></pre>\n`
   }
   renderer.codespan = (text) => {
@@ -53,12 +53,13 @@ export interface MdTitle {
 }
 export const getMdTitleList = (container: Element, tags = 'h1, h2, h3'): MdTitle[] => {
   const nodeList = Array.from(container.querySelectorAll(tags))
-  const headerH = (document.querySelector('.main-header')?.getBoundingClientRect().height || 0) + 15
+  // const headerH = (document.querySelector('.main-header')?.getBoundingClientRect().height || 0) + 15
+  // const mainOffsetTop = (document.querySelector('.main') as any).offsetTop || 0
   return nodeList.map((node: any) => ({
     nodeName: node.nodeName.toLocaleLowerCase(),
     text: node.innerText,
     id: node.id,
-    scrollTop: getOffsetTop(document.getElementById(node.id) as Element) - headerH
+    scrollTop: getOffsetTop(document.getElementById(node.id) as Element) // - mainOffsetTop  // - headerH
   }))
 }
 

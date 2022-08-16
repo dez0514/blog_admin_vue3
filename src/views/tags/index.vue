@@ -24,7 +24,7 @@
                 v-model:pureColor="(editableData as any)[record.key][column.dataIndex]"
               />
               <template v-else>
-                <span class="color-spanbox" :style="{ background: text }"></span>
+                <i class="color-spanbox" :style="{ background: text }"></i>
                 <span style="vertical-align: middle;">{{ text }}</span>
               </template>
             </div>

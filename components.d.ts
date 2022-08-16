@@ -4,11 +4,14 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AAlert: typeof import('ant-design-vue/es')['Alert']
     AAvatar: typeof import('ant-design-vue/es')['Avatar']
     ABadge: typeof import('ant-design-vue/es')['Badge']
     ABreadcrumb: typeof import('ant-design-vue/es')['Breadcrumb']
     ABreadcrumbItem: typeof import('ant-design-vue/es')['BreadcrumbItem']
+    ABreadcrumbSeparator: typeof import('ant-design-vue/es')['BreadcrumbSeparator']
     AButton: typeof import('ant-design-vue/es')['Button']
+    ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
     ADivider: typeof import('ant-design-vue/es')['Divider']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
     ADropdown: typeof import('ant-design-vue/es')['Dropdown']
@@ -30,6 +33,8 @@ declare module 'vue' {
     ASubMenu: typeof import('ant-design-vue/es')['SubMenu']
     ATable: typeof import('ant-design-vue/es')['Table']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
+    ATypographyLink: typeof import('ant-design-vue/es')['TypographyLink']
+    AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     Bread: typeof import('./src/components/bread.vue')['default']
     Calendar: typeof import('./src/components/calendar/calendar.vue')['default']
     Editor: typeof import('./src/components/editor.vue')['default']
