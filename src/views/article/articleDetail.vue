@@ -1,5 +1,15 @@
 <template>
   <div class="detail-page">
+    <!-- <div class="show_menu_btn">目录</div> -->
+    <a-tooltip placement="left" :visible="!isShowMenu">
+      <template #title>
+        <span>文章目录</span>
+      </template>
+      <fixbtn :is-close="isShowMenu" :on-click-cb="fixbtnClick"></fixbtn>
+    </a-tooltip>
+    <div class="menu-wrap" v-show="isShowMenu">
+      <div>目录</div>
+    </div>
     <div class="title">{{ detailInfo && detailInfo.title }}</div>
     <div class="extra_info">
       <div class="extra-box">{{ detailInfo && detailInfo.extra_title }}</div>
@@ -28,9 +38,15 @@ import { useRoute } from 'vue-router'
 import { message } from 'ant-design-vue';
 import { getArticleDetail } from '../../api/articles'
 import { formartMd, getMdTitleList } from '../../utils/marked'
+import fixbtn from "../../components/fixbtn.vue";
 const route = useRoute()
+const isShowMenu = ref<boolean>(false)
 const detailInfo = ref<any>(null)
 const detailbox = ref(null as HTMLDivElement | null)
+const fixbtnClick = () => {
+  isShowMenu.value = !isShowMenu.value
+  console.log('isShowMenu.value==', isShowMenu.value)
+}
 const getArticleById = (id: string | string[]) => {
   getArticleDetail({ id }).then((res: any) => {
     console.log(res)
@@ -60,6 +76,16 @@ onMounted(() => {
 <style lang="scss" scoped>
 .detail-page {
   padding: 0 20px;
+}
+.menu-wrap {
+  z-index: 30;
+  position: fixed;
+  right: 0;
+  top: 210px;
+  overflow: hidden;
+  border: 1px solid red;
+  width: 240px;
+  height: 400px;
 }
 .extra_info {
   display: flex;
