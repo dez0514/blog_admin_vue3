@@ -36,6 +36,8 @@ declare module 'vue' {
     Fixbtn: typeof import('./src/components/fixbtn.vue')['default']
     Header: typeof import('./src/components/header.vue')['default']
     Logo: typeof import('./src/components/logo.vue')['default']
+    PartialLoad: typeof import('./src/components/partialLoad.vue')['default']
+    PartLoad: typeof import('./src/components/partLoad.vue')['default']
     PreviewImage: typeof import('./src/components/previewImage/previewImage.vue')['default']
     Routerview: typeof import('./src/components/routerview.vue')['default']
     Setting: typeof import('./src/components/setting.vue')['default']

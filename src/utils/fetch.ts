@@ -20,7 +20,7 @@ const service = axios.create({
 service.interceptors.request.use(
   (config: any) => {
     console.log('config===', config)
-    if (config.headers.isLoading !== false) {
+    if (config.isLoading !== false) {
       setLoading(true)
     }
     // 在所有请求头部添加token值
@@ -34,7 +34,7 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    if (error.config.headers.isLoading !== false) {
+    if (error.config.isLoading !== false) {
       setLoading(false)
     }
     return Promise.reject(error)
@@ -44,7 +44,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response: any) => {
     console.log('response===', response)
-    if (response.config.headers.isLoading !== false) {
+    if (response.config.isLoading !== false) {
       setLoading(false)
     }
     // 成功请求到数据
@@ -52,7 +52,7 @@ service.interceptors.response.use(
     return Promise.resolve(response.data)
   },
   (error: any) => {
-    if (error.config.headers.isLoading !== false) {
+    if (error.config.isLoading !== false) {
       setLoading(false)
     }
     // 响应错误处理

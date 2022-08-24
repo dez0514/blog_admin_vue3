@@ -1,11 +1,11 @@
 <template>
   <div class="detail-page">
     <!-- <div class="show_menu_btn">目录</div> -->
-    <a-tooltip placement="left" :visible="!isShowMenu">
+    <a-tooltip placement="left" :visible="!isShowMenu && detailMenuList.length > 0">
       <template #title>
         <span>文章目录</span>
       </template>
-      <fixbtn :is-close="isShowMenu" :on-click-cb="fixbtnClick"></fixbtn>
+      <fixbtn v-if="detailMenuList.length > 0" :is-close="isShowMenu" :on-click-cb="fixbtnClick"></fixbtn>
     </a-tooltip>
     <div class="menu-wrap" v-show="isShowMenu">
       <div>目录</div>
@@ -17,19 +17,24 @@
       <div class="extra-box">{{ detailInfo && detailInfo.tags }}</div>
       <a-divider type="vertical" />
       <div class="extra-box">
-        {{ (detailInfo && detailInfo.update_time) ? `更新时间：${detailInfo.update_time}` : `创建时间：${detailInfo && detailInfo.create_time}` }}
+        {{ (detailInfo && detailInfo.update_time) ?
+        `更新时间：${detailInfo.update_time}` : 
+        (detailInfo && detailInfo.update_time) ? 
+        `创建时间：${detailInfo && detailInfo.create_time}` : '' }}
       </div>
     </div>
-    <div class="gitlink">
+    <div class="gitlink" v-show="detailInfo && detailInfo.git">
       <p>git链接: <a :href="detailInfo && detailInfo.git" target="_blank">{{ detailInfo && detailInfo.git }}</a></p>
     </div>
-    <div class="banner-wrap">
+    <div class="banner-wrap" v-show="detailInfo && detailInfo.banner">
       <div class="banner" :style="{ background: `url(${detailInfo && detailInfo.banner}) no-repeat`, backgroundPosition: 'center center', backgroundSize: 'cover' }"></div>
       <img :src="detailInfo && detailInfo.banner" alt="">
     </div>
     <div class="detail-desc md-container">
       <div ref="detailbox" v-html="detailInfo && detailInfo.content"></div>
     </div>
+    <!-- 局部loading -->
+    <partload :load-state="loadState" @refresh="handleRefresh" />
   </div>
 </template>
 <script setup lang="ts">
@@ -39,33 +44,45 @@ import { message } from 'ant-design-vue';
 import { getArticleDetail } from '../../api/articles'
 import { formartMd, getMdTitleList } from '../../utils/marked'
 import fixbtn from "../../components/fixbtn.vue";
+import partload from '../../components/partialLoad.vue'
 const route = useRoute()
 const isShowMenu = ref<boolean>(false)
 const detailInfo = ref<any>(null)
+const detailMenuList = ref<any>([])
+const loadState = ref<number>(-1)
 const detailbox = ref(null as HTMLDivElement | null)
 const fixbtnClick = () => {
   isShowMenu.value = !isShowMenu.value
   console.log('isShowMenu.value==', isShowMenu.value)
 }
 const getArticleById = (id: string | string[]) => {
-  getArticleDetail({ id }).then((res: any) => {
+  loadState.value = 0
+  getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
     console.log(res)
     if (res.code === 0) {
+      loadState.value = -1
       const content = formartMd(res.data.content)
       console.log('format====', content)
       detailInfo.value = { ...res.data, content }
       nextTick(() => {
         if (detailbox.value) {
-          const detailMenuList = getMdTitleList(detailbox.value)
-          console.log('detailMenuList===', detailMenuList)
+          detailMenuList.value = getMdTitleList(detailbox.value)
+          console.log('detailMenuList===', detailMenuList.value)
         }
       })
     } else if (typeof res.message === 'object') {
+      loadState.value = 2
       message.error(res.message && res.message.sqlMessage)
     } else {
+      loadState.value = 2
       message.error(res.message)
     }
+  }).catch(() => {
+    loadState.value = 2
   })
+}
+const handleRefresh = () => {
+  getArticleById(route.params.id)
 }
 onMounted(() => {
   if (route.params.id) {
