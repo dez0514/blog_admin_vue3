@@ -9,6 +9,11 @@
     </a-tooltip>
     <div class="menu-wrap" v-show="isShowMenu">
       <div>目录</div>
+      <div class="menu-list">
+        <div v-for="(item,index) in detailMenuList" :key="index">
+          <a :href="`#${item.id}`" :class="item.nodeName">{{ item.text }}</a>
+        </div>
+      </div>
     </div>
     <div class="title">{{ detailInfo && detailInfo.title }}</div>
     <div class="extra_info">
@@ -67,6 +72,7 @@ const getArticleById = (id: string | string[]) => {
       nextTick(() => {
         if (detailbox.value) {
           detailMenuList.value = getMdTitleList(detailbox.value)
+          const list = 
           console.log('detailMenuList===', detailMenuList.value)
         }
       })
