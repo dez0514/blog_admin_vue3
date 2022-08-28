@@ -4,6 +4,10 @@
       <!-- y = 页面高度[100vh] - header[60px] - (bread + title)[共85px] - 上下padding[共40px] - pagination容器高度[48px] - 表头高度[55px] -->
       <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}">
         <template #bodyCell="{ column, text, record }">
+          <template v-if="column.dataIndex === 'banner'">
+            <img v-if="record.banner" style="width: 60px;" :src="record.banner" alt="" />
+            <span v-else>--</span>
+          </template>
           <template v-if="column.dataIndex === 'operation'">
             <a @click="handleDetail(record)">查看</a>
             <a-divider type="vertical" />
@@ -30,7 +34,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 import { articleItem } from "../../types";
-import { getArticles } from '../../api/articles'
+import { getArticles, deleteArticle } from '../../api/articles'
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 const router = useRouter();
@@ -87,23 +91,29 @@ const columns = [
     width: 180
   }
 ]
-const handleEdit = (val: any) => {
-  console.log(val)
-  router.push(`/article/create/${val.id}`)
-}
-const handleDetail = (val: any) => {
-  // detail
-  console.log(val)
-  router.push(`/article/detail/${val.id}`)
-}
-const onDelete = (val: string) => {
-  console.log(val)
-}
 const getList = () => {
   getArticles().then((res: any) => {
     console.log(res)
     if(res.code === 0) {
       dataSource.value = res.data
+    } else if(typeof res.message === 'object') {
+      message.error(res.message && res.message.sqlMessage)
+    } else {
+      message.error(res.message)
+    }
+  })
+}
+const handleEdit = (val: any) => {
+  router.push(`/article/create/${val.id}`)
+}
+const handleDetail = (val: any) => {
+  router.push(`/article/detail/${val.id}`)
+}
+const onDelete = (val: any) => {
+  deleteArticle({ id: val.id }).then((res: any) => {
+    if(res.code === 0) {
+      message.success(res.message)
+      getList()
     } else if(typeof res.message === 'object') {
       message.error(res.message && res.message.sqlMessage)
     } else {

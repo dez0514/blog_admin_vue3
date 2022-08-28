@@ -24,7 +24,7 @@ const { isClose, onClickCb } = toRefs(props)
   z-index: 40;
   position: fixed;
   right: 0;
-  top: 210px;
+  top: 213px;
   cursor: pointer;
 }
 

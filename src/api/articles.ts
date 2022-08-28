@@ -1,6 +1,6 @@
 import { service } from '../utils/fetch'
 import qs from 'qs'
-// 创建文件夹
+// 创建文章
 export const addArticle = (params: any = {}, config: any = {}) => {
   const data = qs.stringify(params)
   return service.post('/api/add_article', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
@@ -12,4 +12,9 @@ export const getArticles = (params: any = {}, config: any = {}) => {
 
 export const getArticleDetail = (params: any = {}, config: any = {}) => {
   return service.get('/api/article_detail', { params: params, ...config })
+}
+// 删除文章
+export const deleteArticle = (params: any = {}, config: any = {}) => {
+  const data = qs.stringify(params)
+  return service.post('/api/delete_article', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
 }

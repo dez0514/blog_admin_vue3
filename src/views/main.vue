@@ -20,7 +20,7 @@
       </a-layout-header>
       <a-layout-content>
         <bread />
-        <div class="main">
+        <div class="main" @scroll="handleScrollPage">
           <router-view></router-view>
         </div>
         <setting />
@@ -39,6 +39,9 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia'
 import { themeStore } from '../store/themePinia'
 import { configStore } from '../store/configPinia'
+import { emitter } from '../utils/useEmit'
+import { useRoute } from "vue-router";
+const route = useRoute()
 const configStores = configStore()
 const { isCollapse } = storeToRefs(configStores)
 const themeStores = themeStore()
@@ -46,6 +49,13 @@ const { themeColor, menuStyle, menuType } = storeToRefs(themeStores)
 const themeOpts = computed(() => {
   return { themeColor: themeColor.value, menuStyle: menuStyle.value, menuType: menuType.value }
 })
+// 布局原因，@scroll 只能写在这
+const handleScrollPage = (e: any) => {
+  // console.log(e) // 滚动距离
+  if (route.name === 'articleDetail') { // 详情页时触发该页面的事件
+    emitter.emit('pageScrollCallback', e.srcElement)
+  }
+}
 </script>
 <style lang="scss">
 body,

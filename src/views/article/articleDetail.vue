@@ -8,10 +8,10 @@
       <fixbtn v-if="detailMenuList.length > 0" :is-close="isShowMenu" :on-click-cb="fixbtnClick"></fixbtn>
     </a-tooltip>
     <div class="menu-wrap" v-show="isShowMenu">
-      <div>目录</div>
+      <div class="menu-title">目录</div>
       <div class="menu-list">
-        <div v-for="(item,index) in detailMenuList" :key="index">
-          <a :href="`#${item.id}`" :class="item.nodeName">{{ item.text }}</a>
+        <div v-for="(item,index) in detailMenuList" :key="index" :class="['menu-item', activeMenuIndex === index ? 'active':'']" @click="handleClickMenu(index)">
+          <a :href="`#heading${item.hrefIndex}`" :class="item.nodeName">{{ item.text }}</a>
         </div>
       </div>
     </div>
@@ -24,8 +24,8 @@
       <div class="extra-box">
         {{ (detailInfo && detailInfo.update_time) ?
         `更新时间：${detailInfo.update_time}` : 
-        (detailInfo && detailInfo.update_time) ? 
-        `创建时间：${detailInfo && detailInfo.create_time}` : '' }}
+        (detailInfo && detailInfo.create_time) ? 
+        `创建时间：${detailInfo && detailInfo.create_time }` : '' }}
       </div>
     </div>
     <div class="gitlink" v-show="detailInfo && detailInfo.git">
@@ -43,17 +43,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, nextTick } from "vue"
+import { onMounted, ref, nextTick, onUnmounted } from "vue"
 import { useRoute } from 'vue-router'
 import { message } from 'ant-design-vue';
 import { getArticleDetail } from '../../api/articles'
 import { formartMd, getMdTitleList } from '../../utils/marked'
 import fixbtn from "../../components/fixbtn.vue";
 import partload from '../../components/partialLoad.vue'
+import { emitter } from '../../utils/useEmit'
 const route = useRoute()
 const isShowMenu = ref<boolean>(false)
 const detailInfo = ref<any>(null)
 const detailMenuList = ref<any>([])
+const activeMenuIndex = ref<number>(0)
 const loadState = ref<number>(-1)
 const detailbox = ref(null as HTMLDivElement | null)
 const fixbtnClick = () => {
@@ -63,17 +65,32 @@ const fixbtnClick = () => {
 const getArticleById = (id: string | string[]) => {
   loadState.value = 0
   getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
-    console.log(res)
+    console.log('detail===', res)
     if (res.code === 0) {
+      if(Object.keys(res.data).length === 0) {
+        loadState.value = 1
+        return
+      }
       loadState.value = -1
       const content = formartMd(res.data.content)
-      console.log('format====', content)
+      // console.log('format====', content)
       detailInfo.value = { ...res.data, content }
       nextTick(() => {
         if (detailbox.value) {
           detailMenuList.value = getMdTitleList(detailbox.value)
-          const list = 
           console.log('detailMenuList===', detailMenuList.value)
+          const mdDomId = window.location.hash // 锚点就是hash值
+          if (mdDomId) {
+            const headerId = mdDomId.slice(1) // 去掉 #
+            const hDom = document.getElementById(headerId)
+            if (hDom) { // 如果找到锚点对应的元素 就把他滚到最顶部
+              hDom.scrollIntoView(true)
+              const index = detailMenuList.value.findIndex((item: any) => item.id === headerId)
+              if (index > -1) {
+                activeMenuIndex.value = index
+              }
+            }
+          }
         }
       })
     } else if (typeof res.message === 'object') {
@@ -87,13 +104,37 @@ const getArticleById = (id: string | string[]) => {
     loadState.value = 2
   })
 }
+const handleClickMenu = (index: number) => {
+  if (activeMenuIndex.value === index) return
+  activeMenuIndex.value = index
+}
 const handleRefresh = () => {
   getArticleById(route.params.id)
 }
+const pageScrollCallback = (dom: HTMLDivElement) => {
+  // dom 其实就是 .main
+  // .main卷起部分的高度 与 detailMenuList中哪条的scrollTop接近，就哪个高亮
+  // 依次取差值的绝对值，找出最小值
+  const temp = detailMenuList.value.map((item:any) => Math.abs(item.scrollTop - dom.scrollTop))
+  // 找出最小值,找出最小值那条对应的索引，即为应该高亮得那条
+  const min = Math.min(...temp)
+  const index = temp.findIndex((item:number) => item === min)
+  activeMenuIndex.value = index
+  // 当窗口内容已经滚动到最顶部时，可能存在情况：距离页面最下面的一个/几个的标题的距离 小于 距离上一个卷起的标题的距离，此时下面的标题都无法高亮了。
+  // 与文章内容相关，无法解决所有情况，当滚动到底是让最后一个标题高亮
+  if (dom.clientHeight + dom.scrollTop + 30 >= dom.scrollHeight) { // 距离最底部小于等于30px了
+    activeMenuIndex.value = detailMenuList.value.length - 1 // 让最后menu一个高亮
+  }
+}
 onMounted(() => {
+  // 布局原因，监听页面滚动在main.vue里，滚动回调触发此事件。
+  emitter.on('pageScrollCallback', pageScrollCallback)
   if (route.params.id) {
     getArticleById(route.params.id)
   }
+})
+onUnmounted(() => {
+  emitter.off('pageScrollCallback', pageScrollCallback)
 })
 </script>
 <style lang="scss" scoped>
@@ -101,14 +142,43 @@ onMounted(() => {
   padding: 0 20px;
 }
 .menu-wrap {
+  box-sizing: border-box;
+  padding: 5px 15px 20px;
   z-index: 30;
   position: fixed;
   right: 0;
   top: 210px;
   overflow: hidden;
-  border: 1px solid red;
   width: 240px;
-  height: 400px;
+  background: rgba(255,255,255,.65);
+  box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.5);
+  .menu-title {
+    line-height: 31px;
+    border-bottom: 1px solid #aaa;
+  }
+  .menu-list {
+    margin-top: 5px;
+    max-height: 500px;
+    overflow: hidden;
+    overflow-y: auto;
+    .menu-item a {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #000;
+      &.h1, &.h2 {
+        font-size: 16px;
+      }
+      &.h3 {
+        font-size: 14px;
+        padding-left: 14px;
+      }
+    }
+    .menu-item.active a {
+      color: #20a0ff;
+    }
+  }
 }
 .extra_info {
   display: flex;

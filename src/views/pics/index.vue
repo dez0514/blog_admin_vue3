@@ -30,7 +30,7 @@
     </div>
     <div class="add_img">
       <a-upload-dragger v-model:fileList="fileList" name="file" :multiple="true"
-        action="http://localhost:8081/api/upload" :show-upload-list="false" :beforeUpload="beforeUpload"
+        :action="`${baseURL}/api/upload`" :show-upload-list="false" :beforeUpload="beforeUpload"
         :customRequest="customRequest" accept="image/png, image/jpeg, image/jpg, image/gif">
         <p class="ant-upload-drag-icon">
           <inbox-outlined></inbox-outlined>
