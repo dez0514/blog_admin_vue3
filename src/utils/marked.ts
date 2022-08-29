@@ -61,6 +61,7 @@ export interface MdTitle {
   nodeName: string
   text: string
   id: string
+  hrefIndex: number
   scrollTop: number
 }
 export const getMdTitleList = (container: Element, tags = 'h1, h2, h3'): MdTitle[] => {

@@ -47,14 +47,14 @@ import { onMounted, ref, nextTick, onUnmounted } from "vue"
 import { useRoute } from 'vue-router'
 import { message } from 'ant-design-vue';
 import { getArticleDetail } from '../../api/articles'
-import { formartMd, getMdTitleList } from '../../utils/marked'
+import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
 import fixbtn from "../../components/fixbtn.vue";
 import partload from '../../components/partialLoad.vue'
 import { emitter } from '../../utils/useEmit'
 const route = useRoute()
 const isShowMenu = ref<boolean>(false)
 const detailInfo = ref<any>(null)
-const detailMenuList = ref<any>([])
+const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)
 const loadState = ref<number>(-1)
 const detailbox = ref(null as HTMLDivElement | null)
@@ -62,6 +62,7 @@ const fixbtnClick = () => {
   isShowMenu.value = !isShowMenu.value
   console.log('isShowMenu.value==', isShowMenu.value)
 }
+
 const getArticleById = (id: string | string[]) => {
   loadState.value = 0
   getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
