@@ -48,6 +48,7 @@ declare module 'vue' {
     Setting: typeof import('./src/components/setting.vue')['default']
     Sidebar: typeof import('./src/components/sidebar.vue')['default']
     Sidebar_trigger: typeof import('./src/components/sidebar_trigger.vue')['default']
+    SvgIcon: typeof import('./src/components/SvgIcon.vue')['default']
     Test: typeof import('./src/components/test.vue')['default']
   }
 }

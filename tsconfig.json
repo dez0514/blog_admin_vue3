@@ -13,6 +13,7 @@
     "baseUrl": "."
   },
   "include": ["src/**/*", "src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "types": ["vite-plugin-svg-icons/client"],
   "paths": {
     // 根据别名配置相关路径
     "@/*": ["src/*"]

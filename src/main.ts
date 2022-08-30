@@ -13,6 +13,9 @@ import Vue3ColorPicker from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import './styles/md/index.less'
 import { copyTextByDom } from './utils/dom'
+import SvgIcon from '@/components/svgIcon.vue'
+import 'virtual:svg-icons-register'
+import '@iconfu/svg-inject' // svg 可以放到img
 // 复制代码
 const copyCode = () => {
   copyTextByDom('copy-code-btn', {
@@ -55,6 +58,7 @@ if (themeObjStr) {
 window.document.documentElement.setAttribute('data-theme', theme)
 const app: App<Element> = createApp(AppVue)
 console.log('app===',app)
+app.component('svg-icon', SvgIcon)
 app.use(createPinia())
 app.use(router)
 app.component('md-editor', MdEditor)

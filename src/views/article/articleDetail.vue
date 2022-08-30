@@ -38,6 +38,9 @@
     <div class="detail-desc md-container">
       <div ref="detailbox" v-html="detailInfo && detailInfo.content"></div>
     </div>
+    <div v-show="curScrollTop > 30" class="to_top" @click="handleToTop">
+     <svg-icon class="icon" icon-class="rocket"></svg-icon>
+    </div>
     <!-- 局部loading -->
     <partload :load-state="loadState" @refresh="handleRefresh" />
   </div>
@@ -51,6 +54,7 @@ import { formartMd, getMdTitleList, MdTitle } from '../../utils/marked'
 import fixbtn from "../../components/fixbtn.vue";
 import partload from '../../components/partialLoad.vue'
 import { emitter } from '../../utils/useEmit'
+import { setScrollTop } from '../../utils/dom'
 const route = useRoute()
 const isShowMenu = ref<boolean>(false)
 const detailInfo = ref<any>(null)
@@ -58,6 +62,7 @@ const detailMenuList = ref<MdTitle[]>([])
 const activeMenuIndex = ref<number>(0)
 const loadState = ref<number>(-1)
 const detailbox = ref(null as HTMLDivElement | null)
+const curScrollTop = ref<number>(0)
 const fixbtnClick = () => {
   isShowMenu.value = !isShowMenu.value
   console.log('isShowMenu.value==', isShowMenu.value)
@@ -114,6 +119,7 @@ const handleRefresh = () => {
 }
 const pageScrollCallback = (dom: HTMLDivElement) => {
   // dom 其实就是 .main
+  curScrollTop.value = dom.scrollTop // 记录一下滚动距离
   // .main卷起部分的高度 与 detailMenuList中哪条的scrollTop接近，就哪个高亮
   // 依次取差值的绝对值，找出最小值
   const temp = detailMenuList.value.map((item:any) => Math.abs(item.scrollTop - dom.scrollTop))
@@ -126,6 +132,10 @@ const pageScrollCallback = (dom: HTMLDivElement) => {
   if (dom.clientHeight + dom.scrollTop + 30 >= dom.scrollHeight) { // 距离最底部小于等于30px了
     activeMenuIndex.value = detailMenuList.value.length - 1 // 让最后menu一个高亮
   }
+}
+const handleToTop = () => {
+  const container = document.getElementsByClassName('main')[0]
+  setScrollTop(0, { container, animate: true, duration: 500 })
 }
 onMounted(() => {
   // 布局原因，监听页面滚动在main.vue里，滚动回调触发此事件。
@@ -244,5 +254,14 @@ onUnmounted(() => {
 }
 .detail-desc {
   margin-top: 20px;
+}
+.to_top {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  .icon {
+    font-size: 45px;
+    color: #000;
+  }
 }
 </style>
