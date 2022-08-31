@@ -27,19 +27,21 @@
       </a-table>
     </div>
     <div class="page-wrap">
-      <a-pagination v-model:current="current" :total="50" show-less-items />
+      <a-pagination v-model:current="pageNum" :pageSize="pageSize" :total="total" show-less-items @change="getList" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 import { articleItem } from "../../types";
-import { getArticles, deleteArticle } from '../../api/articles'
+import { deleteArticle, getArticlesPage } from '../../api/articles'
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 const router = useRouter();
 const dataSource = ref<articleItem[]>([])
-const current = ref(1)
+const pageSize = 10
+const pageNum = ref<number>(1)
+const total = ref<number>(0)
 const columns = [
   {
     title: '标题',
@@ -92,10 +94,15 @@ const columns = [
   }
 ]
 const getList = () => {
-  getArticles().then((res: any) => {
-    console.log(res)
+  const params = {
+    pageSize: pageSize,
+    pageNum: pageNum.value,
+    type: 1
+  }
+  getArticlesPage(params).then((res: any) => {
     if(res.code === 0) {
       dataSource.value = res.data
+      total.value = Number(res.total)
     } else if(typeof res.message === 'object') {
       message.error(res.message && res.message.sqlMessage)
     } else {

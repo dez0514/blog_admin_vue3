@@ -259,6 +259,7 @@ onUnmounted(() => {
   position: fixed;
   right: 30px;
   bottom: 30px;
+  cursor: pointer;
   .icon {
     font-size: 45px;
     color: #000;

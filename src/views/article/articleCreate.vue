@@ -190,8 +190,7 @@ export default defineComponent({
       if (userinfoStr) {
         author = JSON.parse(userinfoStr).username
       }
-      const params = {
-        id: route.params.id || '',
+      const params: any = {
         title: values.title,
         author: author,
         extra_title: values.extraTitle,
@@ -199,6 +198,9 @@ export default defineComponent({
         tags: values.tags.join(','),
         git: values.git,
         content: values.content
+      }
+      if(route.params.id) {
+        params.id = route.params.id
       }
       addArticle(params).then((res: any) => {
         console.log('res==', res)
