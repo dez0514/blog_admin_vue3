@@ -10,6 +10,10 @@ export const getArticles = (params: any = {}, config: any = {}) => {
   return service.get('/api/article_all_list', { params: params, ...config })
 }
 
+export const getArticlesPage = (params: any = {}, config: any = {}) => {
+  return service.get('/api/article_list', { params: params, ...config })
+}
+
 export const getArticleDetail = (params: any = {}, config: any = {}) => {
   return service.get('/api/article_detail', { params: params, ...config })
 }
