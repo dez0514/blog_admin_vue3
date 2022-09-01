@@ -28,10 +28,11 @@ const handleChangeMeta = () => {
 }
 const getPageList = () => {
   const params = {
-    pageSize: 1,
+    pageSize: 10,
     pageNum: 1,
-    type: 1,
-    tag: 'vue'
+    type: 3,
+    tag: 'vue',
+    keyword: 're'
   }
   getArticlesPage(params).then((res: any) => {
     console.log('page===', res)

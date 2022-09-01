@@ -58,6 +58,13 @@ const columns = [
     align:'center'
   },
   {
+    title: '文章标签',
+    dataIndex: 'tags',
+    key: 'tags',
+    ellipsis: true,
+    align:'center'
+  },
+  {
     title: '文章地址',
     dataIndex: 'git',
     key: 'git',
