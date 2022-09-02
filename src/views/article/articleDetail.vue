@@ -22,9 +22,9 @@
       <div class="extra-box">{{ detailInfo && detailInfo.tags }}</div>
       <a-divider type="vertical" />
       <div class="extra-box">
-        {{ (detailInfo && detailInfo.update_time) ?
+        {{ (detailInfo && detailInfo.update_time && detailInfo.create_time && (detailInfo.update_time !== detailInfo.create_time)) ?
         `更新时间：${detailInfo.update_time}` : 
-        (detailInfo && detailInfo.create_time) ? 
+        (detailInfo && detailInfo.update_time && detailInfo.create_time && (detailInfo.update_time === detailInfo.create_time)) ?
         `创建时间：${detailInfo && detailInfo.create_time }` : '' }}
       </div>
     </div>

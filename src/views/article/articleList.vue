@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="content-wrap">
       <!-- y = 页面高度[100vh] - header[60px] - (bread + title)[共85px] - 上下padding[共40px] - pagination容器高度[48px] - 表头高度[55px] -->
-      <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`}">
+      <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px)`, x: 1625}">
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.dataIndex === 'banner'">
             <img v-if="record.banner" style="width: 60px;" :src="record.banner" alt="" />
@@ -47,6 +47,14 @@ const columns = [
     title: '标题',
     dataIndex: 'title',
     key: 'title',
+    ellipsis: true,
+    align:'center',
+    fixed: 'left'
+  },
+  {
+    title: '小标题',
+    dataIndex: 'extra_title',
+    key: 'extra_title',
     ellipsis: true,
     align:'center'
   },
@@ -97,7 +105,8 @@ const columns = [
     dataIndex: 'operation',
     key: 'operation',
     align:'center',
-    width: 180
+    width: 180,
+    fixed: 'right'
   }
 ]
 const getList = () => {

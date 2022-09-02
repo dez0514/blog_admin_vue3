@@ -30,9 +30,11 @@ const getPageList = () => {
   const params = {
     pageSize: 10,
     pageNum: 1,
-    type: 3,
+    type: 'archive',
+    year: 2021,
+    month: 9,
     tag: 'vue',
-    keyword: 're'
+    keyword: 'or 1=1'
   }
   getArticlesPage(params).then((res: any) => {
     console.log('page===', res)
