@@ -28,7 +28,7 @@
         <md-editor v-model="formState.content" :toolbars="toolbars" :style="{ height: '440px' }"
           preview-theme="vuepress" @htmlChanged="getEditorHtml" />
       </a-form-item>
-      <a-form-item style="margin-bottom: 0;" :wrapper-col="{ offset: 3, span: 14 }">
+      <a-form-item style="margin-bottom: 0; padding-bottom: 20px;" :wrapper-col="{ offset: 3, span: 14 }">
         <a-button type="primary" html-type="submit">提交</a-button>
       </a-form-item>
     </a-form>
@@ -74,6 +74,7 @@ import { useRoute } from "vue-router";
 import { InboxOutlined } from '@ant-design/icons-vue'
 import type { UploadFile } from 'ant-design-vue'
 import { postImgArray } from '../../api'
+import { addTag, getAllTags } from '../../api/tags'
 import { baseURL } from '../../api/urls'
 const useForm = Form.useForm;
 interface FormState {
@@ -124,10 +125,7 @@ export default defineComponent({
       // 'catalog',
       // 'github'
     ]
-    const optionList = ref([
-      { value: 'vue' },
-      { value: 'react' }
-    ])
+    const optionList = ref([])
     const formState = reactive<FormState>({
       title: '',
       extraTitle: '',
@@ -168,11 +166,41 @@ export default defineComponent({
       formPopState.color = '#ff0000'
       resetFields()
     }
+    const getTagList = () => {
+      getAllTags().then((res: any) => {
+        if (res.code === 0) {
+          optionList.value = res.data.map((item: any) => {
+            return {
+              value: item.name
+            }
+          })
+        } else if (typeof res.message === 'object') {
+          message.error(res.message && res.message.sqlMessage)
+        } else {
+          message.error(res.message)
+        }
+      })
+    }
     const handleOk = () => {
       validate().then(() => {
-        console.log(toRaw(formPopState))
-        visible.value = false
-        modalCloseBack()
+        // console.log(toRaw(formPopState))
+        const params = {
+          name: toRaw(formPopState).tagname,
+          icon: toRaw(formPopState).icon,
+          color: toRaw(formPopState).color
+        }
+        addTag(params).then((res: any) => {
+          if(res.code === 0) {
+            message.success(res.message)
+            visible.value = false
+            modalCloseBack()
+            getTagList()
+          } else if(typeof res.message === 'object') {
+            message.error(res.message && res.message.sqlMessage)
+          } else {
+            message.error(res.message)
+          }
+        })
       }).catch(err => {
         console.log('error', err);
       })
@@ -261,6 +289,7 @@ export default defineComponent({
       }
     })
     onMounted(() => {
+      getTagList()
       if (route.params.id) {
         getArticleById(route.params.id)
       }
@@ -289,7 +318,8 @@ export default defineComponent({
       modalCloseBack,
       getArticleById,
       getEditorHtml,
-      customRequest
+      customRequest,
+      getTagList
     };
   },
 });

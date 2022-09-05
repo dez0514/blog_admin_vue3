@@ -32,10 +32,10 @@ export interface articleItem {
   views: number;
 }
 export interface tagItem {
-  key: string;
-  tagname: string;
+  name: string;
   icon: string;
   color: string;
+  key: string;
   gradientColor?: string;
 }
 export interface columnItem {

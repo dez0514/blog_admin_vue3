@@ -112,8 +112,7 @@ const columns = [
 const getList = () => {
   const params = {
     pageSize: pageSize,
-    pageNum: pageNum.value,
-    type: 1
+    pageNum: pageNum.value
   }
   getArticlesPage(params).then((res: any) => {
     if(res.code === 0) {

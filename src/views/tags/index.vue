@@ -4,7 +4,7 @@
       <a-button type="primary" style="margin-bottom: 8px" @click="handleBatchAdd">批量新增</a-button>
       <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px - 40px)`}">
         <template #bodyCell="{ column, text, record }">
-          <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
+          <template v-if="['name', 'icon'].includes(column.dataIndex)">
             <div>
               <a-input v-if="editableData[record.key]" v-model:value="(editableData as any)[record.key][column.dataIndex]" style="margin: -5px 0" allow-clear/>
               <template v-else>{{ text }}</template>
@@ -31,8 +31,8 @@
           </template>
           <template v-else-if="column.dataIndex === 'view'">
             <div>
-              <span v-if="editableData[record.key]" class="view-box" :style="{color: editableData[record.key]['color']}">{{editableData[record.key]['tagname']}}</span>
-              <span v-else class="view-box" :style="{color: record['color']}">{{record['tagname']}}</span>
+              <span v-if="editableData[record.key]" class="view-box" :style="{color: editableData[record.key]['color']}">{{editableData[record.key]['name']}}</span>
+              <span v-else class="view-box" :style="{color: record['color']}">{{record['name']}}</span>
             </div>
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
@@ -77,7 +77,7 @@
             <span style="color: red; vertical-align: middle;" v-if="column.key !== 'color' && column.key !== 'view'">* </span>{{title}}
           </template>
           <template #bodyCell="{ column, record, index }">
-            <template v-if="['tagname', 'icon'].includes(column.dataIndex)">
+            <template v-if="['name', 'icon'].includes(column.dataIndex)">
               <div class="table-form-wrap">
                 <a-form-item :name="['addList', index, column.dataIndex]" 
                   :rules="{
@@ -105,7 +105,7 @@
             </template>
             <template v-else-if="column.dataIndex === 'view'">
               <div>
-                <span class="view-box" :style="{color: record['color']}">{{record['tagname']}}</span>
+                <span class="view-box" :style="{color: record['color']}">{{record['name']}}</span>
               </div>
             </template>
           </template>
@@ -113,25 +113,29 @@
       </a-form>
     </a-modal>
     <div class="page-wrap">
-      <a-pagination v-model:current="current" :total="50" show-less-items />
+      <a-pagination v-model:current="pageNum" :total="total" show-less-items />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, inject, toRaw } from 'vue'
+import { ref, reactive, inject, toRaw, onMounted } from 'vue'
 import type { UnwrapRef } from 'vue'
 import { tagItem, columnItem } from "../../types"
 import { cloneDeep } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { promit } from '../../utils'
+import { addTagList, getTags, addTag, deleteTag } from '../../api/tags'
 const formref = ref(null as HTMLFormElement | null)
 const message: any = inject('$message')
 const dataSource = ref<tagItem[]>([])
+const pageNum = ref<number>(1)
+const pageSize = 10
+const total = ref<number>(0)
 const columns: columnItem[] = [
   {
     title: '标签名称',
-    dataIndex: 'tagname',
-    key: 'tagname',
+    dataIndex: 'name',
+    key: 'name',
     align:'center'
   },
   {
@@ -160,21 +164,6 @@ const columns: columnItem[] = [
   }
 ]
 const dialogColumn: columnItem[] = columns.filter(item => item.key !== 'operation')
-const current = ref(1)
-dataSource.value = [
-  {
-    key: uuidv4(),
-    tagname: 'vue',
-    icon: 'xxx',
-    color: '#ff0000'
-  },
-  {
-    key: uuidv4(),
-    tagname: 'react',
-    icon: 'xxx',
-    color: '#ff0000'
-  }
-]
 const editableData: UnwrapRef<Record<string, tagItem>> = reactive({})
 const visible = ref<boolean>(false)
 const dynamicValidateForm = reactive<{ addList: tagItem[] }>({
@@ -183,7 +172,7 @@ const dynamicValidateForm = reactive<{ addList: tagItem[] }>({
 dynamicValidateForm.addList = [
   {
     key: uuidv4(),
-    tagname: '',
+    name: '',
     icon: '',
     color: '#ff0000'
   }
@@ -200,7 +189,7 @@ const handleBatchAdd = () => {
 const handleAddRow = () => {
   dynamicValidateForm.addList.push({
     key: uuidv4(),
-    tagname: '',
+    name: '',
     icon: '',
     color: '#ff0000'
   })
@@ -212,13 +201,11 @@ const handleDeleteSelectedRow = () => {
     return
   }
   promit(() => {
-    const temp = dynamicValidateForm.addList.filter(item =>
-      !selectedKeys.value.includes(item.key)
-    )
+    const temp = dynamicValidateForm.addList.filter(item => !selectedKeys.value.includes(item.key))
     if (temp.length === 0) {
       temp.push({
         key: uuidv4(),
-        tagname: '',
+        name: '',
         icon: '',
         color: '#ff0000'
       })
@@ -230,10 +217,57 @@ const handleDeleteSelectedRow = () => {
 const onSelectChange = (selectedRowKeys: string[]) => {
   selectedKeys.value = selectedRowKeys
 }
+// 查询列表
+const getTagList = () => {
+  const params = {
+    pageSize: pageSize,
+    pageNum: pageNum.value
+  }
+  getTags(params).then((res: any) => {
+    console.log(res)
+    if(res.code === 0) {
+      dataSource.value = res.data.map((item: any) => {
+        return {
+          key: item.id, // id 都用key 表示。。。懒得改了。。
+          name: item.name,
+          icon: item.icon,
+          color: item.color
+        }
+      })
+      total.value = Number(res.total)
+    } else if(typeof res.message === 'object') {
+      message.error(res.message && res.message.sqlMessage)
+    } else {
+      message.error(res.message)
+    }
+  })
+}
+// 批量添加 确认
 const handleOk = () => {
-  // console.log('formref==',formref.value)
   formref?.value?.validate().then(() => {
-    console.log(toRaw(dynamicValidateForm))
+    const temp = toRaw(dynamicValidateForm).addList
+    const params = {
+     taglist: temp.map(item => {
+      return { name: item.name, icon: item.icon, color: item.color }
+     })
+    }
+    addTagList(params).then((res: any) => {
+      if(res.code === 0) {
+        message.success(res.message)
+        visible.value = false
+        dynamicValidateForm.addList = [{
+          key: uuidv4(),
+          name: '',
+          icon: '',
+          color: '#ff0000'
+        }]
+        getTagList()
+      } else if(typeof res.message === 'object') {
+        message.error(res.message && res.message.sqlMessage)
+      } else {
+        message.error(res.message)
+      }
+    })
   }).catch((err: any) => {
     console.log('err==', err)
   })
@@ -242,7 +276,7 @@ const handleCancel = () => {
   visible.value = false
   dynamicValidateForm.addList = [{
     key: uuidv4(),
-    tagname: '',
+    name: '',
     icon: '',
     color: '#ff0000'
   }]
@@ -251,12 +285,12 @@ const handleCancel = () => {
 const handleEdit = (key: string) => {
   console.log(key)
   editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
-  console.log('editableData==', editableData)
+  // console.log('editableData==', editableData)
 }
 const handleSaveRow = (key: string) => {
   // 校验 不能为空的 保存
-  if(!editableData[key].tagname) {
-    message.error('tagname不能为空')
+  if(!editableData[key].name) {
+    message.error('name不能为空')
     return
   }
   if(!editableData[key].icon) {
@@ -264,15 +298,46 @@ const handleSaveRow = (key: string) => {
     return
   }
   // console.log('save ===', editableData[key])
-  Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
-  delete editableData[key]
+  const params = {
+    id: editableData[key].key,
+    name: editableData[key].name,
+    icon: editableData[key].icon,
+    color: editableData[key].color
+  }
+  addTag(params).then((res: any) => {
+    if(res.code === 0) {
+      message.success(res.message)
+      Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+      delete editableData[key]
+    } else if(typeof res.message === 'object') {
+      message.error(res.message && res.message.sqlMessage)
+    } else {
+      message.error(res.message)
+    }
+  })
 }
 const handleCancelRow = (key: string) => {
   delete editableData[key];
 }
-const confirmDeleteRow = (val: string) => {
-  console.log(val)
+const confirmDeleteRow = (key: string) => {
+  const params = {
+    id: key
+  }
+  deleteTag(params).then((res: any) => {
+    if(res.code === 0) {
+      message.success(res.message)
+      pageNum.value = 1
+      getTagList()
+    } else if(typeof res.message === 'object') {
+      message.error(res.message && res.message.sqlMessage)
+    } else {
+      message.error(res.message)
+    }
+  })
 }
+onMounted(() => {
+  getTagList()
+})
 </script>
 <style lang="scss" scoped>
 .page-container {
@@ -313,7 +378,10 @@ const confirmDeleteRow = (val: string) => {
   .ant-table-tbody > tr > td.ant-table-cell {
     padding-top: 22px;
     padding-bottom: 22px
- }
+  }
+  .ant-table-tbody > tr.ant-table-row-selected > td {
+    background: transparent;
+  }
 }
 :deep(.table-form-wrap .ant-form-item) {
   margin-bottom: 0;

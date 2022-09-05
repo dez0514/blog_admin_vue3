@@ -83,7 +83,7 @@ const [router, route] = [useRouter(), useRoute()];
 const [openKeys, selectedKeys] = [ref<string[]>([]), ref<string[]>([])];
 const menuList = ref<RouteRecordRaw[]>([...asyncRoutes]);
 const handleRouteClick = ({ item, key, keyPath }: any) => {
-  console.log('key====', item, key, keyPath)
+  // console.log('key====', item, key, keyPath)
   let routePath = key
   if (key === '/article/create/:id?') {
     routePath = '/article/create'
@@ -92,15 +92,16 @@ const handleRouteClick = ({ item, key, keyPath }: any) => {
   router.push(routePath);
 };
 watch(() => route.path, (val) => {
-  console.log('watch.route===', route)
+  // console.log('watch.route===', route)
   if(val.indexOf('/article/create') > -1) {
     selectedKeys.value = ['/article/create/:id?'];
   } else {
     selectedKeys.value = [route.path];
   }
-  const openArr = route.path.split("/");
-  if (openArr.length > 1) {
-    openKeys.value = ["/" + openArr[1]];
+  const openArr = route.path.split('/').filter(item => item !== '');
+  // console.log('openArr.length====', openArr)
+  if (openArr.length >= 2) {
+    openKeys.value = ['/' + openArr[0]]
   }
 }, { immediate: true})
 </script>
