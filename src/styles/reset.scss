@@ -64,6 +64,6 @@ menu {
   background-color: transparent;
 }
 // table 空值显示 --
-// .ant-table-cell:empty:after,.ant-table-cell span:empty:after {
-//   content: '--'; // 选中的cell有问题
-// }
+.ant-table-cell:empty:after {
+  content: '--'; // 选中的cell有问题
+}

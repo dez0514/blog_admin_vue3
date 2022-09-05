@@ -7,7 +7,7 @@
           <template v-if="['name', 'icon'].includes(column.dataIndex)">
             <div>
               <a-input v-if="editableData[record.key]" v-model:value="(editableData as any)[record.key][column.dataIndex]" style="margin: -5px 0" allow-clear/>
-              <template v-else>{{ text }}</template>
+              <template v-else>{{ text || '--' }}</template>
             </div>
           </template>
           <template v-else-if="column.dataIndex === 'color'">
@@ -24,15 +24,15 @@
                 v-model:pureColor="(editableData as any)[record.key][column.dataIndex]"
               />
               <template v-else>
-                <i class="color-spanbox" :style="{ background: text }"></i>
-                <span style="vertical-align: middle;">{{ text }}</span>
+                <i v-if="text" class="color-spanbox" :style="{ background: text }"></i>
+                <span style="vertical-align: middle;">{{ text || '--' }}</span>
               </template>
             </div>
           </template>
           <template v-else-if="column.dataIndex === 'view'">
             <div>
               <span v-if="editableData[record.key]" class="view-box" :style="{color: editableData[record.key]['color']}">{{editableData[record.key]['name']}}</span>
-              <span v-else class="view-box" :style="{color: record['color']}">{{record['name']}}</span>
+              <span v-else class="view-box" :style="{color: record['color']}">{{record['name'] || '--'}}</span>
             </div>
           </template>
           <template v-else-if="column.dataIndex === 'operation'">
