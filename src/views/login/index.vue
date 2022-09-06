@@ -74,6 +74,7 @@ import verifyCode from './components/verifyCode.vue'
 import verifyDrag from './components/verifyDrag.vue'
 import { useRouter } from 'vue-router';
 import { Form } from 'ant-design-vue';
+import { login } from '../../api/user'
 const useForm = Form.useForm;
 interface FormState {
   username: string,
@@ -132,13 +133,22 @@ export default defineComponent({
       formState.verifydrag = flag
     }
     const { validate } = useForm(formState, rulesRef);
+    const handleLogin = () => {
+      const params = {
+        username: formState.username,
+        password: formState.password
+      }
+      login(params).then(res => {
+        console.log(res)
+      })
+    }
     const handleSubmit = () => {
       validate().then(() => {
         // console.log(toRaw(formState));
-        if (formState.username !== 'zwd' || formState.password !== '123456') {
-          message.error('用户名或密码不正确');
-          return
-        }
+        // if (formState.username !== 'zwd' || formState.password !== '123456') {
+        //   message.error('用户名或密码不正确');
+        //   return
+        // }
         if (formState.code.toLowerCase() !== imgCode.value.toLowerCase()) {
           message.error('验证码不正确');
           return
@@ -147,13 +157,14 @@ export default defineComponent({
           message.error('滑块验证未通过');
           return
         }
-        submitLoad.value = true
-        setTimeout(() => {
-          submitLoad.value = false
-          localStorage.setItem('isLogin', 'true')
-          localStorage.setItem('userinfo', JSON.stringify({ username: formState.username }))
-          router.replace('/')
-        }, 500)
+        // submitLoad.value = true
+        // setTimeout(() => {
+        //   submitLoad.value = false
+        //   localStorage.setItem('isLogin', 'true')
+        //   localStorage.setItem('userinfo', JSON.stringify({ username: formState.username }))
+        //   router.replace('/')
+        // }, 500)
+        handleLogin()
       }).catch(err => {
         submitLoad.value = false
         message.error('登录失败');
@@ -179,7 +190,8 @@ export default defineComponent({
       handleSubmit,
       getCode,
       getDragVerify,
-      handlePressEnter
+      handlePressEnter,
+      handleLogin
     };
   },
 });

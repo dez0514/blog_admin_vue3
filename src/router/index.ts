@@ -92,7 +92,10 @@ const constantRoutes = [
   {
     path: '/login',
     name: 'login',
-    component: Login
+    component: Login,
+    meta: {
+      title: '登录页面'
+    }
   },
   {
     path: "/:pathMatch(.*)*",
