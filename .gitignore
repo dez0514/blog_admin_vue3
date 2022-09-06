@@ -6,3 +6,4 @@ admin
 *.DS_Store
 */.DS_Store
 .vscode
+components.d.ts
