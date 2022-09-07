@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2 style="text-align: center;color: #1890ff;">博客管理系统</h2>
-    <a-tabs v-model:activeKey="activeTab">
+    <a-tabs v-model:activeKey="activeTab" @change="changeTab">
       <a-tab-pane key="login" tab="登录">
         <a-form ref="formref" :model="formState">
           <a-form-item name="username" :rules="rulesRef.username">
@@ -218,9 +218,9 @@ export default defineComponent({
         submitLoad.value = false
       })
     }
+    const loginForm = useForm(formState, rulesRef);
     const handleSubmit = () => {
-      const { validate } = useForm(formState, rulesRef);
-      validate().then(() => {
+      loginForm.validate().then(() => {
         // console.log(toRaw(formState));
         // if (formState.username !== 'zwd' || formState.password !== '123456') {
         //   message.error('用户名或密码不正确');
@@ -257,9 +257,9 @@ export default defineComponent({
         submitRegLoad.value = false
       })
     }
+    const registerForm = useForm(registerFormState, rulesRegRef);
     const handleRegSubmit = () => {
-      const { validate } = useForm(registerFormState, rulesRegRef);
-      validate().then((valid) => {
+      registerForm.validate().then((valid) => {
         console.log('valid==', valid)
         submitRegLoad.value = true
         handleRegister()
@@ -297,6 +297,13 @@ export default defineComponent({
         handleRegSubmit()
       }
     }
+    const changeTab = (val: string) => {
+      if (val === 'register') {
+        registerForm.clearValidate(['username', 'password']) // 不生效
+      } else if(val === 'login') {
+        loginForm.clearValidate(['username', 'password', 'code']) // 不生效
+      }
+    }
     return {
       activeTab,
       pwdref,
@@ -313,7 +320,8 @@ export default defineComponent({
       getDragVerify,
       handlePressEnter,
       handleLogin,
-      handleRegister
+      handleRegister,
+      changeTab
     };
   },
 });
