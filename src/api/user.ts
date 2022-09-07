@@ -5,3 +5,8 @@ export const login = (params: any = {}, config: any = {}) => {
   const data = qs.stringify(params)
   return service.post('/api/user/login', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
 }
+// 注册
+export const register = (params: any = {}, config: any = {}) => {
+  const data = qs.stringify(params)
+  return service.post('/api/user/register', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
+}
