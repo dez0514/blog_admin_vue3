@@ -213,9 +213,15 @@ export default defineComponent({
         username: formState.username,
         password: formState.password
       }
-      login(params).then(res => {
+      login(params).then((res: any) => {
         console.log(res)
         submitLoad.value = false
+        if(Number(res.code) === 0) {
+          localStorage.setItem('isLogin', 'true')
+          localStorage.setItem('token', res.data.token)
+          localStorage.setItem('userinfo', JSON.stringify(res.data.userinfo))
+          router.replace('/')
+        }
       })
     }
     const loginForm = useForm(formState, rulesRef);
