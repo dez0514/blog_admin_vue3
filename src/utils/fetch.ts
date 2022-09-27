@@ -26,7 +26,7 @@ service.interceptors.request.use(
     // 在所有请求头部添加token值
     const token = localStorage.getItem('token')
     if (token) {
-      config.headers.Authorization = token
+      config.headers.authorization = token
     }
     // if (config.headers && config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
     //   config.data = JSON.stringify(config.data)
