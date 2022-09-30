@@ -19,7 +19,9 @@
     <div class="extra_info">
       <div class="extra-box">{{ detailInfo && detailInfo.extra_title }}</div>
       <a-divider type="vertical" />
-      <div class="extra-box">{{ detailInfo && detailInfo.tags }}</div>
+      <div class="extra-box" v-if="detailInfo && detailInfo.tagList">
+        <div class="tag" v-for="(item, index) in detailInfo.tagList" :key="index" :style="{ color: item.color }">{{ item.name }}</div>
+      </div>
       <a-divider type="vertical" />
       <div class="extra-box">
         {{ (detailInfo && detailInfo.update_time && detailInfo.create_time && (detailInfo.update_time !== detailInfo.create_time)) ?
@@ -99,9 +101,6 @@ const getArticleById = (id: string | string[]) => {
           }
         }
       })
-    } else if (typeof res.message === 'object') {
-      loadState.value = 2
-      message.error(res.message && res.message.sqlMessage)
     } else {
       loadState.value = 2
       message.error(res.message)
@@ -195,9 +194,30 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 50px;
+  height: 50px;
   .extra-box {
     margin: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .tag {
+      position: relative;
+      padding: 0 10px 5px;
+    }
+    .tag:not(:last-child) {
+      margin-right: 5px;
+    }
+    .tag:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background-color: currentColor;
+      opacity: .15;
+      border-radius: 4px;
+    }
   }
 }
 .title {

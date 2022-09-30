@@ -235,8 +235,6 @@ const getTagList = () => {
         }
       })
       total.value = Number(res.total)
-    } else if(typeof res.message === 'object') {
-      message.error(res.message && res.message.sqlMessage)
     } else {
       message.error(res.message)
     }
@@ -262,8 +260,6 @@ const handleOk = () => {
           color: '#ff0000'
         }]
         getTagList()
-      } else if(typeof res.message === 'object') {
-        message.error(res.message && res.message.sqlMessage)
       } else {
         message.error(res.message)
       }
@@ -309,8 +305,6 @@ const handleSaveRow = (key: string) => {
       message.success(res.message)
       Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
       delete editableData[key]
-    } else if(typeof res.message === 'object') {
-      message.error(res.message && res.message.sqlMessage)
     } else {
       message.error(res.message)
     }
@@ -328,8 +322,6 @@ const confirmDeleteRow = (key: string) => {
       message.success(res.message)
       pageNum.value = 1
       getTagList()
-    } else if(typeof res.message === 'object') {
-      message.error(res.message && res.message.sqlMessage)
     } else {
       message.error(res.message)
     }

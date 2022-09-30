@@ -12,6 +12,7 @@ import {
 import Login from '@/views/login/index.vue'
 import Main from '@/views/main.vue'
 import RouterView from '@/components/routerview.vue'
+import { getUserInfo } from '../api/user'
 export const asyncRoutes: Array<RouteRecordRaw> = [
   {
     path: '/article',
@@ -118,15 +119,39 @@ const router = createRouter({
     ...constantRoutes
   ],
 });
-
-router.beforeEach((
+// 登录拦截
+router.beforeEach(async(
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) => {
   if (typeof (to.meta.title) === 'string') document.title = to.meta.title
-  if (to.path !== '/login' && localStorage.getItem('isLogin') !== 'true') next('/login')
-  else next()
+  const token = localStorage.getItem('token')
+  if (to.path !== '/login') {
+    if (!token) {
+      localStorage.clear()
+      next('/login')
+    } else {
+      const userinfo = localStorage.getItem('userinfo') || ''
+      if(!userinfo || !(JSON.parse(userinfo) && JSON.parse(userinfo).username)) {
+        const res: any = await getUserInfo()
+        if (Number(res.code) === 0) {
+          localStorage.setItem('userinfo', JSON.stringify(res.data))
+          next()
+        } else {
+          next('/login')
+        }
+      } else {
+        next()
+      }
+    }
+  } else {
+    if (token) {
+      next('/')
+    } else {
+      next()
+    }
+  }
 })
 
 export default router

@@ -116,10 +116,13 @@ const getList = () => {
   }
   getArticlesPage(params).then((res: any) => {
     if(res.code === 0) {
+      res.data.forEach((item: any) => {
+        const temp = item.tagList.map((inner: any) => inner.name)
+        const str = temp.join(',')
+        item.tags = str
+      })
       dataSource.value = res.data
       total.value = Number(res.total)
-    } else if(typeof res.message === 'object') {
-      message.error(res.message && res.message.sqlMessage)
     } else {
       message.error(res.message)
     }
@@ -136,8 +139,6 @@ const onDelete = (val: any) => {
     if(res.code === 0) {
       message.success(res.message)
       getList()
-    } else if(typeof res.message === 'object') {
-      message.error(res.message && res.message.sqlMessage)
     } else {
       message.error(res.message)
     }

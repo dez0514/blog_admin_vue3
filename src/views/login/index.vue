@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <h2 style="text-align: center;color: #1890ff;">博客管理系统</h2>
-    <a-tabs v-model:activeKey="activeTab" @change="changeTab">
-      <a-tab-pane key="login" tab="登录">
+    <!-- <a-tabs v-model:activeKey="activeTab" @change="changeTab">
+      <a-tab-pane key="login" tab="登录"> -->
         <a-form ref="formref" :model="formState">
           <a-form-item name="username" :rules="rulesRef.username">
             <a-input
@@ -63,8 +63,8 @@
             >登录</a-button>
           </a-form-item>
         </a-form>
-      </a-tab-pane>
-      <a-tab-pane key="register" tab="注册">
+      <!-- </a-tab-pane> -->
+      <!-- <a-tab-pane key="register" tab="注册">
          <a-form ref="regformref" :model="registerFormState">
           <a-form-item name="username" :rules="rulesRegRef.username">
             <a-input
@@ -107,7 +107,7 @@
           </a-form-item>
         </a-form>
       </a-tab-pane>
-    </a-tabs>
+    </a-tabs> -->
   </div>
 </template>
 <script lang="ts">
@@ -217,11 +217,13 @@ export default defineComponent({
         console.log(res)
         submitLoad.value = false
         if(Number(res.code) === 0) {
-          localStorage.setItem('isLogin', 'true')
           localStorage.setItem('token', res.data.token)
           localStorage.setItem('userinfo', JSON.stringify(res.data.userinfo))
           router.replace('/')
         }
+      }).catch(() => {
+        submitLoad.value = false
+        message.error('登录失败！');
       })
     }
     const loginForm = useForm(formState, rulesRef);
@@ -241,12 +243,6 @@ export default defineComponent({
           return
         }
         submitLoad.value = true
-        // setTimeout(() => {
-        //   submitLoad.value = false
-        //   localStorage.setItem('isLogin', 'true')
-        //   localStorage.setItem('userinfo', JSON.stringify({ username: formState.username }))
-        //   router.replace('/')
-        // }, 500)
         handleLogin()
       }).catch(err => {
         submitLoad.value = false

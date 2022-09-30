@@ -20,7 +20,9 @@
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="标签" name="tags"
         :rules="[{ required: true, message: '请选择标签!' }]">
         <a-select v-model:value="formState.tags" mode="multiple" style="width: calc(100% - 100px);margin-right: 12px;"
-          placeholder="请选择标签" :options="optionList" @change="handleChange"></a-select>
+          placeholder="请选择标签" :options="optionList" option-label-prop="name" @change="handleChange">
+          <template #option="{ name }">{{ name }}</template>
+        </a-select>
         <a-button type="primary" @click="showModal">新增标签</a-button>
       </a-form-item>
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 18 }" label="内容" name="content"
@@ -171,11 +173,10 @@ export default defineComponent({
         if (res.code === 0) {
           optionList.value = res.data.map((item: any) => {
             return {
-              value: item.name
+              value: item.id,
+              name: item.name
             }
           })
-        } else if (typeof res.message === 'object') {
-          message.error(res.message && res.message.sqlMessage)
         } else {
           message.error(res.message)
         }
@@ -195,8 +196,6 @@ export default defineComponent({
             visible.value = false
             modalCloseBack()
             getTagList()
-          } else if(typeof res.message === 'object') {
-            message.error(res.message && res.message.sqlMessage)
           } else {
             message.error(res.message)
           }
@@ -240,8 +239,6 @@ export default defineComponent({
           formState.git = ''
           formState.tags = []
           formState.content = ''
-        } else if (typeof res.message === 'object') {
-          message.error(res.message && res.message.sqlMessage)
         } else {
           message.error(res.message)
         }
@@ -255,10 +252,8 @@ export default defineComponent({
           formState.extraTitle = res.data.extra_title
           formState.banner = res.data.banner
           formState.git = res.data.git
-          formState.tags = res.data.tags.split(',')
+          formState.tags = res.data.tagList.map((item: any) => item.tagId)
           formState.content = res.data.content
-        } else if (typeof res.message === 'object') {
-          message.error(res.message && res.message.sqlMessage)
         } else {
           message.error(res.message)
         }

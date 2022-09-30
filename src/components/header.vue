@@ -34,6 +34,7 @@ import { storeToRefs } from 'pinia'
 import { themeStore } from '../store/themePinia'
 import sidebar from '@components/sidebar.vue'
 import avatar from '../assets/avatar_boy.png'
+import { logout } from '../api/user'
 const themeStores = themeStore()
 const { themeColor, menuStyle, menuType } = storeToRefs(themeStores)
 const themeOpts = computed(() => {
@@ -52,11 +53,14 @@ const userStr = localStorage.getItem('userinfo')
 if (userStr) {
   userinfo.value = JSON.parse(userStr)
 }
-const handleMenuClick = (context: { item: any, key: string, keyPath: any }) => {
+const handleMenuClick = async(context: { item: any, key: string, keyPath: any }) => {
   console.log("click", context);
   if (context.key === 'logout') {
-    localStorage.clear()
-    router.push('/login');
+    const res:any = await logout()
+    if(Number(res.code) === 0) {
+      localStorage.clear()
+      router.push('/login')
+    }
   }
 };
 const visibleChange = (currentVisible: boolean) => {
