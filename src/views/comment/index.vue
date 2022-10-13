@@ -1,11 +1,11 @@
 <template>
   <div class="comments">
     <div style="margin-bottom: 10px;text-transform: capitalize;">zhang wang de</div>
-    <calendar />
+    <!-- 留言板审核 -->
+    <!-- 文章评论审核 -->
   </div>
 </template>
 <script lang="ts" setup>
-import calendar from '../../components/calendar/index.vue'
 </script>
 <style lang="scss" scoped>
 .comments {
