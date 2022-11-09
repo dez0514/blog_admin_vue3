@@ -70,7 +70,7 @@ const fixbtnClick = () => {
   console.log('isShowMenu.value==', isShowMenu.value)
 }
 
-const getArticleById = (id: string | string[]) => {
+const getArticleById = (id: string | number) => {
   loadState.value = 0
   getArticleDetail({ id }, { isLoading: false }).then((res: any) => {
     console.log('detail===', res)
@@ -114,7 +114,9 @@ const handleClickMenu = (index: number) => {
   activeMenuIndex.value = index
 }
 const handleRefresh = () => {
-  getArticleById(route.params.id)
+  if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
+    getArticleById(route.params.id)
+  }
 }
 const pageScrollCallback = (dom: HTMLDivElement) => {
   // dom 其实就是 .main
@@ -139,8 +141,11 @@ const handleToTop = () => {
 onMounted(() => {
   // 布局原因，监听页面滚动在main.vue里，滚动回调触发此事件。
   emitter.on('pageScrollCallback', pageScrollCallback)
+  console.log('detail route==========', route)
   if (route.params.id) {
-    getArticleById(route.params.id)
+    if(typeof route.params.id === 'string' || typeof route.params.id === 'number') {
+      getArticleById(route.params.id)
+    }
   }
 })
 onUnmounted(() => {

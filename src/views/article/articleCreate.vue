@@ -233,12 +233,14 @@ export default defineComponent({
         console.log('res==', res)
         if (res.code === 0) {
           message.success(res.message)
-          formState.title = ''
-          formState.extraTitle = ''
-          formState.banner = ''
-          formState.git = ''
-          formState.tags = []
-          formState.content = ''
+          if(!route.params.id) {
+            formState.title = ''
+            formState.extraTitle = ''
+            formState.banner = ''
+            formState.git = ''
+            formState.tags = []
+            formState.content = ''
+          }
         } else {
           message.error(res.message)
         }
