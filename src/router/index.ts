@@ -7,7 +7,8 @@ import {
   PictureOutlined,
   TagsOutlined,
   MailOutlined,
-  SettingOutlined
+  SettingOutlined,
+  UserOutlined
 } from "@ant-design/icons-vue";
 import Login from '@/views/login/index.vue'
 import Main from '@/views/main.vue'
@@ -68,6 +69,16 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
       icon: TagsOutlined,
     },
     component: () => import('@/views/tags/index.vue')
+  },
+  {
+    path: '/resume',
+    name: 'resume',
+    meta: {
+      title: '简历管理',
+      icon: UserOutlined,
+      badge: true
+    },
+    component: () => import('@/views/resume/index.vue')
   },
   {
     path: '/comment',
