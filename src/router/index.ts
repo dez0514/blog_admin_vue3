@@ -78,7 +78,37 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
       icon: UserOutlined,
       badge: true
     },
-    component: () => import('@/views/resume/index.vue')
+    redirect: '/resume/config',
+    component: RouterView,
+    children: [
+      {
+        path: '/resume/config',
+        name: 'resumeConfig',
+        meta: {
+          title: '简历配置',
+          icon: PictureOutlined,
+        },
+        component: () => import('@/views/resume/config.vue')
+      },
+      {
+        path: '/resume/company',
+        name: 'resumeCompany',
+        meta: {
+          title: '工作经历',
+          icon: PictureOutlined,
+        },
+        component: () => import('@/views/resume/company.vue')
+      },
+      {
+        path: '/resume/projects',
+        name: 'resumeProjects',
+        meta: {
+          title: '项目经历',
+          icon: PictureOutlined,
+        },
+        component: () => import('@/views/resume/projects.vue')
+      },
+    ]
   },
   {
     path: '/comment',
