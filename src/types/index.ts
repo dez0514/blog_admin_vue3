@@ -38,6 +38,20 @@ export interface tagItem {
   key: string;
   gradientColor?: string;
 }
+export interface companyItem {
+  name: string;
+  durings: string;
+  sort?: number;
+  key: string;
+}
+export interface projectItem {
+  name: string;
+  intro: string;
+  technology: string;
+  details: string;
+  sort?: number;
+  key: string;
+}
 export interface columnItem {
   title: string;
   dataIndex: string;

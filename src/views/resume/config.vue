@@ -27,9 +27,9 @@
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="GitHub">
         <a-input v-model:value="formState.github" allowClear />
       </a-form-item>
-      <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="电话" name="cell"
+      <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="电话" name="phone"
         :rules="[{ required: true, message: '请输入电话!' }]">
-        <a-input v-model:value="formState.cell" allowClear />
+        <a-input v-model:value="formState.phone" allowClear />
       </a-form-item>
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="邮箱">
         <a-input v-model:value="formState.email" allowClear />
@@ -44,65 +44,14 @@
         :rules="[{ required: true, message: '请输入应聘岗位!' }]">
         <a-input v-model:value="formState.job" allowClear />
       </a-form-item>
-    </a-form>
-    <div style="font-weight: 600">工作经历：</div>
-    <a-form style="margin-top: 10px;" ref="formRef" :model="dynamicValidateForm" name="dynamic" v-bind="formItemLayoutWithOutLabel">
-      <a-form-item v-for="(domain, index) in dynamicValidateForm.domains" :key="domain.key" 
-        v-bind="formItemLayoutWithOutLabel"
-        :name="['domains', index, 'value']"
-        :rules="{
-          required: true,
-          message: 'can not be null',
-          trigger: 'blur',
-        }">
-        <div class="domain-item-wrap">
-          <div class="domain-item">
-            <a-form-item label="公司名称" v-bind="formItemLayout">
-              <a-input v-model:value="domain.value" placeholder="please input domain" allowClear />
-            </a-form-item>
-            <a-form-item label="时间" v-bind="formItemLayout">
-              <a-input v-model:value="domain.value" placeholder="please input domain" allowClear />
-            </a-form-item>
-          </div>
-          <MinusCircleOutlined v-if="dynamicValidateForm.domains.length > 1 && index > 0" class="dynamic-delete-button"
-          @click="removeDomain(domain)" />
-        </div>
-      </a-form-item>
-      <a-form-item v-bind="formItemLayoutWithOutLabel">
-        <a-button type="dashed" style="width: 100%" @click="addDomain">
-          <PlusOutlined />Add Company
-        </a-button>
+      <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="应聘岗位" name="job"
+        :rules="[{ required: true, message: '请输入应聘岗位!' }]">
+        <a-input v-model:value="formState.job" allowClear />
       </a-form-item>
     </a-form>
-    <div style="font-weight: 600">项目经验：</div>
-    <a-form style="margin-top: 10px;" ref="formRef" :model="dynamicValidateForm" name="dynamic" v-bind="formItemLayoutWithOutLabel">
-      <a-form-item v-for="(domain, index) in dynamicValidateForm.domains" :key="domain.key" 
-        v-bind="formItemLayoutWithOutLabel"
-        :name="['domains', index, 'value']"
-        :rules="{
-          required: true,
-          message: 'can not be null',
-          trigger: 'blur',
-        }">
-        <div class="domain-item-wrap">
-          <div class="domain-item">
-            <a-form-item label="公司名称" v-bind="formItemLayout">
-              <a-input v-model:value="domain.value" placeholder="please input domain" allowClear />
-            </a-form-item>
-            <a-form-item label="时间" v-bind="formItemLayout">
-              <a-input v-model:value="domain.value" placeholder="please input domain" allowClear />
-            </a-form-item>
-          </div>
-          <MinusCircleOutlined v-if="dynamicValidateForm.domains.length > 1 && index > 0" class="dynamic-delete-button"
-          @click="removeDomain(domain)" />
-        </div>
-      </a-form-item>
-      <a-form-item v-bind="formItemLayoutWithOutLabel">
-        <a-button type="dashed" style="width: 100%" @click="addDomain">
-          <PlusOutlined />Add Project
-        </a-button>
-      </a-form-item>
-      <a-form-item v-bind="formItemLayoutWithOutLabel">
+    <div style="font-weight: 600">选择项目：</div>
+    <a-form>
+      <a-form-item>
         <a-button type="primary" html-type="submit" @click="submitForm">提交</a-button>
       </a-form-item>
     </a-form>
@@ -110,28 +59,6 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons-vue';
-import type { FormInstance } from 'ant-design-vue';
-interface Domain {
-  value: string;
-  key: number;
-}
-const formItemLayout = {
-  labelCol: {
-    span: 3
-  },
-  wrapperCol: {
-    offset: 1,
-    span: 20
-  }
-};
-const formItemLayoutWithOutLabel = {
-  wrapperCol: {
-    offset: 3,
-    span: 14
-  },
-};
-const formRef = ref<FormInstance>();
 const gendarList = [
   { label: '男', value: '男' },
   { label: '女', value: '女' }
@@ -144,27 +71,13 @@ const formState = reactive({
   graduationDate: '',
   blog: '',
   github: '',
-  cell: '',
+  phone: '',
   email: '',
   wechat: '',
   qq: '',
   job: ''
 })
-const dynamicValidateForm = reactive<{ domains: Domain[] }>({
-  domains: []
-})
-const removeDomain = (item: Domain) => {
-  let index = dynamicValidateForm.domains.indexOf(item);
-  if (index !== -1) {
-    dynamicValidateForm.domains.splice(index, 1)
-  }
-}
-const addDomain = () => {
-  dynamicValidateForm.domains.push({
-    value: '',
-    key: Date.now()
-  })
-}
+
 const submitForm = () => {
 
 }
