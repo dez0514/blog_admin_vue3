@@ -32,6 +32,9 @@
         <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ offset: 1 }" label="详细" name="details">
           <a-input v-model:value="formPopState.details" />
         </a-form-item>
+        <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ offset: 1 }" label="项目截图" name="imgList">
+          <a-input v-model:value="formPopState.imgList" />
+        </a-form-item>
         <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ offset: 1 }" label="所属单位" name="companyId">
           <a-select v-model:value="formPopState.companyId" placeholder="请选择单位" :options="optionList"
             option-label-prop="name">
@@ -63,6 +66,7 @@ interface popItem {
   intro: string;
   technology: string;
   details: string;
+  imgList: string;
   companyId: number | string;
   sort?: number;
 }
@@ -115,6 +119,7 @@ const formPopState = reactive<popItem>({
   intro: '',
   technology: '',
   details: '',
+  imgList: '',
   companyId: ''
 })
 const handleAddProject = () => {
@@ -129,15 +134,6 @@ const getProjectList = () => {
   getPageProjects(params).then((res: any) => {
     console.log(res)
     if (res.code === 0) {
-      res.data.forEach((item: any) => {
-        if(item.companyInfo && item.companyInfo.length > 0) {
-          item.companyId = item.companyInfo[0].companyId
-          item.companyName = item.companyInfo[0].name
-        } else {
-          item.companyId = ''
-          item.companyName = ''
-        }
-      })
       dataSource.value = res.data.map((item: any) => {
         return {
           key: item.id,
@@ -145,6 +141,7 @@ const getProjectList = () => {
           intro: item.intro,
           technology: item.technology,
           details: item.details,
+          imgList: item.imgList,
           sort: item.sort,
           companyId: String(item.companyId),
           companyName: item.companyName
@@ -180,6 +177,7 @@ const handleOk = () => {
       intro: formPopState.intro,
       technology: formPopState.technology,
       details: formPopState.details,
+      imgList: formPopState.imgList,
       companyId: formPopState.companyId
     }
     addProject(params).then((res: any) => {
@@ -202,6 +200,7 @@ const handleCancel = () => {
   formPopState.intro = ''
   formPopState.technology = ''
   formPopState.details = ''
+  formPopState.imgList = ''
   formPopState.companyId = ''
 }
 // table methods
@@ -212,6 +211,7 @@ const handleEdit = (record: any) => {
   formPopState.intro = record.intro
   formPopState.technology = record.technology
   formPopState.details = record.details
+  formPopState.imgList = record.imgList
   formPopState.companyId = record.companyId
   visible.value = true
 }
