@@ -20,3 +20,8 @@ export const deleteCompany = (params: any = {}, config: any = {}) => {
   const data = qs.stringify(params)
   return service.post('/api/company/delete_company', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
 }
+
+export const sortCompanyData = (params: any = {}, config: any = {}) => {
+  const data = qs.stringify(params)
+  return service.post('/api/company/sort_company', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
+}

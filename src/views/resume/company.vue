@@ -3,7 +3,7 @@
     <div class="content-wrap">
       <a-button type="primary" style="margin-bottom: 8px" @click="handleBatchAdd">批量新增</a-button>
       <a-table :dataSource="dataSource" :columns="columns" :pagination="false" :scroll="{y: `calc(100vh - 64px - 85px - 40px - 48px - 55px - 40px)`}">
-        <template #bodyCell="{ column, text, record }">
+        <template #bodyCell="{ column, text, record, index }">
           <template v-if="['name', 'durings'].includes(column.dataIndex)">
             <div>
               <a-input v-if="editableData[record.key]" v-model:value="(editableData as any)[record.key][column.dataIndex]" style="margin: -5px 0" allow-clear/>
@@ -24,6 +24,10 @@
                 <a-typography-link @click="handleCancelRow(record.key)">取消</a-typography-link>
               </span>
               <span v-else>
+                <a @click="handleSort('up', record, index)">上移</a>
+                <a-divider type="vertical" />
+                <a style="color: #ff4d4f" @click="handleSort('down', record, index)">下移</a>
+                <a-divider type="vertical" />
                 <a @click="handleEdit(record.key)">编辑</a>
                 <a-divider type="vertical" />
                 <a-popconfirm
@@ -77,7 +81,7 @@ import { companyItem, columnItem } from "../../types"
 import { cloneDeep } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { promit } from '../../utils'
-import { addCompanyList, addCompany, getCompanys, deleteCompany } from '../../api/company'
+import { addCompanyList, addCompany, getCompanys, deleteCompany, sortCompanyData } from '../../api/company'
 
 const formref = ref(null as HTMLFormElement | null)
 const message: any = inject('$message')
@@ -160,7 +164,7 @@ const getCompanyList = () => {
     if(res.code === 0) {
       dataSource.value = res.data.map((item: any) => {
         return {
-          key: item.id, // id 都用key 表示。。。懒得改了。。
+          key: item.id, // id 都用key 表示。。。
           name: item.name,
           durings: item.durings
         }
@@ -210,6 +214,37 @@ const handleEdit = (key: string) => {
   console.log(key)
   editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
   // console.log('editableData==', editableData)
+}
+const handleSort = (type: string, record: any, index: number) => {
+  console.log(type, record, index)
+  if(dataSource.value.length <= 1) return
+  if(type === 'up' && index === 0) return
+  if(type === 'down' && index === dataSource.value.length - 1) return
+  // 换位置： newindex 与 index 互换位置
+  let newindex = index
+  if(type === 'up') {
+    newindex = index - 1
+  } else if (type === 'down'){
+    newindex = index + 1
+  }
+  if(newindex === index) return
+  dataSource.value[newindex] = dataSource.value.splice(index, 1, dataSource.value[newindex])[0]
+  sortCompanys()
+}
+const sortCompanys = () => {
+  const companys = dataSource.value.map((item, index) => {
+    return {
+      id: item.key,
+      sort: index,
+      name: item.name,
+      durings: item.durings
+    }
+  })
+  sortCompanyData({ companys }).then((res: any) => {
+    if(res.code !== 0) {
+      message.error(res.message)
+    }
+  })
 }
 const handleSaveRow = (key: string) => {
   // 校验 不能为空的 保存

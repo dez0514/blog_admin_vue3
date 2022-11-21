@@ -61,7 +61,7 @@
       <a-form-item :label-col="{ span: 2 }" :wrapper-col="{ offset: 1, span: 14 }" label="绑定项目" name="projects"
         :rules="[{ required: true, message: '请选择项目!' }]">
         <a-select v-model:value="formState.projects" mode="multiple"
-          placeholder="请选择项目" :options="projectsList" allowClear>
+          placeholder="请选择项目" :options="projectsList" allowClear @change="changePro">
         </a-select>
       </a-form-item>
       <a-form-item style="margin-bottom: 0; padding-bottom: 20px;" :wrapper-col="{ offset: 3, span: 14 }">
@@ -124,6 +124,9 @@ const formState = reactive<formItem>({
   extra: '',
   projects: []
 })
+const changePro = (val:any) => {
+  console.log(val)
+}
 const getResumeData = () => {
   getResume().then((res: any) => {
     if(res.code === 0) {
@@ -131,9 +134,11 @@ const getResumeData = () => {
         if(item !== 'projects') {
           formState[item as keyof formItem] = res.data && res.data[item] || ''
         } else {
-          formState[item as keyof formItem] = res.data && res.data.projectList.map((inner: any) => inner.companyId)
+          formState[item as keyof formItem] = res.data && res.data.projectList.map((inner: any) => inner.id)
         }
       })
+      console.log('==dd==', formState.projects)
+      console.log('==dd==', projectsList)
     } else {
       message.error(res.message)
     }

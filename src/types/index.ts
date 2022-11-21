@@ -51,6 +51,7 @@ export interface projectItem {
   details: string;
   sort?: number;
   key: string;
+  imgList: string;
 }
 export interface columnItem {
   title: string;

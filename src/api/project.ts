@@ -20,3 +20,8 @@ export const deleteProject = (params: any = {}, config: any = {}) => {
   const data = qs.stringify(params)
   return service.post('/api/project/delete_project', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
 }
+
+export const sortProjectData = (params: any = {}, config: any = {}) => {
+  const data = qs.stringify(params)
+  return service.post('/api/project/sort_project', data, { ...config, headers: { 'Content-Type' : 'application/x-www-form-urlencoded' }})
+}
