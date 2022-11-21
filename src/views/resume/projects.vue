@@ -47,15 +47,12 @@
         </a-form-item>
       </a-form>
     </a-modal>
-    <div class="page-wrap">
-      <a-pagination v-model:current="pageNum" :total="total" show-less-items />
-    </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, reactive, inject, onMounted } from 'vue'
 import { projectItem, columnItem } from "../../types"
-import { addProject, getPageProjects, deleteProject, sortProjectData } from '../../api/project'
+import { addProject, getAllProjects, deleteProject, sortProjectData } from '../../api/project'
 import { getCompanys } from '../../api/company'
 const formref = ref(null as HTMLFormElement | null)
 const message: any = inject('$message')
@@ -75,9 +72,6 @@ interface popItem {
   sort?: number;
 }
 const optionList = ref<optItem[]>([])
-const pageNum = ref<number>(1)
-const pageSize = 10
-const total = ref<number>(0)
 const columns: columnItem[] = [
   {
     title: '项目名称',
@@ -131,12 +125,7 @@ const handleAddProject = () => {
 }
 // 查询列表
 const getProjectList = () => {
-  const params = {
-    pageSize: pageSize,
-    pageNum: pageNum.value
-  }
-  getPageProjects(params).then((res: any) => {
-    console.log(res)
+  getAllProjects().then((res: any) => {
     if (res.code === 0) {
       dataSource.value = res.data.map((item: any) => {
         return {
@@ -151,7 +140,6 @@ const getProjectList = () => {
           companyName: item.companyName
         }
       })
-      total.value = Number(res.total)
     } else {
       message.error(res.message)
     }
@@ -260,7 +248,6 @@ const confirmDeleteRow = (key: string) => {
   deleteProject(params).then((res: any) => {
     if (res.code === 0) {
       message.success(res.message)
-      pageNum.value = 1
       getProjectList()
     } else {
       message.error(res.message)
@@ -282,7 +269,7 @@ onMounted(() => {
 
 .content-wrap {
   box-sizing: border-box;
-  height: calc(100% - 48px);
+  height: 100%;
   padding-bottom: 20px;
 }
 
