@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <h2 style="text-align: center;color: #1890ff;">博客管理系统</h2>
-    <!-- <a-tabs v-model:activeKey="activeTab" @change="changeTab">
-      <a-tab-pane key="login" tab="登录"> -->
+    <a-tabs v-model:activeKey="activeTab" @change="changeTab">
+      <a-tab-pane key="login" :tab="showReg ? '登录': ''">
         <a-form ref="formref" :model="formState">
           <a-form-item name="username" :rules="rulesRef.username">
             <a-input
@@ -63,8 +63,8 @@
             >登录</a-button>
           </a-form-item>
         </a-form>
-      <!-- </a-tab-pane> -->
-      <!-- <a-tab-pane key="register" tab="注册">
+      </a-tab-pane>
+      <a-tab-pane v-if="showReg" key="register" tab="注册">
          <a-form ref="regformref" :model="registerFormState">
           <a-form-item name="username" :rules="rulesRegRef.username">
             <a-input
@@ -100,18 +100,18 @@
               type="primary"
               block
               :disabled="registerFormState.username === '' || registerFormState.password === ''"
-              :loading="submitLoad"
+              :loading="submitRegLoad"
               @click="handleRegSubmit"
               style="height: 44px"
             >注册</a-button>
           </a-form-item>
         </a-form>
       </a-tab-pane>
-    </a-tabs> -->
+    </a-tabs>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, inject, reactive, ref, toRaw } from 'vue';
+import { defineComponent, inject, reactive, ref } from 'vue';
 import {
   UserOutlined,
   LockOutlined,
@@ -122,6 +122,7 @@ import verifyDrag from './components/verifyDrag.vue'
 import { useRouter } from 'vue-router';
 import { Form } from 'ant-design-vue';
 import { login, register } from '../../api/user'
+const showReg = ref<boolean>(false)
 const useForm = Form.useForm;
 interface FormState {
   username: string;
@@ -220,6 +221,8 @@ export default defineComponent({
           localStorage.setItem('token', res.data.token)
           localStorage.setItem('userinfo', JSON.stringify(res.data.userinfo))
           router.replace('/')
+        } else {
+          message.error(res.message)
         }
       }).catch(() => {
         submitLoad.value = false
@@ -254,8 +257,14 @@ export default defineComponent({
         username: registerFormState.username,
         password: registerFormState.password
       }
-      register(params).then(res => {
-        console.log(res)
+      register(params).then((res: any) => {
+        submitRegLoad.value = false
+        if(res.code === 0) {
+          message.success(res.message)
+        } else {
+          message.error(res.message)
+        }
+      }).catch(() => {
         submitRegLoad.value = false
       })
     }
@@ -307,6 +316,7 @@ export default defineComponent({
       }
     }
     return {
+      showReg,
       activeTab,
       pwdref,
       coderef,
