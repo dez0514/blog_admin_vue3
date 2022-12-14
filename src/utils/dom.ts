@@ -113,7 +113,7 @@ export const copyTextByDom = (
     error?: (e: ClipboardJS.Event) => void
   }
 ) => {
-  let clipboard
+  let clipboard: ClipboardJS | null = null
   if (deep) {
     clipboard = new ClipboardJS(`.${selector}`, {
       text: (el: any) => {
@@ -138,8 +138,14 @@ export const copyTextByDom = (
       }
     })
   }
-  clipboard.on('success', success)
+  clipboard.on('success', (e) => {
+    success && success(e)
+    clipboard?.destroy() // 每次执行完销毁掉
+    clipboard = null
+  })
   clipboard.on('error', (e) => {
     error && error(e)
+    clipboard?.destroy()
+    clipboard = null
   })
 }
