@@ -1,113 +1,79 @@
 <template>
-  <div class="container">
-    <h2 style="text-align: center;color: #1890ff;">博客管理系统</h2>
-    <a-tabs v-model:activeKey="activeTab" @change="changeTab">
-      <a-tab-pane key="login" :tab="showReg ? '登录': ''">
-        <a-form ref="formref" :model="formState">
-          <a-form-item name="username" :rules="rulesRef.username">
-            <a-input
-              placeholder="用户名"
-              v-model:value="formState.username"
-              @pressEnter="handlePressEnter('pwdref')"
-              allow-clear
-              autocomplete="on"
-              style="height: 44px"
-            >
-              <template #prefix>
-                <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-form-item name="password" :rules="rulesRef.password">
-            <a-input-password
-              ref="pwdref"
-              placeholder="密码"
-              v-model:value="formState.password"
-              autocomplete="on"
-              @pressEnter="handlePressEnter('coderef')"
-              allow-clear
-              style="height: 44px"
-            >
-              <template #prefix>
-                <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
-              </template>
-            </a-input-password>
-          </a-form-item>
-          <a-form-item name="code" :rules="rulesRef.code">
-            <a-input
-              ref="coderef"
-              placeholder="验证码"
-              v-model:value="formState.code"
-              style="width: calc(100% - 100px);margin-right: 12px;height: 44px;"
-              @pressEnter="handlePressEnter('formref')"
-              allow-clear
-              autocomplete="off"
-            >
-              <template #prefix>
-                <CodeOutlined style="color: rgba(0, 0, 0, 0.25)" />
-              </template>
-            </a-input>
-            <verify-code style="width: 88px;height: 44px;" @emitCode="getCode"></verify-code>
-          </a-form-item>
-          <a-form-item>
-            <verify-drag @emitVerifyDrag="getDragVerify"></verify-drag>
-          </a-form-item>
-          <a-form-item>
-            <a-button
-              type="primary"
-              block
-              :disabled="formState.username === '' || formState.password === '' || formState.code === '' || !formState.verifydrag"
-              :loading="submitLoad"
-              @click="handleSubmit"
-              style="height: 44px"
-            >登录</a-button>
-          </a-form-item>
-        </a-form>
-      </a-tab-pane>
-      <a-tab-pane v-if="showReg" key="register" tab="注册">
-         <a-form ref="regformref" :model="registerFormState">
-          <a-form-item name="username" :rules="rulesRegRef.username">
-            <a-input
-              placeholder="用户名"
-              v-model:value="registerFormState.username"
-              @pressEnter="handlePressEnter('regpwdref')"
-              allow-clear
-              autocomplete="new-password"
-              style="height: 44px"
-            >
-              <template #prefix>
-                <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-form-item name="password" :rules="rulesRegRef.password">
-            <a-input-password
-              ref="regpwdref"
-              placeholder="密码"
-              v-model:value="registerFormState.password"
-              autocomplete="new-password"
-              @pressEnter="handlePressEnter('regformref')"
-              allow-clear
-              style="height: 44px"
-            >
-              <template #prefix>
-                <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
-              </template>
-            </a-input-password>
-          </a-form-item>
-          <a-form-item>
-            <a-button
-              type="primary"
-              block
-              :disabled="registerFormState.username === '' || registerFormState.password === ''"
-              :loading="submitRegLoad"
-              @click="handleRegSubmit"
-              style="height: 44px"
-            >注册</a-button>
-          </a-form-item>
-        </a-form>
-      </a-tab-pane>
-    </a-tabs>
+  <div class="login-page">
+    <div class="container">
+      <h2 style="text-align: center;color: #1890ff;">博客管理系统</h2>
+      <a-tabs v-model:activeKey="activeTab" @change="changeTab">
+        <a-tab-pane key="login" :tab="showReg ? '登录' : ''">
+          <a-form ref="formref" :model="formState">
+            <a-form-item name="username" :rules="rulesRef.username">
+              <a-input placeholder="用户名" v-model:value="formState.username" @pressEnter="handlePressEnter('pwdref')"
+                allow-clear autocomplete="on" style="height: 44px">
+                <template #prefix>
+                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
+              </a-input>
+            </a-form-item>
+            <a-form-item name="password" :rules="rulesRef.password">
+              <a-input-password ref="pwdref" placeholder="密码" v-model:value="formState.password" autocomplete="on"
+                @pressEnter="handlePressEnter('coderef')" allow-clear style="height: 44px">
+                <template #prefix>
+                  <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
+              </a-input-password>
+            </a-form-item>
+            <a-form-item name="code" :rules="rulesRef.code">
+              <a-input ref="coderef" placeholder="验证码" v-model:value="formState.code"
+                style="width: calc(100% - 100px);margin-right: 12px;height: 44px;"
+                @pressEnter="handlePressEnter('formref')" allow-clear autocomplete="off">
+                <template #prefix>
+                  <CodeOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
+              </a-input>
+              <verify-code style="width: 88px;height: 44px;" @emitCode="getCode"></verify-code>
+            </a-form-item>
+            <a-form-item>
+              <verify-drag @emitVerifyDrag="getDragVerify"></verify-drag>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" block @click="handleShowJigsaw" style="height: 44px">test</a-button>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" block
+                :disabled="formState.username === '' || formState.password === '' || formState.code === '' || !formState.verifydrag"
+                :loading="submitLoad" @click="handleSubmit" style="height: 44px">登录</a-button>
+            </a-form-item>
+          </a-form>
+        </a-tab-pane>
+        <a-tab-pane v-if="showReg" key="register" tab="注册">
+          <a-form ref="regformref" :model="registerFormState">
+            <a-form-item name="username" :rules="rulesRegRef.username">
+              <a-input placeholder="用户名" v-model:value="registerFormState.username"
+                @pressEnter="handlePressEnter('regpwdref')" allow-clear autocomplete="new-password"
+                style="height: 44px">
+                <template #prefix>
+                  <UserOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
+              </a-input>
+            </a-form-item>
+            <a-form-item name="password" :rules="rulesRegRef.password">
+              <a-input-password ref="regpwdref" placeholder="密码" v-model:value="registerFormState.password"
+                autocomplete="new-password" @pressEnter="handlePressEnter('regformref')" allow-clear
+                style="height: 44px">
+                <template #prefix>
+                  <LockOutlined style="color: rgba(0, 0, 0, 0.25)" />
+                </template>
+              </a-input-password>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" block
+                :disabled="registerFormState.username === '' || registerFormState.password === ''"
+                :loading="submitRegLoad" @click="handleRegSubmit" style="height: 44px">注册</a-button>
+            </a-form-item>
+          </a-form>
+        </a-tab-pane>
+      </a-tabs>
+    </div>
+    <verifyJigsaw v-if="jigsawShow" v-model:visible="jigsawShow" />
   </div>
 </template>
 <script lang="ts">
@@ -119,6 +85,7 @@ import {
 } from "@ant-design/icons-vue";
 import verifyCode from './components/verifyCode.vue'
 import verifyDrag from './components/verifyDrag.vue'
+import verifyJigsaw from './components/verifyJigsaw.vue'
 import { useRouter } from 'vue-router';
 import { Form } from 'ant-design-vue';
 import { login, register } from '../../api/user'
@@ -140,7 +107,8 @@ export default defineComponent({
     LockOutlined,
     CodeOutlined,
     verifyCode,
-    verifyDrag
+    verifyDrag,
+    verifyJigsaw
   },
   setup() {
     const message: any = inject('$message')
@@ -156,6 +124,7 @@ export default defineComponent({
       password: '',
     })
     const activeTab = ref<string>('login')
+    const jigsawShow = ref<boolean>(false)
     const rulesRef = reactive({
       username: [
         {
@@ -217,7 +186,7 @@ export default defineComponent({
       login(params).then((res: any) => {
         console.log(res)
         submitLoad.value = false
-        if(Number(res.code) === 0) {
+        if (Number(res.code) === 0) {
           localStorage.setItem('token', res.data.token)
           localStorage.setItem('userinfo', JSON.stringify(res.data.userinfo))
           router.replace('/')
@@ -252,6 +221,9 @@ export default defineComponent({
         message.error('登录失败');
       });
     }
+    const handleShowJigsaw = () => {
+      jigsawShow.value = true
+    }
     const handleRegister = () => {
       const params = {
         username: registerFormState.username,
@@ -259,7 +231,7 @@ export default defineComponent({
       }
       register(params).then((res: any) => {
         submitRegLoad.value = false
-        if(res.code === 0) {
+        if (res.code === 0) {
           message.success(res.message)
         } else {
           message.error(res.message)
@@ -302,7 +274,7 @@ export default defineComponent({
           return
         }
         handleSubmit()
-      } else if(typeRef === 'regpwdref') {
+      } else if (typeRef === 'regpwdref') {
         regpwdref.value?.focus()
       } else if (typeRef === 'regformref') {
         handleRegSubmit()
@@ -311,7 +283,7 @@ export default defineComponent({
     const changeTab = (val: string) => {
       if (val === 'register') {
         registerForm.clearValidate(['username', 'password']) // 不生效
-      } else if(val === 'login') {
+      } else if (val === 'login') {
         loginForm.clearValidate(['username', 'password', 'code']) // 不生效
       }
     }
@@ -326,7 +298,9 @@ export default defineComponent({
       rulesRegRef,
       submitLoad,
       submitRegLoad,
+      jigsawShow,
       handleSubmit,
+      handleShowJigsaw,
       handleRegSubmit,
       getCode,
       getDragVerify,
@@ -339,6 +313,10 @@ export default defineComponent({
 });
 </script>
 <style lang="scss" scoped>
+.login-page {
+  width: 100%;
+  height: 100vh;
+}
 .container {
   position: fixed;
   top: 50%;
@@ -350,6 +328,7 @@ export default defineComponent({
   border-radius: 6px;
   user-select: none;
 }
+
 :deep(input:-internal-autofill-previewed),
 :deep(input:-internal-autofill-selected) {
   transition: background-color 5000s ease-in-out 0s !important;

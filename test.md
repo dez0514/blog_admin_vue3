@@ -30,7 +30,12 @@ setup() {
 // defineEmits 用法
 const emit = defineEmits<{ (e: "emitCode", code: string): void }>();
 emit('emitCode', code)
+
 ```   
+注意
+v-model 取代 .sync修饰符
+使用v-model:xxx 才能 emit('update:xxx')
+
 2. ts 使用中括号时
 ```
 const obj = ref<{a:string}>({a:'abc'})
@@ -161,3 +166,33 @@ progress 可能处理也比较麻烦。。
 #### node express 中图片文件名带中文，无法展示。
 参考： https://blog.csdn.net/qq_39668938/article/details/107293250
 app.js去掉 res.header("Content-Type", "application/json;charset=utf-8")
+
+#### 要使用 style var
+https://github.com/vuejs/rfcs/pull/231
+注意这个问题：https://www.jianshu.com/p/4cd415293fcb, 弹窗挂载在body下时，css中的v-bind的变量会找不到。。
+
+```
+<template>
+  <div class="text">hello</div>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        color: 'red',
+        font: {
+          size: '2em'
+        }
+      }
+    }
+</script>
+
+<style>
+  .text {
+    color: v-bind(color);
+    /* expressions (wrap in quotes) */
+    font-size: v-bind('font.size');
+  }
+</style>
+```
