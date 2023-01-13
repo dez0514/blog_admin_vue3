@@ -205,12 +205,14 @@ export default defineComponent({
           formState.jigsaw = false
           // 验证码刷新，拖动验证重新验证
           verifycoderef.value?.handleDraw()
+          formState.code = ''
           verifydragref.value?.refreshInit()
         }
       }).catch(() => {
         submitLoad.value = false
         formState.jigsaw = false
         verifycoderef.value?.handleDraw()
+        formState.code = ''
         verifydragref.value?.refreshInit()
         message.error('登录失败！');
       })
