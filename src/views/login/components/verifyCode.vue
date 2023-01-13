@@ -105,6 +105,9 @@ const draw = () => {
     }
     return imgCode
 }
+defineExpose({
+  handleDraw
+})
 onMounted(() => {
   // 初始化绘制图片验证码
   handleDraw()

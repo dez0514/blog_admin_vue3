@@ -2,7 +2,14 @@
   <div id="verify-jigsaw">
     <a-modal v-model:visible="visible" :getContainer="getContainer" centered title="拖动下方滑块完成拼图" :footer="null"
       @cancel="handleClose">
-      <div ref="checkwraps" class="check">
+      <div ref="checkwraps" class="check"
+        :style="{ 
+          backgroundImage: `url(${bgUrl})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: '0 0',
+          backgroundSize: '100% 100%'
+        }"
+      >
         <!-- 小块拼图 -->
         <div ref="checkchild" :class="['check-child', showTip ? 'anim-floatlr' : '']"></div>
         <div v-show="showSuccess" class="success-tips">
@@ -41,7 +48,8 @@ const props = withDefaults(defineProps<Props>(), {
   visible: false,
 })
 const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void
+  (e: 'update:visible', value: boolean): void,
+  (e: 'verifyResult', value: boolean): void
 }>()
 const { visible } = toRefs(props)
 const showSuccess= ref<boolean>(false)
@@ -56,6 +64,7 @@ const randomLeft = ref<number>(0) // 获取随机位置left,top
 const randomTop = ref<number>(0)
 const startTime = ref<number>(0)
 const endTime = ref<number>(0)
+const bgUrl = ref<string>('')
 const useTime = computed(() => {
   const result = (endTime.value - startTime.value) / 1000
   return Number(result.toFixed(1))
@@ -75,6 +84,15 @@ const initTopBox = computed(() => {
 const initLeftBox = computed(() => {
   return '-' + randomLeft.value + 'px'
 })
+const getImgUrl = (name: string) => {
+  return new URL(`/src/assets/login_img/${name}`, import.meta.url).href
+}
+const getRandomBgImg = () => {
+  // 0~4
+  const num = Math.floor(Math.random() * 4 + 1)
+  const name = `bg${num}.jpeg`
+  bgUrl.value = getImgUrl(name)
+}
 const getRandomLocation = () => {
   // 阴影部分给个随机位置, 且保持在容器里靠右侧的某范围内
   // 容器：宽472,高280。让阴影的left落在在110~410范围内，top落在20~200的范围内
@@ -111,6 +129,7 @@ const setDragTrans = (ofs: number, isBack=false) => {
 }
 const handleClose = () => {
   emit('update:visible', false)
+  emit('verifyResult', false)
 }
 const initTrans = 20 // dragbtn初始tranform偏移
 const offsetWidth = 9 // dragbtn比小拼图宽18，为了居中对齐，小拼图多偏移的距离
@@ -145,6 +164,8 @@ const handleMouseDown = (ev: MouseEvent) => {
       const sucTimer = setTimeout(() => {
         clearTimeout(sucTimer)
         handleClose()
+        // 登录回调
+        emit('verifyResult', true)
       }, 1000)
     } else {
       // 失败：1.出失败提示，3s后消失。2.出动画，3s后还原，且回到初始位置。
@@ -163,20 +184,29 @@ const handleMouseDown = (ev: MouseEvent) => {
 }
 const handleRefresh = () => {
   if(showSuccess.value) return
-  // 树形图片和位置 初始化
+  // 树形图片和位置
+  // 初始化所有
+  showSuccess.value = false
+  clickDown.value = false
+  showTip.value = false
+  startX.value = 0
+  startTime.value = 0
+  endTime.value = 0
+  getRandomBgImg()
+  getRandomLocation()
+  transX.value = initTrans
+  setDragTrans(offsetWidth)
 }
 onMounted(() => {
+  getRandomBgImg()
   getRandomLocation()
 })
 </script>
 <style lang="scss" scoped>
 .check {
+  position: relative;
   width: 472px;
   height: 280px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-image: url(https://img0.baidu.com/it/u=2028084904,3939052004&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500);
-  position: relative;
 }
 .success-tips {
   position: absolute;

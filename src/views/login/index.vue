@@ -29,13 +29,10 @@
                   <CodeOutlined style="color: rgba(0, 0, 0, 0.25)" />
                 </template>
               </a-input>
-              <verify-code style="width: 88px;height: 44px;" @emitCode="getCode"></verify-code>
+              <verify-code ref="verifycoderef" style="width: 88px;height: 44px;" @emitCode="getCode"></verify-code>
             </a-form-item>
             <a-form-item>
-              <verify-drag @emitVerifyDrag="getDragVerify"></verify-drag>
-            </a-form-item>
-            <a-form-item>
-              <a-button type="primary" block @click="handleShowJigsaw" style="height: 44px">test</a-button>
+              <verify-drag ref="verifydragref" @emitVerifyDrag="getDragVerify"></verify-drag>
             </a-form-item>
             <a-form-item>
               <a-button type="primary" block
@@ -73,7 +70,7 @@
         </a-tab-pane>
       </a-tabs>
     </div>
-    <verifyJigsaw v-if="jigsawShow" v-model:visible="jigsawShow" />
+    <verifyJigsaw v-if="jigsawShow" v-model:visible="jigsawShow" @verifyResult="jigsawVerify" />
   </div>
 </template>
 <script lang="ts">
@@ -96,6 +93,7 @@ interface FormState {
   password: string;
   code: string;
   verifydrag: boolean;
+  jigsaw: boolean;
 }
 interface regFormState {
   username: string;
@@ -117,12 +115,15 @@ export default defineComponent({
       username: '',
       password: '',
       code: '',
-      verifydrag: false
+      verifydrag: false,
+      jigsaw: false
     });
     const registerFormState = reactive<regFormState>({
       username: '',
       password: '',
     })
+    const verifycoderef = ref<InstanceType<typeof verifyCode> | null>(null)
+    const verifydragref = ref<InstanceType<typeof verifyDrag> | null>(null)
     const activeTab = ref<string>('login')
     const jigsawShow = ref<boolean>(false)
     const rulesRef = reactive({
@@ -178,6 +179,14 @@ export default defineComponent({
     const getDragVerify = (flag: boolean) => {
       formState.verifydrag = flag
     }
+    const jigsawVerify = (flag: boolean) => {
+      formState.jigsaw = flag
+      if(flag) {
+        // 验证成功，自动走登录接口
+        submitLoad.value = true
+        handleLogin()
+      }
+    }
     const handleLogin = () => {
       const params = {
         username: formState.username,
@@ -192,20 +201,23 @@ export default defineComponent({
           router.replace('/')
         } else {
           message.error(res.message)
+          // 拼图验证回初始值
+          formState.jigsaw = false
+          // 验证码刷新，拖动验证重新验证
+          verifycoderef.value?.handleDraw()
+          verifydragref.value?.refreshInit()
         }
       }).catch(() => {
         submitLoad.value = false
+        formState.jigsaw = false
+        verifycoderef.value?.handleDraw()
+        verifydragref.value?.refreshInit()
         message.error('登录失败！');
       })
     }
     const loginForm = useForm(formState, rulesRef);
     const handleSubmit = () => {
       loginForm.validate().then(() => {
-        // console.log(toRaw(formState));
-        // if (formState.username !== 'zwd' || formState.password !== '123456') {
-        //   message.error('用户名或密码不正确');
-        //   return
-        // }
         if (formState.code.toLowerCase() !== imgCode.value.toLowerCase()) {
           message.error('验证码不正确');
           return
@@ -214,15 +226,16 @@ export default defineComponent({
           message.error('滑块验证未通过');
           return
         }
-        submitLoad.value = true
-        handleLogin()
+        if (!formState.jigsaw) {
+          jigsawShow.value = true
+        } else {
+          submitLoad.value = true
+          handleLogin()
+        }
       }).catch(err => {
         submitLoad.value = false
         message.error('登录失败');
       });
-    }
-    const handleShowJigsaw = () => {
-      jigsawShow.value = true
     }
     const handleRegister = () => {
       const params = {
@@ -292,6 +305,8 @@ export default defineComponent({
       activeTab,
       pwdref,
       coderef,
+      verifycoderef,
+      verifydragref,
       formState,
       registerFormState,
       rulesRef,
@@ -300,7 +315,7 @@ export default defineComponent({
       submitRegLoad,
       jigsawShow,
       handleSubmit,
-      handleShowJigsaw,
+      jigsawVerify,
       handleRegSubmit,
       getCode,
       getDragVerify,

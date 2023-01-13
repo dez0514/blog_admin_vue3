@@ -60,6 +60,17 @@ const mousemoveFn = (e: MouseEvent) => {
     dragWidth.value = e.clientX - startX.value
   }
 }
+const refreshInit = () => {
+  randomWidth.value = 0
+  dragWidth.value = 0
+  startX.value = 0
+  mouseClickDown.value = false
+  sucLock.value = false
+  emit('emitVerifyDrag', false)
+}
+defineExpose({
+  refreshInit
+})
 const mouseupFn = () => {
   mouseClickDown.value = false
   if (randomWidth.value > 0 && dragWidth.value >= randomWidth.value - 10 && dragWidth.value <= randomWidth.value + 10) {
