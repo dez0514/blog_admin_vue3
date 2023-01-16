@@ -46,8 +46,10 @@
     <div class="pic-list">
       <div :class="['pic-item', isSelect ? 'select_mode' : 'normal']" v-for="(item, index) in imgList" :key="index">
         <div style="padding: 10px;background: rgba(0, 0, 0, .05)">
-          <img :src="`${baseUrl}${currentFolder === '' ? '' : currentFolder + '/'}${item.name}`" alt=""
-            @error="onErrorImg">
+          <!-- <img :src="`${baseUrl}${currentFolder === '' ? '' : currentFolder + '/'}${item.name}`" alt=""
+            @error="onErrorImg"> -->
+            <WaterMarkImg :src="`${baseUrl}${currentFolder === '' ? '' : currentFolder + '/'}${item.name}`" alt=""
+            @error="onErrorImg" />
         </div>
         <div class="pic-link">{{ item.name }}</div>
         <div class="copy-tip">
@@ -90,6 +92,7 @@ import { MouseMenuDirective as vMouseMenu } from '@howdyjs/mouse-menu';
 import { promit } from '../../utils'
 import defaultImg from '../../assets/default_pic.png'
 import { baseURL } from '../../api/urls'
+import WaterMarkImg from '../../components/waterMarking/index.vue'
 const maxCount = 3
 const onErrorImg = (e: any) => {
   e.target.src = defaultImg
