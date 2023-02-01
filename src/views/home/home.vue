@@ -8,16 +8,33 @@
     <a-button type="primary" @click="handleChangeMeta">修改router.meta中的参数</a-button>
     <div>comments:{{ comments }}</div>
     <a-button type="primary" @click="getPageList">get page</a-button>
+    <div>
+      <div>global search test</div>
+      <a-button type="primary" @click="testSearch">搜索框open</a-button>
+      <a-button type="primary" style="margin-left: 5px;" @click="testSearch('close')">搜索框close</a-button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 // import { onMounted } from 'vue'
+// import { getData } from '../../api'
 import { todoStore } from '../../store/pinia'
 import { storeToRefs } from 'pinia'
 import { getArticlesPage } from '../../api/articles'
-// import { getData } from '../../api'
+import useSearch from '../../components/globalSearch/useSearch';
+const { openSearchBar, closeSearchBar } = useSearch
 const store = todoStore()
 const { todos, filter, nextId, comments } = storeToRefs(store)
+
+// 搜索框
+const testSearch = (type: undefined | string) => {
+  if(type === 'close') {
+    closeSearchBar()
+  } else {
+    openSearchBar()
+  }
+}
+
 const test = () => {
   console.log(store)
   store.addTodo('test1')

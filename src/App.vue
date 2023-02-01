@@ -5,11 +5,26 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted } from "vue";
+import { onMounted, onUnmounted } from 'vue';
 import { changeTheme, defaultTheme } from "./utils";
 import { themeColorList } from "./utils/config";
 import { useLoading } from './utils/useLoading'
+import useSearch from './components/globalSearch/useSearch';
+const { openSearchBar, closeSearchBar } = useSearch
 const { showLoading } = useLoading()
+// 全局搜索快捷键
+const keyDownEvt = (e: any) => {
+  // console.log('keydown==', e)
+  if((e.ctrlKey || e.metaKey) && e.keyCode === 75) {
+    // ctrl + k || command + k
+    e.preventDefault() // 阻止浏览器默认动作
+    openSearchBar()
+  } else if(e.keyCode === 27) {
+    // esc
+    e.preventDefault()
+    closeSearchBar()
+  }
+}
 onMounted(() => {
   let themeObjStr = localStorage.getItem("theme");
   // console.log("主题色值===", theme);
@@ -23,7 +38,11 @@ onMounted(() => {
   } else {
     changeTheme(theme);
   }
+  window.addEventListener('keydown', keyDownEvt)
 });
+onUnmounted(() => {
+  window.removeEventListener('keydown', keyDownEvt)
+})
 </script>
 <style lang="scss" scoped>
 .outest-loading {
