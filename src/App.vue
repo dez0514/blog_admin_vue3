@@ -10,7 +10,7 @@ import { changeTheme, defaultTheme } from "./utils";
 import { themeColorList } from "./utils/config";
 import { useLoading } from './utils/useLoading'
 import useSearch from './components/globalSearch/useSearch';
-const { openSearchBar, closeSearchBar } = useSearch
+const { openSearchBar } = useSearch
 const { showLoading } = useLoading()
 // 全局搜索快捷键
 const keyDownEvt = (e: any) => {
@@ -19,10 +19,6 @@ const keyDownEvt = (e: any) => {
     // ctrl + k || command + k
     e.preventDefault() // 阻止浏览器默认动作
     openSearchBar()
-  } else if(e.keyCode === 27) {
-    // esc
-    e.preventDefault()
-    closeSearchBar()
   }
 }
 onMounted(() => {
