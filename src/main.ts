@@ -16,6 +16,17 @@ import { copyTextByDom } from './utils/dom'
 import SvgIcon from '@/components/svgIcon.vue'
 import 'virtual:svg-icons-register'
 import '@iconfu/svg-inject' // svg 可以放到img
+import { Updater } from './utils/noticeReload'
+//实例化该类
+const up = new Updater({ timer:2000 })
+//未更新通知
+up.on('no-update',()=>{
+ console.log('未更新')
+})
+//更新通知
+up.on('update',()=>{
+  console.log('更新了')
+})
 // 复制代码
 const copyCode = () => {
   copyTextByDom('copy-code-btn', {
