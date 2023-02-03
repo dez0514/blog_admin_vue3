@@ -14,6 +14,8 @@
 ```
 setup() {
     const testbox = ref<InstanceType<typeof test> | null>(null) // ts 获取子组件的类型
+    // 注意，使用InstanceType获取子组件类型时，子组件不能用<script setup>的写法！！run build时会报错。。[新版本貌似无此问题]
+    // 参考： https://juejin.cn/post/7031921830852034591
     const login = ref(null as HTMLDivElement | null) // 标签类型，后面使用时，可能为null会提示不能去里面的属性，要做判断或者使用'?'取，例如 testbox.value?.a
     onMounted(()=> {
         console.log('test==',testbox.value?.a) // a 需要在 test组件中 利用 defineExpose 或者 expose 暴露出来

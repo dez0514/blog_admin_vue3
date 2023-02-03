@@ -80,8 +80,8 @@ import {
   LockOutlined,
   CodeOutlined
 } from "@ant-design/icons-vue";
-import verifyCode from './components/verifyCode.vue'
-import verifyDrag from './components/verifyDrag.vue'
+import verifyCode, { API as verifyCodeApi } from './components/verifyCode.vue'
+import verifyDrag, { API as verifyDragApi } from './components/verifyDrag.vue'
 import verifyJigsaw from './components/verifyJigsaw.vue'
 import { useRouter } from 'vue-router';
 import { Form } from 'ant-design-vue';
@@ -122,8 +122,8 @@ export default defineComponent({
       username: '',
       password: '',
     })
-    const verifycoderef = ref<InstanceType<typeof verifyCode> | null>(null)
-    const verifydragref = ref<InstanceType<typeof verifyDrag> | null>(null)
+    const verifycoderef = ref<verifyCodeApi | null>(null)
+    const verifydragref = ref<verifyDragApi | null>(null)
     const activeTab = ref<string>('login')
     const jigsawShow = ref<boolean>(false)
     const rulesRef = reactive({
@@ -188,6 +188,7 @@ export default defineComponent({
       }
     }
     const handleLogin = () => {
+      console.log('verifycoderef.value===', verifycoderef.value)
       const params = {
         username: formState.username,
         password: formState.password

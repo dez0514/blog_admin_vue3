@@ -9,6 +9,9 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
+export interface API {
+  handleDraw: Function;
+}
 const verify = ref(null as HTMLCanvasElement | null)
 const state = reactive({
     pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890', // 字符串

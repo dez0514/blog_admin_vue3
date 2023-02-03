@@ -29,6 +29,9 @@
 <script setup lang="ts">
 import { DoubleRightOutlined, SafetyOutlined, CheckCircleOutlined } from "@ant-design/icons-vue";
 import { ref, onMounted } from 'vue';
+export interface API {
+  refreshInit: Function;
+}
 const emit = defineEmits<{ (e: "emitVerifyDrag", flag: boolean): void }>();
 const randomWidth = ref<number>(0);
 const dragWidth = ref<number>(0);
