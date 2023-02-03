@@ -13,6 +13,11 @@
       <a-button type="primary" @click="testSearch">搜索框open</a-button>
       <a-button type="primary" style="margin-left: 5px;" @click="testSearch('close')">搜索框close</a-button>
     </div>
+    <div>
+      <div>toast</div>
+      <a-button type="primary" @click="testToast">toast</a-button>
+      <a-button type="primary" style="margin-left: 5px;" @click="hideToast">hideToast</a-button>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -22,10 +27,17 @@ import { todoStore } from '../../store/pinia'
 import { storeToRefs } from 'pinia'
 import { getArticlesPage } from '../../api/articles'
 import useSearch from '../../components/globalSearch/useSearch';
+import useToast from '../../components/toast/useToast';
 const { openSearchBar, closeSearchBar } = useSearch
+const { showToast, hideToast } = useToast
 const store = todoStore()
 const { todos, filter, nextId, comments } = storeToRefs(store)
-
+const testToast = () => {
+  showToast({
+    message: '测试toast',
+    bgColor: '#409eff'
+  })
+}
 // 搜索框
 const testSearch = (type: undefined | string) => {
   if(type === 'close') {
