@@ -28,6 +28,13 @@ import { storeToRefs } from 'pinia'
 import { getArticlesPage } from '../../api/articles'
 import useSearch from '../../components/globalSearch/useSearch';
 import useToast from '../../components/toast/useToast';
+// import { usePage } from '../../utils/usePage';
+// import { getTags } from '../../api/tags'
+// const { reset, page, tableData, handleSizeChange, handleCurrentChange } = usePage({
+//   getListApi: getTags
+// })
+// reset()
+
 const { openSearchBar, closeSearchBar } = useSearch
 const { showToast, hideToast } = useToast
 const store = todoStore()

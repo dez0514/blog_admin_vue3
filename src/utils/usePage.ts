@@ -1,4 +1,4 @@
-// https://mp.weixin.qq.com/s?__biz=MzA4MjA1MDM3Ng==&mid=2450827694&idx=1&sn=8fafbbdb2f9ce604ca1862bc331616fb&chksm=886ba589bf1c2c9f6d92978a0649d1051d10a7fc2df1c79399990aae590620643e80818f8760&scene=126&sessionid=1671074023#rd
+// https://juejin.cn/post/7160480314089799710
 import { reactive, ref } from 'vue'
 // 一个用于重置对象字段为原始值的函数
 // import { resetObjToPrimitiveType } from '@/utils/tool'
