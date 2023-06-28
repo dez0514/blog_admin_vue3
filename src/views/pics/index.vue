@@ -82,7 +82,7 @@
 </template>
 <script setup lang="ts">
 import { ref, inject, reactive, onMounted, computed } from 'vue'
-import previewImg from '../../components/previewImage'
+import previewImg from '../../components/previewImage/Index'
 import useClipboard from 'vue-clipboard3'
 import { DeleteOutlined, PlusOutlined, InboxOutlined, LeftOutlined } from '@ant-design/icons-vue'
 import type { UploadFile } from 'ant-design-vue'
